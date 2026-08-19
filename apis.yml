@@ -1,15 +1,16 @@
 aid: agntcy
 name: AGNTCY
-description: 'AGNTCY is the open collective for agent interoperability, initiated by Outshift — Cisco''s incubation group
-  — and governed under the Linux Foundation (LF Projects, LLC), developed in the open across 52 public repositories. It publishes
-  specifications rather than a product API: OASF (Open Agentic Schema Framework) for describing agents with a versioned record
-  schema and skill/domain taxonomies, the Agent Directory (DIR) for announcing and discovering multi-agent systems over gRPC,
-  SLIM (Secure Low-Latency Interactive Messaging) as a transport, the Agent Connect Protocol (ACP) as a REST interface for
-  invoking remote agents, and an Identity layer that issues and verifies W3C Verifiable Credential badges for agents, MCP
-  servers and tools. One AGNTCY-operated API exists — the OASF Schema Server at schema.oasf.outshift.com, unauthenticated
-  and callable by anyone; everything else is a specification you implement or software you deploy yourself. It ships SDKs
-  in Python, JavaScript, Go, Rust and .NET, a local-stdio MCP server for the Agent Directory, and SLIMRPC transports for the
-  A2A SDKs in five languages. Everything is Apache-2.0; there is no pricing, no paid tier and no commercial plan.'
+description: 'AGNTCY is the open collective for agent interoperability, initiated by Outshift — Cisco''s incubation
+  group — and governed under the Linux Foundation (LF Projects, LLC), developed in the open across 52 public repositories.
+  It publishes specifications rather than a product API: OASF (Open Agentic Schema Framework) for describing agents
+  with a versioned record schema and skill/domain taxonomies, the Agent Directory (DIR) for announcing and discovering
+  multi-agent systems over gRPC, SLIM (Secure Low-Latency Interactive Messaging) as a transport, the Agent Connect
+  Protocol (ACP) as a REST interface for invoking remote agents, and an Identity layer that issues and verifies
+  W3C Verifiable Credential badges for agents, MCP servers and tools. One AGNTCY-operated API exists — the OASF
+  Schema Server at schema.oasf.outshift.com, unauthenticated and callable by anyone; everything else is a specification
+  you implement or software you deploy yourself. It ships SDKs in Python, JavaScript, Go, Rust and .NET, a local-stdio
+  MCP server for the Agent Directory, and SLIMRPC transports for the A2A SDKs in five languages. Everything is Apache-2.0;
+  there is no pricing, no paid tier and no commercial plan.'
 url: https://raw.githubusercontent.com/api-evangelist/agntcy/refs/heads/main/apis.yml
 type: Index
 access: 3rd-Party
@@ -18,10 +19,10 @@ x-type: company
 x-source: cisco-family-buildout:2026-08-19
 x-parent: cisco
 x-relationship: initiative
-x-contract-status: spec+api
-x-contract-note: Publishes four OpenAPI/Swagger contracts (ACP, OASF Schema API, Identity Service, Identity Node), 34 protobuf
-  definitions and a set of JSON Schemas. Only the OASF Schema API is AGNTCY-hosted and callable; ACP is an interface with
-  no servers[], and the two Identity APIs are self-hosted (servers[] localhost).
+x-contract-status: real
+x-contract-note: 'Four first-party machine-readable contracts (106 operations): the Agent Connect Protocol OpenAPI
+  3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents, plus 34 verbatim protobuf definitions.
+  schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API.'
 specificationVersion: '0.23'
 created: '2026-08-19'
 modified: '2026-08-19'
@@ -46,10 +47,10 @@ tags:
 - Linux Foundation
 apis:
 - name: OASF Schema API
-  description: 'The Open Agentic Schema Framework schema server API. Browse and retrieve the OASF schema, walk the skill /
-    domain / module taxonomies, generate samples, translate taxonomy values, and validate agent records. Hosted by Outshift
-    by Cisco, unauthenticated, and version-addressed: schema versions 0.7.0, 0.8.0, 1.0.0 and 1.1.0 are all still served.
-    This is the only AGNTCY-operated API.'
+  description: 'The Open Agentic Schema Framework schema server API. Browse and retrieve the OASF schema, walk the
+    skill / domain / module taxonomies, generate samples, translate taxonomy values, and validate agent records.
+    Hosted by Outshift by Cisco, unauthenticated, and version-addressed: schema versions 0.7.0, 0.8.0, 1.0.0 and
+    1.1.0 are all still served. This is the only AGNTCY-operated API.'
   humanURL: https://schema.oasf.outshift.com/doc
   baseURL: https://schema.oasf.outshift.com/api
   image: https://agntcy.org/logo/preview-thumbnail-new.png
@@ -82,10 +83,10 @@ apis:
     base_status: 200
     note: GET https://schema.oasf.outshift.com/api/versions returned 200 anonymously.
 - name: Agent Connect Protocol (ACP)
-  description: 'A standard REST interface for invoking and configuring remote agents: agent discovery and descriptors, stateful
-    threads, thread runs, and stateless runs, each with create / wait / stream / resume / cancel paths. OpenAPI 3.1.1, version
-    0.2.3, 30 operations. ACP is a specification every compliant agent server implements — it declares no servers[] and AGNTCY
-    hosts no instance of it.'
+  description: 'A standard REST interface for invoking and configuring remote agents: agent discovery and descriptors,
+    stateful threads, thread runs, and stateless runs, each with create / wait / stream / resume / cancel paths.
+    OpenAPI 3.1.1, version 0.2.3, 30 operations. ACP is a specification every compliant agent server implements
+    — it declares no servers[] and AGNTCY hosts no instance of it.'
   humanURL: https://spec.acp.agntcy.org/
   image: https://agntcy.org/logo/preview-thumbnail-new.png
   tags:
@@ -104,13 +105,13 @@ apis:
     url: https://github.com/agntcy/acp-spec
   - type: Documentation
     url: https://docs.agntcy.org/
-  x-no-base-url: The ACP OpenAPI declares no servers[] block, because ACP is an interface implemented by each agent server
-    rather than a service AGNTCY operates. Recorded as absent rather than guessed from the spec host.
+  x-no-base-url: The ACP OpenAPI declares no servers[] block, because ACP is an interface implemented by each agent
+    server rather than a service AGNTCY operates. Recorded as absent rather than guessed from the spec host.
 - name: AGNTCY Identity Service API
-  description: 'Manages identity and access control in the AGNTCY ecosystem: register agents, MCP servers and tools as apps
-    (including directly from an OASF record), issue and verify W3C Verifiable Credential badges, manage policies and rules,
-    register approval devices, and run the OIDC authorize/token and external-authorization flows. OpenAPI 3.0.3, 36 operations,
-    with bearer-JWT and x-id-api-key security schemes.'
+  description: 'Manages identity and access control in the AGNTCY ecosystem: register agents, MCP servers and tools
+    as apps (including directly from an OASF record), issue and verify W3C Verifiable Credential badges, manage
+    policies and rules, register approval devices, and run the OIDC authorize/token and external-authorization flows.
+    OpenAPI 3.0.3, 36 operations, with bearer-JWT and x-id-api-key security schemes.'
   humanURL: https://identity-docs.outshift.com/openapi/service/v1alpha1
   image: https://agntcy.org/logo/preview-thumbnail-new.png
   tags:
@@ -131,12 +132,13 @@ apis:
     url: https://github.com/agntcy/identity-service
   - type: Authentication
     url: authentication/agntcy-authentication.yml
-  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://localhost:4000 and no AGNTCY-operated instance
-    exists — identity-service.outshift.com, referenced in the docs sitemap, does not resolve (DNS failure) as of 2026-08-19.
+  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://localhost:4000 and no AGNTCY-operated
+    instance exists — identity-service.outshift.com, referenced in the docs sitemap, does not resolve (DNS failure)
+    as of 2026-08-19.
 - name: AGNTCY Identity Node API
-  description: The identity node that generates and resolves agent IDs, registers issuers and serves their JWKS, and publishes,
-    revokes, searches and verifies Verifiable Credentials. OpenAPI 3.0.3, 9 operations, generated from the protobuf service
-    definitions.
+  description: The identity node that generates and resolves agent IDs, registers issuers and serves their JWKS,
+    and publishes, revokes, searches and verifies Verifiable Credentials. OpenAPI 3.0.3, 9 operations, generated
+    from the protobuf service definitions.
   humanURL: https://github.com/agntcy/identity
   image: https://agntcy.org/logo/preview-thumbnail-new.png
   tags:
@@ -155,12 +157,12 @@ apis:
     url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
   - type: JSONSchema
     url: json-schema/agntcy-identity-credential-content.jsonschema.json
-  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://0.0.0.0:4000 (local environment); AGNTCY operates
-    no node.
+  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://0.0.0.0:4000 (local environment);
+    AGNTCY operates no node.
 - name: Agent Directory (DIR)
-  description: Distributed announce and discovery of multi-agent systems. gRPC-first, with services for storage (content-addressed
-    by CID), routing over a DHT, structured search, signing and verification, domain name verification, peer sync, streaming
-    events and runtime discovery. Canonical schemas are published on buf.build.
+  description: Distributed announce and discovery of multi-agent systems. gRPC-first, with services for storage
+    (content-addressed by CID), routing over a DHT, structured search, signing and verification, domain name verification,
+    peer sync, streaming events and runtime discovery. Canonical schemas are published on buf.build.
   humanURL: https://dir.agntcy.org/
   image: https://agntcy.org/logo/preview-thumbnail-new.png
   tags:
@@ -189,8 +191,8 @@ apis:
     url: mcp/agntcy-tool-crosswalk.yml
   - type: CLI
     url: cli/agntcy-cli.yml
-  x-no-base-url: Self-hosted gRPC. dirctl defaults to 0.0.0.0:8888 for a local node; remote access goes through an operator-run
-    oidc-gateway. AGNTCY publishes no public Directory endpoint.
+  x-no-base-url: Self-hosted gRPC. dirctl defaults to 0.0.0.0:8888 for a local node; remote access goes through
+    an operator-run oidc-gateway. AGNTCY publishes no public Directory endpoint.
 common:
 - type: AgenticAccess
   url: agentic-access/agntcy-agentic-access.yml
