@@ -1,0 +1,20 @@
+generated: '2026-08-19'
+method: searched
+source: https://agntcy.org/ and its sitemap (/, /changelog, /articles, /sdks, /supporters)
+plan_count: 0
+currency: null
+note: AGNTCY publishes no plans, no pricing page and no paid tier. It is an open specification collective under the Linux
+  Foundation (LF Projects, LLC); every specification, SDK and the hosted OASF schema server are free and Apache-2.0 licensed.
+  agntcy.org has a five-URL sitemap containing no pricing page, and https://agntcy.org/pricing was not present. This is an
+  honest zero, not a missing measurement.
+plans: []
+evidence:
+- url: https://agntcy.org/sitemap.xml
+  status: 200
+  note: 5 URLs, none of them pricing
+- url: https://agntcy.org/
+  status: 200
+licensing:
+  model: open-source
+  license: Apache-2.0
+  foundation: Linux Foundation (LF Projects, LLC)

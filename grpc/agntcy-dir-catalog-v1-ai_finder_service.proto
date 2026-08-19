@@ -1,0 +1,251 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package agntcy.dir.catalog.v1;
+
+import "agntcy/dir/catalog/v1/models.proto";
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+
+// AIFinderService is the federated AI Finder discovery surface over the AI
+// Catalog model. It is exposed over gRPC and, via grpc-gateway, as a REST API.
+service AIFinderService {
+  // ListAgents returns catalog entries with deterministic, cacheable browsing
+  // semantics (database filtering, no relevance ranking).
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse) {
+    option (google.api.http) = {get: "/v1/agents"};
+  }
+
+  // GetAgent returns a single CatalogEntry by CID. The response shape is the
+  // same as one element in ListAgentsResponse.results[], providing a stable
+  // detail URL for any agent discovered through listing.
+  rpc GetAgent(GetAgentRequest) returns (GetAgentResponse) {
+    option (google.api.http) = {
+      get: "/v1/agents/{cid}"
+      response_body: "entry"
+    };
+  }
+
+  // ExportAgent returns the full agent record in one of the supported export
+  // formats (oasf, a2a, agent-skill, mcp-ghcopilot). The bytes are written
+  // directly into the response body via google.api.HttpBody with an appropriate
+  // Content-Type.
+  rpc ExportAgent(ExportAgentRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/v1/agents/{cid}/export"};
+  }
+
+  // GetWellKnownCatalog returns the AI Catalog well-known document (host
+  // descriptor, published entries, and dynamic collections) at the RFC 8615 URI.
+  rpc GetWellKnownCatalog(GetWellKnownCatalogRequest) returns (GetWellKnownCatalogResponse) {
+    option (google.api.http) = {
+      get: "/.well-known/ai-catalog.json"
+      response_body: "catalog"
+    };
+  }
+
+  // ListTags returns the distinct catalog tags derived from OASF skills, domains,
+  // and record annotations across the registry.
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
+    option (google.api.http) = {get: "/v1/tags"};
+  }
+
+  // ExtractTaxonomy maps free-form text onto the OASF taxonomy, returning the
+  // skills and domains the text is closest to. It is a passthrough over the
+  // OASF extractor with no catalog semantics attached: it does not search, rank
+  // records, or check that any record actually carries a returned class.
+  //
+  // Its purpose is to let callers turn a description of what a user wants
+  // ("analyzing customer support tickets") into taxonomy labels they can use as
+  // tag suggestions. Callers that need the suggestions to be actionable should
+  // intersect them against ListTags.
+  //
+  // POST rather than GET because the input is free-form user text that belongs
+  // in a body rather than a URL.
+  rpc ExtractTaxonomy(ExtractTaxonomyRequest) returns (ExtractTaxonomyResponse) {
+    option (google.api.http) = {
+      post: "/v1/extract"
+      body: "*"
+    };
+  }
+
+  // SearchAgents answers a free-text query with relevance-ranked catalog
+  // entries. It is the API equivalent of `dirctl search "<query>"` and returns
+  // the same records in the same order for the same query.
+  //
+  // POST rather than GET because the query is free-form user text that belongs
+  // in a body rather than a URL.
+  rpc SearchAgents(SearchAgentsRequest) returns (SearchAgentsResponse) {
+    option (google.api.http) = {
+      post: "/v1/search"
+      body: "*"
+    };
+  }
+}
+
+// ListAgentsRequest carries the AI Finder browsing parameters. All fields are
+// optional; an empty request returns the first page with server defaults.
+message ListAgentsRequest {
+  // Filter expression: "field=value" clauses joined by AND; comma-separated
+  // values within a field are OR-combined.
+  string filter = 1 [(buf.validate.field).string.max_len = 2048];
+
+  // Sort fields, comma-separated, each optionally suffixed "ASC"/"DESC"
+  // (default ASC), e.g. "created_at DESC, display_name ASC".
+  string order_by = 2 [(buf.validate.field).string.max_len = 256];
+
+  // Maximum entries to return. Default 20, clamped to 100.
+  uint32 page_size = 3 [(buf.validate.field).uint32.lte = 100];
+
+  // Opaque continuation token from a previous call.
+  string page_token = 4 [(buf.validate.field).string.max_len = 1024];
+}
+
+// ListAgentsResponse returns one page of catalog entries.
+message ListAgentsResponse {
+  // Catalog entries on this page, in the requested sort order.
+  repeated CatalogEntry results = 1;
+
+  // Opaque continuation token. Empty when there are no more results.
+  string next_page_token = 2;
+
+  // Total number of catalog entries matching the filter across all pages.
+  uint32 total_count = 3;
+}
+
+// SearchAgentsRequest carries a natural-language query and paging parameters.
+//
+// There is deliberately no filter field: `dirctl search` applies no facets to a
+// natural-language query, and accepting them here would make the two paths
+// disagree. Structured filtering belongs on ListAgents.
+message SearchAgentsRequest {
+  // Free-text query, e.g. "a skill for reviewing code". Required.
+  string query = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+
+  // Maximum entries to return. Default 20, clamped to 100.
+  uint32 page_size = 2 [(buf.validate.field).uint32.lte = 100];
+
+  // Opaque continuation token from a previous call.
+  string page_token = 3 [(buf.validate.field).string.max_len = 1024];
+}
+
+// SearchAgentsResponse returns one page of relevance-ranked catalog entries.
+message SearchAgentsResponse {
+  // Catalog entries on this page, most relevant first.
+  repeated CatalogEntry results = 1;
+
+  // Opaque continuation token. Empty when there are no more results.
+  string next_page_token = 2;
+
+  // Total number of matching records across all pages. Bounded by the
+  // per-signal fan-out cap, so it counts candidates found rather than the whole
+  // index.
+  uint32 total_count = 3;
+}
+
+// GetAgentRequest carries the CID of the catalog entry to retrieve.
+message GetAgentRequest {
+  // Content-addressable identifier of the agent record.
+  string cid = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+// GetAgentResponse wraps a single CatalogEntry. The HTTP gateway extracts
+// the "entry" field via response_body so REST consumers receive the bare
+// CatalogEntry JSON.
+message GetAgentResponse {
+  // CatalogEntry for the requested CID.
+  CatalogEntry entry = 1 [(buf.validate.field).required = true];
+}
+
+// ExportAgentRequest selects an agent and the format to render it in.
+message ExportAgentRequest {
+  // Content-addressable identifier of the agent record.
+  string cid = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+
+  // Export format. Empty string is treated as "oasf".
+  string format = 2 [(buf.validate.field).string = {
+    in: [
+      "",
+      "oasf",
+      "a2a",
+      "agent-skill",
+      "skill",
+      "mcp-ghcopilot"
+    ]
+  }];
+}
+
+// GetWellKnownCatalogRequest is intentionally empty; it exists for forward
+// compatibility with future query parameters.
+message GetWellKnownCatalogRequest {}
+
+// GetWellKnownCatalogResponse wraps the document in a named field (buf
+// RPC_RESPONSE_STANDARD_NAME); the gateway emits the bare WellKnownCatalog.
+message GetWellKnownCatalogResponse {
+  // The well-known AI Catalog document.
+  WellKnownCatalog catalog = 1 [(buf.validate.field).required = true];
+}
+
+message ListTagsRequest {}
+
+message ListTagsResponse {
+  repeated CatalogTag tags = 1;
+}
+
+// ExtractTaxonomyRequest carries the free-form text to map onto the taxonomy.
+message ExtractTaxonomyRequest {
+  // Free-form description of what the caller is looking for, e.g. "analyzing
+  // customer support tickets". Required.
+  string text = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+}
+
+// ExtractTaxonomyResponse returns what the extractor found in the text, in
+// descending score order within each list. Modules are deliberately omitted:
+// they are a deployment concern rather than a discovery label.
+message ExtractTaxonomyResponse {
+  // OASF skills the text is closest to.
+  repeated ScoredClass skills = 1;
+
+  // OASF domains the text is closest to.
+  repeated ScoredClass domains = 2;
+
+  // Salient terms lifted from the text. These are not taxonomy labels and have
+  // no OASF class behind them; tag-oriented consumers should use skills and
+  // domains only.
+  repeated string keywords = 3;
+}
+
+// ScoredClass is one OASF class the extractor matched, with the score and tier
+// that ranked it. Consumers need both to threshold matches and decide how many
+// suggestions to show.
+message ScoredClass {
+  // OASF numeric identifier (uid), e.g. 10304.
+  uint32 id = 1;
+
+  // Hierarchical OASF name, e.g.
+  // "natural_language_processing/text_classification". This is the value that
+  // appears as a catalog tag.
+  string name = 2;
+
+  // Combined relevance score in [0,1]; higher is closer.
+  double score = 3;
+
+  // 1-based score group this class falls in; tier 1 is the closest cluster of
+  // matches, and a new tier starts at a relative drop in score. Classes within
+  // a tier have near-equal scores.
+  uint32 tier = 4;
+}

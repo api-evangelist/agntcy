@@ -1,0 +1,57 @@
+generated: '2026-08-19'
+method: searched
+source: https://agntcy.org/changelog and the per-project GitHub release streams
+versioning:
+  scheme: semver-per-project
+  note: 'Each AGNTCY project versions independently: dir v1.7.0, oasf-sdk v1.2.0, agntcy-slim 2.3.0, OASF schema 1.1.0, ACP
+    0.2.3, Identity v1alpha1. There is no single AGNTCY release train.'
+  current:
+    dir: v1.7.0
+    oasf-schema: 1.1.0
+    oasf-sdk: v1.2.0
+    acp: 0.2.3
+    identity: v1alpha1
+    slim: 2.3.0
+    dir-mcp: v1.3.5
+  docs: https://agntcy.org/changelog
+api_versioning:
+  style: uri-path
+  evidence: OASF Schema API is version-addressed (/api/1.1.0/..., /api/0.7.0/...); Identity is /v1alpha1/...; DIR proto packages
+    are agntcy.dir.<area>.v1
+schema_immutability:
+  policy: true
+  statement: Once a schema version is released, no changes to that version are expected except non-breaking fixes. Deletions,
+    additions or structural changes land in the next version.
+  source: https://github.com/agntcy/oasf/blob/main/README.md
+version_retention:
+  observed:
+  - 0.7.0
+  - 0.8.0
+  - 1.0.0
+  - 1.1.0
+  source: https://schema.oasf.outshift.com/api/versions
+  note: Every released OASF schema version stays addressable on the hosted server; retired versions are not removed.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No RFC 8594 Sunset/Deprecation header support and no written deprecation policy were found. Schema immutability plus
+    retained version endpoints is the substitute, but it is not a deprecation policy — recorded as absent rather than inferred.
+    No Deprecation pointer is emitted.
+sla:
+  url: null
+  uptime_target: null
+  note: No SLA published. AGNTCY is an open-source collective; the hosted OASF schema server is a convenience instance, not
+    a commercial service.
+status_page: null
+status_page_note: status.agntcy.org does not resolve (DNS failure, curl exit 6 / HTTP 000) and no status page is linked from
+  agntcy.org, docs.agntcy.org or dir.agntcy.org. No StatusPage pointer is emitted.
+health_endpoint:
+  url: https://schema.oasf.outshift.com/healthz
+  status: 200
+  note: The hosted OASF schema server exposes a liveness endpoint; this is the only availability signal AGNTCY publishes.
+deprecated_operations: []
+governance:
+  foundation: Linux Foundation (LF Projects, LLC)
+  model: https://github.com/agntcy/governance/blob/main/OPERATING_MODEL.md
+  working_groups: https://github.com/agntcy/governance/blob/main/working-groups/WORKING-GROUPS.md
+  discussions: https://github.com/orgs/agntcy/discussions

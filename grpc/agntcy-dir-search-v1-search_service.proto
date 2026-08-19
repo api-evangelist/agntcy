@@ -1,0 +1,94 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package agntcy.dir.search.v1;
+
+import "agntcy/dir/core/v1/record.proto";
+import "agntcy/dir/search/v1/record_query.proto";
+
+// SortMode controls the ordering of search results.
+enum SortMode {
+  // SORT_MODE_UNSPECIFIED defaults to SORT_MODE_RECENCY.
+  SORT_MODE_UNSPECIFIED = 0;
+
+  // SORT_MODE_RECENCY orders results by creation time, newest first.
+  SORT_MODE_RECENCY = 1;
+
+  // SORT_MODE_POPULARITY orders results by pull count plus lookup count
+  // (direct usage signal), highest first.
+  SORT_MODE_POPULARITY = 2;
+
+  // SORT_MODE_PROVIDER_COUNT orders results by the number of DHT peers
+  // currently announcing the record (network distribution signal), highest first.
+  SORT_MODE_PROVIDER_COUNT = 3;
+
+  // SORT_MODE_RELEVANCE orders results by how many query signals matched the
+  // record, highest first. Used with natural-language search fan-out queries.
+  SORT_MODE_RELEVANCE = 4;
+}
+
+service SearchService {
+  // Search for record CIDs that match the given parameters.
+  // Returns only CIDs for efficient lookups and piping to other commands.
+  // This operation does not interact with the network.
+  rpc SearchCIDs(SearchCIDsRequest) returns (stream SearchCIDsResponse);
+
+  // Search for full records that match the given parameters.
+  // Returns complete record data including all metadata, skills, domains, etc.
+  // This operation does not interact with the network.
+  rpc SearchRecords(SearchRecordsRequest) returns (stream SearchRecordsResponse);
+
+  // Count records that match the given parameters.
+  // This operation does not interact with the network.
+  rpc CountRecords(CountRecordsRequest) returns (CountRecordsResponse);
+}
+
+message SearchCIDsRequest {
+  // List of queries to match against the records.
+  repeated RecordQuery queries = 1;
+
+  // Optional limit on the number of results to return.
+  optional uint32 limit = 2;
+
+  // Optional offset for pagination of results.
+  optional uint32 offset = 3;
+
+  // Sort mode for the results. Defaults to SORT_MODE_RECENCY.
+  SortMode sort_mode = 4;
+}
+
+message SearchRecordsRequest {
+  // List of queries to match against the records.
+  repeated RecordQuery queries = 1;
+
+  // Optional limit on the number of results to return.
+  optional uint32 limit = 2;
+
+  // Optional offset for pagination of results.
+  optional uint32 offset = 3;
+
+  // Sort mode for the results. Defaults to SORT_MODE_RECENCY.
+  SortMode sort_mode = 4;
+}
+
+message CountRecordsRequest {
+  // List of queries to match against the records.
+  repeated RecordQuery queries = 1;
+}
+
+message SearchCIDsResponse {
+  // The CID of the record that matches the search criteria.
+  string record_cid = 1;
+}
+
+message SearchRecordsResponse {
+  // The full record that matches the search criteria.
+  agntcy.dir.core.v1.Record record = 1;
+}
+
+message CountRecordsResponse {
+  // Total number of distinct records that match the search criteria.
+  uint32 total_count = 1;
+}

@@ -1,0 +1,249 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package agntcy.dir.sign.v1;
+
+import "agntcy/dir/core/v1/record.proto";
+import "agntcy/dir/sign/v1/signature.proto";
+
+// SignService provides methods to sign and verify records.
+//
+// NOTE: This is a client-side service and is not available on the server.
+service SignService {
+  // Sign record using keyless OIDC based provider or
+  // using PEM-encoded private key with an optional passphrase.
+  rpc Sign(SignRequest) returns (SignResponse);
+
+  // Verify signed record using keyless OIDC based provider or
+  // using PEM-encoded public key.
+  rpc Verify(VerifyRequest) returns (VerifyResponse);
+}
+
+// Options for OIDC-based signing.
+message SignOptionsOIDC {
+  // Fulcio authority access URL.
+  // Default: https://fulcio.sigstore.dev
+  string fulcio_url = 1;
+
+  // Rekor transparency log access URL.
+  // Default: https://rekor.sigstore.dev
+  string rekor_url = 2;
+
+  // Timestamp authority access URL.
+  // Default: https://timestamp.sigstore.dev/api/v1/timestamp
+  string timestamp_url = 3;
+
+  // OIDC provider access URL.
+  // Default: https://oauth2.sigstore.dev/auth
+  string oidc_provider_url = 4;
+
+  // OIDC client ID.
+  // Default: sigstore
+  string oidc_client_id = 5;
+
+  // OIDC client secret.
+  // Required for confidential OIDC clients that require client authentication.
+  // Default: empty
+  string oidc_client_secret = 6;
+
+  // Skip uploading signature to transparency log (Rekor).
+  // Set to true for private signing where transparency log upload is not desired.
+  // Note: Signatures created with this option cannot be verified against Rekor.
+  // Default: false
+  bool skip_tlog = 7;
+}
+
+// Options for OIDC-based verification.
+message VerifyOptionsOIDC {
+  // TUF repository mirror URL.
+  // Used to fetch trusted root material (certificates, keys) for verification.
+  // Default: https://tuf-repo-cdn.sigstore.dev (public good instance)
+  string tuf_mirror_url = 1;
+
+  // Path to a Sigstore TrustedRoot JSON file.
+  // When provided, verification uses this file instead of fetching from TUF.
+  // Required for fully offline/air-gapped verification.
+  // The file contains Fulcio CAs, Rekor keys, TSA certs, and CT log keys.
+  // Default: empty (uses TUF to fetch trusted root)
+  string trusted_root_path = 2;
+
+  // Skip transparency log (Rekor) verification.
+  // Set to true for private infrastructure without Rekor,
+  // or when signatures weren't uploaded to the transparency log.
+  // Default: false
+  bool ignore_tlog = 3;
+
+  // Skip timestamp authority (TSA) verification.
+  // Set to true when timestamps aren't required or TSA wasn't used during signing.
+  // Default: false
+  bool ignore_tsa = 4;
+
+  // Skip Signed Certificate Timestamp (SCT) verification.
+  // Set to true for private PKI where Certificate Transparency logs aren't used.
+  // Default: false
+  bool ignore_sct = 5;
+}
+
+message SignRequest {
+  // Record reference to be signed
+  core.v1.RecordRef record_ref = 1;
+
+  // Signing provider to use
+  SignRequestProvider provider = 2;
+}
+
+message SignRequestProvider {
+  oneof request {
+    // Sign with PEM-encoded public key
+    SignWithKey key = 1;
+
+    // Sign with OIDC provider
+    SignWithOIDC oidc = 2;
+  }
+}
+
+message SignWithKey {
+  // Private key for signing.
+  // Accepts either:
+  // - PEM-encoded private key content (inline)
+  // - Reference to a private key:
+  //   - File path: "/path/to/cosign.key" or "./cosign.key"
+  //   - HTTP(S) URL: "https://example.com/cosign.key"
+  //   - Environment variable: "env://COSIGN_PRIVATE_KEY"
+  //   - AWS KMS: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+  //   - GCP KMS: "gcpkms://projects/[PROJECT]/locations/[LOC]/keyRings/[RING]/cryptoKeys/[KEY]"
+  //   - Azure Key Vault: "azurekms://[VAULT_NAME][VAULT_URI]/[KEY]"
+  //   - Hashicorp Vault: "hashivault://[KEY]"
+  //   - Kubernetes secret: "k8s://[NAMESPACE]/[SECRET_NAME]"
+  //   - PKCS11 token: "pkcs11:token=...;slot-id=...;object=..."
+  //   - GitLab: "gitlab://[PROJECT]"
+  string private_key = 1;
+
+  // Password to unlock the private key (if encrypted).
+  optional bytes password = 2;
+}
+
+message SignWithOIDC {
+  // Token for OIDC provider
+  string id_token = 1;
+
+  // Signing options for OIDC
+  optional SignOptionsOIDC options = 2;
+}
+
+message SignResponse {
+  // Cryptographic signature of the record
+  Signature signature = 1;
+}
+
+message VerifyRequest {
+  // Record reference to be verified
+  core.v1.RecordRef record_ref = 1;
+
+  // Verification provider to use
+  VerifyRequestProvider provider = 2;
+
+  // When true, use cached verification result from server.
+  // When false, verification is performed locally.
+  bool from_server = 3;
+}
+
+message VerifyRequestProvider {
+  oneof request {
+    // Verify with PEM-encoded public key
+    VerifyWithKey key = 1;
+
+    // Verify with OIDC provider
+    VerifyWithOIDC oidc = 2;
+
+    // Verify implicitly without providing any key or OIDC information.
+    // This will attempt to verify any signature found on the record.
+    // This is useful for verifying records that have been signed and have signatures attached,
+    // without needing to verify against a specific key or OIDC identity.
+    VerifyWithAny any = 3;
+  }
+}
+
+message VerifyWithKey {
+  // Public key to verify against.
+  // Accepts either:
+  // - PEM-encoded public key content (inline)
+  // - Reference to a public key:
+  //   - File path: "/path/to/cosign.pub" or "./cosign.pub"
+  //   - HTTP(S) URL: "https://example.com/cosign.pub"
+  //   - Environment variable: "env://COSIGN_PUBLIC_KEY"
+  //   - AWS KMS: "awskms://[ENDPOINT]/[ID/ALIAS/ARN]"
+  //   - GCP KMS: "gcpkms://projects/[PROJECT]/locations/[LOC]/keyRings/[RING]/cryptoKeys/[KEY]"
+  //   - Azure Key Vault: "azurekms://[VAULT_NAME][VAULT_URI]/[KEY]"
+  //   - Hashicorp Vault: "hashivault://[KEY]"
+  //   - Kubernetes secret: "k8s://[NAMESPACE]/[SECRET_NAME]"
+  //   - PKCS11 token: "pkcs11:token=...;slot-id=...;object=..."
+  //   - GitLab: "gitlab://[PROJECT]"
+  string public_key = 1;
+}
+
+message VerifyWithOIDC {
+  // OIDC issuer URL.
+  // Accepts exact match or regular expression (e.g., "https://github.com/login/oauth")
+  string issuer = 1;
+
+  // OIDC subject/identity.
+  // Accepts exact match or regular expression (e.g., "user@example.com")
+  string subject = 2;
+
+  // Verification options for OIDC
+  optional VerifyOptionsOIDC options = 3;
+}
+
+message VerifyWithAny {
+  // Verification options for OIDC.
+  // This is used to verify only OIDC signatures on the record.
+  // For key-based signatures, this field is ignored.
+  optional VerifyOptionsOIDC oidc_options = 1;
+}
+
+message VerifyResponse {
+  // The verify process result
+  bool success = 1;
+
+  // List of all signers that signed the record.
+  // Each entry represents one valid signature on the record.
+  repeated SignerInfo signers = 2;
+
+  // Optional error message if verification failed
+  optional string error_message = 3;
+}
+
+// Structured information about who signed the record
+message SignerInfo {
+  oneof type {
+    // Key-based signer information
+    SignerInfoKey key = 1;
+
+    // OIDC-based signer information
+    SignerInfoOIDC oidc = 2;
+  }
+}
+
+// Information about a key-based signer
+message SignerInfoKey {
+  // Public key used for verification (PEM-encoded)
+  string public_key = 1;
+
+  // Key algorithm (e.g., "ECDSA-P256", "Ed25519", "RSA")
+  string algorithm = 2;
+}
+
+// Information about an OIDC-based signer
+message SignerInfoOIDC {
+  // OIDC issuer URL (e.g., "https://github.com/login/oauth")
+  string issuer = 1;
+
+  // OIDC subject/identity (e.g., "user@example.com")
+  string subject = 2;
+
+  // X.509 certificate issuer (e.g., "CN=sigstore-intermediate,O=sigstore.dev")
+  string certificate_issuer = 3;
+}

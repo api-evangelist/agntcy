@@ -1,0 +1,96 @@
+generated: '2026-08-19'
+method: derived
+source: openapi/ 4xx/5xx and default responses, grpc/agntcy-identity-core-v1alpha1-errors.proto, and https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-api-reference.md
+format: none
+note: No AGNTCY surface uses RFC 9457 application/problem+json. REST errors are plain application/json; the Identity APIs
+  return google.rpc.Status; the Directory returns standard gRPC status codes. The AGNTCY Identity ErrorReason enum below is
+  the only named, stable error registry the collective publishes.
+problems:
+- status: 404
+  title: Not Found
+  description: Not Found
+  source_operation: openapi/agntcy-acp-openapi.json#get_agent_by_id
+  operations: 26
+  media_type: application/json
+  schema: components.schemas (ACP error body)
+- status: 409
+  title: Conflict
+  description: Conflict
+  source_operation: openapi/agntcy-acp-openapi.json#create_thread
+  operations: 9
+  media_type: application/json
+- status: 422
+  title: Validation Error
+  description: Validation Error
+  source_operation: openapi/agntcy-acp-openapi.json#search_agents
+  operations: 29
+  media_type: application/json
+- status: 400
+  title: Bad Request
+  description: Bad Request - id and name parameters refer to different classes
+  source_operation: openapi/agntcy-oasf-schema-swagger.json#SchemaWeb.SchemaController.domain_categories
+  operations: 10
+- status: 404
+  title: Not Found
+  description: Not Found - No class found with the specified id or name
+  source_operation: openapi/agntcy-oasf-schema-swagger.json#SchemaWeb.SchemaController.skill_categories
+  operations: 16
+- status: default
+  title: Default error response
+  description: Every AGNTCY Identity operation declares one default error response carrying google.rpc.Status (code, message,
+    details[]).
+  source_operation: openapi/agntcy-identity-service-openapi.yaml#AppService_ListApps
+  operations: 45
+  media_type: application/json
+  schema: '#/components/schemas/Status'
+grpc_status_codes:
+  surface: Agent Directory (DIR)
+  source: https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-api-reference.md
+  codes:
+  - code: InvalidArgument
+    description: Client provided an invalid or malformed argument, such as a missing or invalid record reference or record.
+  - code: NotFound
+    description: The requested object does not exist in the local store or across the network.
+  - code: FailedPrecondition
+    description: The server environment or configuration is not in the required state.
+  - code: Internal
+    description: An unexpected internal error occurred, such as I/O failures or serialization errors.
+  - code: Canceled
+    description: The operation was canceled by the client or the context expired.
+  - code: Unauthenticated
+    description: The client is not authenticated to perform the operation.
+  - code: PermissionDenied
+    description: The client does not have permission to perform the operation.
+identity_error_reasons:
+  surface: AGNTCY Identity
+  envelope: agntcy.identity.core.v1alpha1.ErrorInfo {reason, message}
+  source: grpc/agntcy-identity-core-v1alpha1-errors.proto
+  reasons:
+  - reason: ERROR_REASON_UNSPECIFIED
+    description: No specific error reason has been specified.
+  - reason: ERROR_REASON_INTERNAL
+    description: An internal error; unexpected condition or failure within the service.
+  - reason: ERROR_REASON_INVALID_CREDENTIAL_ENVELOPE_TYPE
+    description: The credential envelope type is invalid.
+  - reason: ERROR_REASON_INVALID_CREDENTIAL_ENVELOPE_VALUE_FORMAT
+    description: The credential envelope value format does not match envelope_type.
+  - reason: ERROR_REASON_INVALID_ISSUER
+    description: The issuer contains one or more invalid fields.
+  - reason: ERROR_REASON_ISSUER_NOT_REGISTERED
+    description: The issuer is not registered in the Node.
+  - reason: ERROR_REASON_INVALID_VERIFIABLE_CREDENTIAL
+    description: 'The Verifiable Credential is invalid: bad format or unverifiable Data Integrity proof.'
+  - reason: ERROR_REASON_IDP_REQUIRED
+    description: The Identity Provider is required for the operation but was not provided.
+  - reason: ERROR_REASON_INVALID_PROOF
+    description: The proof is invalid.
+  - reason: ERROR_REASON_UNSUPPORTED_PROOF
+    description: The proof type is not supported.
+  - reason: ERROR_REASON_RESOLVER_METADATA_NOT_FOUND
+    description: Unable to resolve an ID to a ResolverMetadata.
+  - reason: ERROR_REASON_UNKNOWN_IDP
+    description: Unknown Identity Provider.
+  - reason: ERROR_REASON_ID_ALREADY_REGISTERED
+    description: The ID and Resolver Metadata are already registered in the system.
+  - reason: ERROR_REASON_VERIFIABLE_CREDENTIAL_REVOKED
+    description: The Verifiable Credential is revoked.

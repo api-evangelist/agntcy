@@ -1,0 +1,46 @@
+generated: '2026-08-19'
+method: searched
+source: https://schema.oasf.outshift.com/doc, https://dir.agntcy.org/latest/dir/dir-quickstart/, https://github.com/agntcy/coffeeAgntcy
+note: AGNTCY has no test-vs-live key model — there are no keys to issue. What it publishes instead is an anonymously callable
+  hosted schema API with an interactive console, plus local deployment paths for everything else. No test credentials, cards,
+  tokens or fixtures exist to capture, and none are invented here.
+test_live_separation:
+  exists: false
+  note: No test/live modes, no key prefixes. The Identity Service does define an x-id-api-key header, but keys are minted
+    by whoever operates the deployment, not by AGNTCY.
+public_console:
+  url: https://schema.oasf.outshift.com/doc
+  status: 200
+  type: swagger-ui
+  auth: none
+  note: Swagger UI over the live OASF Schema API. Every operation is callable anonymously against the real service — 31 operations
+    across schema browsing, sample generation, taxonomy translation and record validation.
+public_endpoints_no_auth:
+- url: https://schema.oasf.outshift.com/api/versions
+  status: 200
+- url: https://schema.oasf.outshift.com/api/version
+  status: 200
+- url: https://schema.oasf.outshift.com/api/skill_categories
+  status: 200
+- url: https://schema.oasf.outshift.com/healthz
+  status: 200
+local_environments:
+- name: Directory local deployment
+  docs: https://dir.agntcy.org/latest/dir/dir-deployment-local/
+  note: Run a Directory node locally; dirctl defaults to 0.0.0.0:8888 with auth auto-detect falling back to insecure for local
+    development.
+- name: Self-hosted OASF schema server
+  docs: https://github.com/agntcy/oasf
+  note: OASF_API_VALIDATION_SCHEMA_URL can point dirctl at a local schema server (e.g. http://localhost:8080).
+- name: coffeeAgntcy reference application
+  repo: https://github.com/agntcy/coffeeAgntcy
+  docs: https://docs.agntcy.org/coffee-agntcy/get-started/
+  note: End-to-end runnable reference app exercising DIR, SLIM and Identity together — the closest thing AGNTCY has to a sandbox.
+- name: CSIT integration test suite
+  repo: https://github.com/agntcy/csit
+  note: Continuous System Integration Testing harness for AGNTCY projects.
+auth_modes_for_testing:
+- none
+- insecure
+auth_modes_note: dirctl --auth-mode=none and --auth-mode=insecure are the documented local-development modes; SPIFFE modes
+  (x509, jwt, token) require an explicit flag.

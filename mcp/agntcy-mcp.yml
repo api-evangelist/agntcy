@@ -1,0 +1,82 @@
+generated: '2026-08-19'
+method: searched
+status: published
+source: https://github.com/agntcy/dir-mcp/blob/main/docs/directory-mcp.md
+deployment:
+  mode: local-stdio
+  install: npx -y @agntcy/dir-mcp
+  package: https://www.npmjs.com/package/@agntcy/dir-mcp
+  auth: oauth
+  verified: searched
+  note: AGNTCY ships NO remote MCP endpoint. The server runs locally over stdio via the dirctl binary (args ["mcp","serve"]),
+    the ghcr.io/agntcy/dir-ctl container, or the @agntcy/dir-mcp npm package which exposes dir-mcp and dirctl bins. Auth is
+    OIDC against the Directory server the client is pointed at (DIRECTORY_CLIENT_AUTH_MODE=oidc plus DIRECTORY_CLIENT_AUTH_TOKEN,
+    or dirctl auth login); the OASF schema half of the tool set reads https://schema.oasf.outshift.com anonymously.
+server:
+  name: dir-mcp-server
+  transport: stdio
+  repo: https://github.com/agntcy/dir-mcp
+  docs: https://github.com/agntcy/dir-mcp/blob/main/docs/directory-mcp.md
+  container: ghcr.io/agntcy/dir-ctl:latest
+configuration:
+  DIRECTORY_CLIENT_SERVER_ADDRESS: Directory server address (default 0.0.0.0:8888)
+  DIRECTORY_CLIENT_AUTH_MODE: none | insecure | x509 | jwt | token | tls | oidc (empty = auto-detect)
+  DIRECTORY_CLIENT_AUTH_TOKEN: Pre-issued bearer token for oidc mode
+  OASF_API_VALIDATION_SCHEMA_URL: OASF schema server, defaults to https://schema.oasf.outshift.com
+tools:
+- name: agntcy_oasf_list_versions
+  category: schema
+  description: Lists all available OASF schema versions supported by the server.
+- name: agntcy_oasf_get_schema
+  category: schema
+  description: Retrieves the complete OASF schema JSON content for the specified version.
+- name: agntcy_oasf_get_schema_skills
+  category: schema
+  description: Retrieves skills from the OASF schema with hierarchical navigation support.
+- name: agntcy_oasf_get_schema_domains
+  category: schema
+  description: Retrieves domains from the OASF schema with hierarchical navigation support.
+- name: agntcy_oasf_validate_record
+  category: schema
+  description: Validates an OASF agent record against the OASF schema.
+- name: agntcy_dir_push_record
+  category: directory
+  description: Pushes an OASF agent record to a Directory server and returns its CID.
+- name: agntcy_dir_search_local
+  category: directory
+  description: Searches agent records on the local directory node using structured query filters.
+- name: agntcy_dir_pull_record
+  category: directory
+  description: Pulls an OASF agent record from the local Directory node by its CID.
+- name: agntcy_dir_verify_name
+  category: trust
+  description: Verifies that a record name is owned by the domain it claims, via the domain /.well-known/jwks.json.
+- name: agntcy_dir_verify_record
+  category: trust
+  description: Verifies the digital signature of a record in the Directory by its CID.
+- name: agntcy_oasf_import_record
+  category: interop
+  description: Imports MCP server, A2A card or Agent Skills data into an OASF record.
+- name: agntcy_oasf_export_record
+  category: interop
+  description: Exports an OASF record to A2A, GitHub Copilot or Agent Skills format.
+prompts:
+- name: create_record
+  description: Analyzes the current directory codebase and generates a complete, valid OASF agent record.
+- name: validate_record
+  description: Guided workflow for validating an existing OASF agent record file.
+- name: push_record
+  description: Validates then pushes an OASF record to the Directory server.
+- name: search_records
+  description: Translates a free-text query into structured OASF search filters and runs the search.
+- name: pull_record
+  description: Guided workflow for pulling an OASF record from the Directory by CID.
+- name: import_record
+  description: Guided workflow for importing MCP, A2A or Agent Skills data into OASF.
+- name: export_record
+  description: Guided workflow for exporting an OASF record to A2A, GitHub Copilot or Agent Skills.
+x-evidence:
+  fetched: '2026-08-19'
+  tool_count: 12
+  prompt_count: 7
+  remote_endpoint: null

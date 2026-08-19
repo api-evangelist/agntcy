@@ -1,0 +1,71 @@
+generated: '2026-08-19'
+method: derived
+source: openapi/, grpc/, json-schema/ in this repo plus AGNTCY project documentation
+note: AGNTCY is an open specification collective under the Linux Foundation, not a commercial API vendor. It publishes NO
+  certification or compliance program (no SOC 2, ISO 27001, PCI DSS, HIPAA or FedRAMP), so no Compliance pointer is emitted.
+  What follows is standards conformance derived from the artifacts.
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: 'openapi/agntcy-acp-openapi.json declares openapi: 3.1.1'
+- id: openapi-3.0
+  conforms: true
+  evidence: 'openapi/agntcy-identity-service-openapi.yaml and openapi/agntcy-identity-node-openapi.yaml declare openapi: 3.0.3'
+- id: swagger-2.0
+  conforms: true
+  evidence: 'openapi/agntcy-oasf-schema-swagger.json declares swagger: 2.0, served live at https://schema.oasf.outshift.com/doc'
+- id: json-schema
+  conforms: true
+  evidence: json-schema/ carries OASF record/dictionary/locator schemas and protoc-generated JSON Schema bundles for the Identity
+    credential objects
+- id: protobuf-proto3
+  conforms: true
+  evidence: 34 .proto files in grpc/ across OASF, DIR, Identity and SLIM; published on buf.build/agntcy
+- id: grpc
+  conforms: true
+  evidence: Agent Directory exposes a gRPC API; error handling uses standard gRPC status codes
+- id: model-context-protocol
+  conforms: true
+  evidence: mcp/agntcy-mcp.yml — the dir-mcp server exposes 12 MCP tools and 7 MCP prompts over stdio
+- id: a2a
+  conforms: true
+  evidence: AGNTCY ships SLIMRPC transports for the A2A SDKs in Go, JavaScript/TypeScript, Java, .NET and Python (slim-a2a-*),
+    and dir-mcp imports/exports A2A agent cards. AGNTCY itself serves no /.well-known/agent-card.json — see well-known/agntcy-well-known.yml.
+- id: agent-skills
+  conforms: true
+  evidence: agntcy_oasf_import_record and agntcy_oasf_export_record convert between OASF records and Agent Skills SKILL.md
+- id: oidc
+  conforms: true
+  evidence: Directory oidc-gateway accepts OIDC JWT; dirctl auth login runs an OIDC PKCE/device flow; Identity Service AccessToken
+    is an IAM JWT issued during an OIDC flow
+- id: oauth2
+  conforms: true
+  evidence: OIDC flows imply OAuth 2.0; no oauth2 securityScheme is declared in any published OpenAPI, so no scopes/ artifact
+    is emitted
+- id: spiffe-spire
+  conforms: true
+  evidence: Directory uses SPIFFE/SPIRE as its primary in-cluster trust model; auth modes x509, jwt and token are SPIFFE-backed
+- id: w3c-verifiable-credentials
+  conforms: true
+  evidence: AGNTCY Identity issues and verifies Verifiable Credentials; grpc/agntcy-identity-core-v1alpha1-vc.proto and json-schema/agntcy-identity-credential-content.jsonschema.json
+- id: jwk-rfc7517
+  conforms: true
+  evidence: IssuerService_GetWellKnown serves /v1alpha1/issuer/{commonName}/.well-known/jwks.json; grpc/agntcy-identity-core-v1alpha1-jwk.proto
+- id: multiformats-cid
+  conforms: true
+  evidence: Directory derives a content identifier (CID) from the artifact digest for immutable, content-addressed lookup
+- id: opentelemetry
+  conforms: true
+  evidence: agntcy/observe (ioa-observe-sdk) and agntcy/slim-otel provide OpenTelemetry-based multi-agent observability
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: no application/problem+json media type appears in any harvested spec
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returned 404 on all six AGNTCY hosts probed
+- id: asyncapi
+  conforms: false
+  evidence: Directory has a real streaming event surface (agntcy.dir.events.v1.EventService) but publishes no AsyncAPI document
+- id: apis-json
+  conforms: false
+  evidence: no apis.json / /.well-known/api-catalog served

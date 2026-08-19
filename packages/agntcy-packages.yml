@@ -1,0 +1,217 @@
+generated: '2026-08-19'
+method: searched
+source: registry.npmjs.org, pypi.org, crates.io, proxy.golang.org, azuresearch-usnc.nuget.org queried 2026-08-19
+note: All entries publish from repositories inside github.com/agntcy, so every one is first-party. Maven Central returned
+  no org.agntcy coordinates on 2026-08-19; the slim-a2a-java transport is source-only.
+packages:
+- language: python
+  registry: pypi
+  name: agntcy-acp
+  url: https://pypi.org/project/agntcy-acp/
+  install: pip install agntcy-acp
+  official: true
+  version: 1.5.2
+  published: '2025-06-16'
+  repo: https://github.com/agntcy/acp-sdk
+  note: Agent Connect Protocol SDK. Latest release predates the other AGNTCY SDKs by more than a year.
+- language: python
+  registry: pypi
+  name: agntcy-app-sdk
+  url: https://pypi.org/project/agntcy-app-sdk/
+  install: pip install agntcy-app-sdk
+  official: true
+  version: 0.5.5
+  published: '2026-04-09'
+  repo: https://github.com/agntcy/app-sdk
+- language: python
+  registry: pypi
+  name: agntcy-dir
+  url: https://pypi.org/project/agntcy-dir/
+  install: pip install agntcy-dir
+  official: true
+  version: 1.5.0
+  published: '2026-06-22'
+  repo: https://github.com/agntcy/dir-sdk-python
+  note: Agent Directory (DIR) Python SDK.
+- language: python
+  registry: pypi
+  name: ioa-observe-sdk
+  url: https://pypi.org/project/ioa-observe-sdk/
+  install: pip install ioa-observe-sdk
+  official: true
+  version: 1.0.44
+  published: '2026-07-01'
+  repo: https://github.com/agntcy/observe
+- language: python
+  registry: pypi
+  name: agntcy-iomapper
+  url: https://pypi.org/project/agntcy-iomapper/
+  install: pip install agntcy-iomapper
+  official: true
+  version: 0.2.3
+  published: '2025-05-12'
+  repo: https://github.com/agntcy/iomapper-agnt
+- language: python
+  registry: pypi
+  name: slim-bindings
+  url: https://pypi.org/project/slim-bindings/
+  install: pip install slim-bindings
+  official: true
+  version: 2.1.0
+  published: '2026-08-13'
+  repo: https://github.com/agntcy/slim-bindings
+- language: javascript
+  registry: npm
+  name: '@agntcy/slim-bindings'
+  url: https://www.npmjs.com/package/@agntcy/slim-bindings
+  install: npm install @agntcy/slim-bindings
+  official: true
+  version: 2.1.0
+  published: '2026-08-13'
+  repo: https://github.com/agntcy/slim-bindings
+  note: Ships per-platform prebuilt siblings (@agntcy/slim-bindings-{darwin-arm64,darwin-x64,linux-arm64-gnu,linux-x64-gnu,win32-x64-msvc,win32-arm64-msvc}),
+    all 2.1.0 / 2026-08-13.
+- language: javascript
+  registry: npm
+  name: '@agntcy/slim-bindings-react-native'
+  url: https://www.npmjs.com/package/@agntcy/slim-bindings-react-native
+  install: npm install @agntcy/slim-bindings-react-native
+  official: true
+  version: 2.0.0
+  published: '2026-08-05'
+  repo: https://github.com/agntcy/slim-bindings
+- language: javascript
+  registry: npm
+  name: '@agntcy/slim-a2a'
+  url: https://www.npmjs.com/package/@agntcy/slim-a2a
+  install: npm install @agntcy/slim-a2a
+  official: true
+  version: 0.2.0
+  published: '2026-08-10'
+  repo: https://github.com/agntcy/slim-a2a-node
+  note: SLIM (slimrpc) transport for the A2A JS/TS SDK.
+- language: javascript
+  registry: npm
+  name: agntcy-dir
+  url: https://www.npmjs.com/package/agntcy-dir
+  install: npm install agntcy-dir
+  official: true
+  version: 1.5.0
+  published: '2026-06-23'
+  repo: https://github.com/agntcy/dir-sdk-javascript
+- language: javascript
+  registry: npm
+  name: '@agntcy/dir-mcp'
+  url: https://www.npmjs.com/package/@agntcy/dir-mcp
+  install: npx -y @agntcy/dir-mcp
+  official: true
+  version: 1.3.4-mcp.1
+  published: '2026-08-17'
+  repo: https://github.com/agntcy/dir-mcp
+  note: Ships bins dir-mcp and dirctl. This is the npm distribution of the Directory MCP server.
+- language: rust
+  registry: crates.io
+  name: agntcy-slim
+  url: https://crates.io/crates/agntcy-slim
+  install: cargo add agntcy-slim
+  official: true
+  version: 2.3.0
+  published: '2026-08-13'
+  repo: https://github.com/agntcy/slim
+- language: rust
+  registry: crates.io
+  name: ai-catalog
+  url: https://crates.io/crates/ai-catalog
+  install: cargo add ai-catalog
+  official: true
+  version: 0.2.0
+  published: '2026-08-13'
+  repo: https://github.com/agntcy/ai-catalog-rust
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agntcy/dir
+  url: https://pkg.go.dev/github.com/agntcy/dir
+  install: go get github.com/agntcy/dir
+  official: true
+  version: v1.7.0
+  published: '2026-08-18'
+  repo: https://github.com/agntcy/dir
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agntcy/dir-mcp
+  url: https://pkg.go.dev/github.com/agntcy/dir-mcp
+  install: go get github.com/agntcy/dir-mcp
+  official: true
+  version: v1.3.5
+  published: '2026-08-18'
+  repo: https://github.com/agntcy/dir-mcp
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agntcy/oasf-sdk
+  url: https://pkg.go.dev/github.com/agntcy/oasf-sdk
+  install: go get github.com/agntcy/oasf-sdk
+  official: true
+  version: v1.2.0
+  published: '2026-08-11'
+  repo: https://github.com/agntcy/oasf-sdk
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agntcy/ai-catalog-go
+  url: https://pkg.go.dev/github.com/agntcy/ai-catalog-go
+  install: go get github.com/agntcy/ai-catalog-go
+  official: true
+  version: v0.2.0
+  published: '2026-08-12'
+  repo: https://github.com/agntcy/ai-catalog-go
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agntcy/slim-bindings-go
+  url: https://pkg.go.dev/github.com/agntcy/slim-bindings-go
+  install: go get github.com/agntcy/slim-bindings-go
+  official: true
+  version: v1.4.0
+  published: '2026-05-13'
+  repo: https://github.com/agntcy/slim-bindings-go
+- language: dotnet
+  registry: nuget
+  name: Agntcy.Slim
+  url: https://www.nuget.org/packages/Agntcy.Slim
+  install: dotnet add package Agntcy.Slim
+  official: true
+  version: 2.1.0
+  published: null
+  note: NuGet search index returned the version but no publish date on 2026-08-19; date not recorded rather than guessed.
+- language: dotnet
+  registry: nuget
+  name: Agntcy.Slim.SlimRpc
+  url: https://www.nuget.org/packages/Agntcy.Slim.SlimRpc
+  install: dotnet add package Agntcy.Slim.SlimRpc
+  official: true
+  version: 2.1.0
+  published: null
+  note: Publish date not exposed by the NuGet search index; not recorded rather than guessed.
+- language: dotnet
+  registry: nuget
+  name: Agntcy.SlimA2A
+  url: https://www.nuget.org/packages/Agntcy.SlimA2A
+  install: dotnet add package Agntcy.SlimA2A
+  official: true
+  version: 0.2.0
+  published: null
+  repo: https://github.com/agntcy/slim-a2a-dotnet
+  note: Publish date not exposed by the NuGet search index; not recorded rather than guessed.
+- language: go
+  registry: container
+  name: ghcr.io/agntcy/dir-ctl
+  url: https://github.com/agntcy/dir/pkgs/container/dir-ctl
+  install: docker run --rm -i ghcr.io/agntcy/dir-ctl:latest mcp serve
+  official: true
+  version: null
+  published: null
+  note: Container distribution of dirctl documented in dir-mcp setup. The published tag is :latest and is unpinned, so a consumer
+    cannot tell which build they get; version recorded as null for that reason.
+not_found:
+- registry: maven-central
+  query: g:org.agntcy / a:slim-a2a*
+  result: 0 results on 2026-08-19
+  note: github.com/agntcy/slim-a2a-java exists as source but publishes no Maven Central coordinate we could find.

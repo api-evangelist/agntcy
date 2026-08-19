@@ -1,0 +1,392 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+package dataplane.proto.v1;
+
+service DataPlaneService {
+  rpc OpenChannel(stream Message) returns (stream Message) {}
+}
+
+// SLIM messages
+message Subscribe {
+  SLIMHeader header = 1;
+  // Identifier for this subscription.
+  // Non-zero when the sender wants a SubscriptionAck back.
+  uint64 subscription_id = 2;
+}
+
+message Unsubscribe {
+  SLIMHeader header = 1;
+  // Globally unique identifier for this subscription.
+  // Non-zero when the sender wants a SubscriptionAck back.
+  uint64 subscription_id = 2;
+}
+
+message Publish {
+  SLIMHeader header = 1;
+  SessionHeader session = 2;
+  Content msg = 3;
+}
+
+message Message {
+  oneof message_type {
+    Subscribe subscribe = 1;
+    Unsubscribe unsubscribe = 2;
+    Publish publish = 3;
+    Link link = 5;
+    SubscriptionAck subscription_ack = 6;
+  }
+  map<string, string> metadata = 4;
+}
+
+// Link is a link-local message exchanged only between directly connected SLIM nodes.
+// It is never routed and never sent over local (application-facing) connections.
+message Link {
+  oneof link_type {
+    LinkNegotiationPayload link_negotiation = 1;
+  }
+}
+
+// SLIM headers
+
+// recvFrom = connection from where the sub/unsub is supposed to be received
+// forwardTo = connection where to forward the message
+// incomingConn = connection from where the packet was received
+// error = if true the publication contains an error notification
+message SLIMHeader {
+  Name source = 1;
+  Name destination = 2;
+  string identity = 3;
+  uint32 fanout = 4;
+  string version = 5;
+  uint32 ttl = 6;
+  optional uint64 recv_from = 7;
+  optional uint64 forward_to = 8;
+  optional uint64 incoming_conn = 9;
+  optional bool error = 10;
+  optional bytes header_mac = 11;
+  optional bytes e2e_header_sig = 12;
+}
+
+message SessionHeader {
+  SessionType session_type = 1;
+  SessionMessageType session_message_type = 2;
+  uint32 session_id = 3;
+  uint32 message_id = 4;
+}
+
+message Name {
+  EncodedName name = 1;
+  StringName str_name = 2;
+}
+
+message NameId {
+  // higher 64 bits
+  uint64 id_0 = 1;
+  // lower 64 bits
+  uint64 id_1 = 2;
+}
+
+message EncodedName {
+  uint64 component_0 = 1;
+  uint64 component_1 = 2;
+  uint64 component_2 = 3;
+  NameId name_id = 4;
+}
+
+message StringName {
+  string str_component_0 = 1;
+  string str_component_1 = 2;
+  string str_component_2 = 3;
+}
+
+enum SessionType {
+  SESSION_TYPE_UNSPECIFIED = 0;
+  SESSION_TYPE_POINT_TO_POINT = 1;
+  SESSION_TYPE_MULTICAST = 2;
+}
+
+enum SessionMessageType {
+  SESSION_MESSAGE_TYPE_UNSPECIFIED = 0;
+  SESSION_MESSAGE_TYPE_MSG = 1;
+  SESSION_MESSAGE_TYPE_MSG_ACK = 2;
+  SESSION_MESSAGE_TYPE_RTX_REQUEST = 3;
+  SESSION_MESSAGE_TYPE_RTX_REPLY = 4;
+  SESSION_MESSAGE_TYPE_DISCOVERY_REQUEST = 5;
+  SESSION_MESSAGE_TYPE_DISCOVERY_REPLY = 6;
+  SESSION_MESSAGE_TYPE_JOIN_REQUEST = 7;
+  SESSION_MESSAGE_TYPE_JOIN_REPLY = 8;
+  SESSION_MESSAGE_TYPE_LEAVE_REQUEST = 9;
+  SESSION_MESSAGE_TYPE_LEAVE_REPLY = 10;
+  SESSION_MESSAGE_TYPE_GROUP_UPDATE = 11;
+  SESSION_MESSAGE_TYPE_GROUP_WELCOME = 12;
+  SESSION_MESSAGE_TYPE_GROUP_CLOSE = 13;
+  SESSION_MESSAGE_TYPE_GROUP_PROPOSAL = 14;
+  SESSION_MESSAGE_TYPE_GROUP_ACK = 15;
+  SESSION_MESSAGE_TYPE_GROUP_NACK = 16;
+  SESSION_MESSAGE_TYPE_HEARTBEAT = 17;
+  SESSION_MESSAGE_TYPE_UPDATE_PARTICIPANT_STATE = 18;
+  SESSION_MESSAGE_TYPE_REJOIN_REQUEST = 19;
+  SESSION_MESSAGE_TYPE_REJOIN_REPLY = 20;
+}
+
+// SLIM message content
+message Content {
+  oneof content_type {
+    ApplicationPayload app_payload = 1;
+    CommandPayload command_payload = 2;
+  }
+}
+
+message ApplicationPayload {
+  string payload_type = 1;
+  bytes blob = 2;
+}
+
+message CommandPayload {
+  oneof command_payload_type {
+    DiscoveryRequestPayload discovery_request = 1;
+    DiscoveryReplyPayload discovery_reply = 2;
+    JoinRequestPayload join_request = 3;
+    JoinReplyPayload join_reply = 4;
+    LeaveRequestPayload leave_request = 5;
+    LeaveReplyPayload leave_reply = 6;
+    GroupUpdatePayload group_update = 7;
+    GroupWelcomePayload group_welcome = 8;
+    GroupClosePayload group_close = 9;
+    GroupProposalPayload group_proposal = 10;
+    GroupAckPayload group_ack = 11;
+    GroupNackPayload group_nack = 12;
+    HeartbeatPayload heartbeat = 13;
+    UpdateParticipantStatePayload update_participant_state = 14;
+    RejoinRequestPayload rejoin_request = 15;
+    RejoinReplyPayload rejoin_reply = 16;
+  }
+}
+
+enum ParticipantState {
+  ONLINE = 0;
+  OFFLINE = 1;
+}
+
+message ParticipantSettings {
+  bool sends_data = 1; // participant produces data messages
+  bool receives_data = 2; // participant consumes data messages
+}
+
+message Participant {
+  Name name = 1;
+  ParticipantSettings settings = 2;
+  ParticipantState status = 3;
+}
+
+// Payloads for Command messages
+
+// Discovery Request
+message DiscoveryRequestPayload {}
+
+// Discovery Reply
+message DiscoveryReplyPayload {}
+
+// Join Request
+message JoinRequestPayload {
+  // settings for timers for rtx and acks
+  optional TimerSettings timer_settings = 1;
+  // name where to send the messages (data channel)
+  // it can be a channel or none
+  optional Name channel = 2;
+  // name where to send control messages (control channel)
+  // must be set if channel is set
+  optional Name control = 3;
+  // MLS related settings
+  optional MlsSettings mls_settings = 4;
+}
+
+message TimerSettings {
+  // timeout is intended in ms
+  uint32 timeout = 1;
+  uint32 max_retries = 2;
+}
+
+// Join Reply
+message JoinReplyPayload {
+  // to be used only is MLS is enabled
+  optional bytes key_package = 1;
+  Participant participant = 2;
+}
+
+// Leave Request
+message LeaveRequestPayload {}
+
+// Leave Reply
+message LeaveReplyPayload {}
+
+// MLS payload to add to the group
+// messages when mls is active
+message MlsPayload {
+  // the commit id for add/rm participants
+  // the last commit id sent by the moderator in case of welcome message
+  uint32 commit_id = 1;
+  // commit or welcome mls message
+  bytes mls_content = 2;
+}
+
+// MLS specific settings
+message MlsSettings {
+  // 0 = disable header-integrity checks (still may send AAD for forward compat)
+  // 1-100 = percent of messages to verify after decrypt
+  uint32 header_integrity_validation_percent = 1;
+}
+
+// Fields to include in E2E header integrity check
+message HeaderIntegrityAad {
+  uint32 version = 1;
+  Name source = 2;
+  Name destination = 3;
+  string identity = 4;
+  SessionType session_type = 5;
+  SessionMessageType session_message_type = 6;
+  uint32 session_id = 7;
+  uint32 message_id = 8;
+  string payload_type = 9;
+}
+
+enum GroupUpdateOp {
+  ADD = 0;
+  REMOVE = 1;
+  REJOIN = 2;
+}
+
+// Group Update Payload
+// sent when participant is added, removed
+// or is rejoining the group
+message GroupUpdatePayload {
+  // operation to perform (add/rm/rejoin)
+  GroupUpdateOp op = 1;
+  // participant that triggered the add/rm/rejoin
+  Participant participant = 2;
+  // updated list of participants and their status
+  repeated Participant participants = 3;
+  // used only when MLS is enabled
+  optional MlsPayload mls = 4;
+}
+
+// Group Welcome
+// sent on group join
+message GroupWelcomePayload {
+  repeated Participant participants = 1;
+  // used only when MLS is enabled
+  optional MlsPayload mls = 2;
+}
+
+// Group Close
+// sent on group close
+message GroupClosePayload {
+  repeated Name participants = 1;
+}
+
+// Group Proposal
+// sent on mls key rotation
+message GroupProposalPayload {
+  // Original name of the endpoint that created the proposal
+  // this may be different from the packet source since it is
+  // forwarded by the moderator on the channel to all the
+  // group participants
+  Name source = 1;
+  // MLS proposal message
+  bytes mls_proposal = 2;
+}
+
+// Group Ack
+message GroupAckPayload {}
+
+// Group Nack
+message GroupNackPayload {}
+
+// Heartbeat — one-way presence broadcast, no reply expected
+// The epoch is the current MLS epoch of the participant sending
+// the packet. If MLS is not enable it is ignored
+message HeartbeatPayload {
+  uint64 epoch = 1;
+}
+
+// Message to broadcast a participant state change (online/offline).
+// Sent to the group channel and expects GroupAck from all receivers.
+// On rejoin (ONLINE), includes the sender's MLS epoch so receivers
+// can verify epoch compatibility and ACK or NACK accordingly.
+message UpdateParticipantStatePayload {
+  Name participant = 1;
+  ParticipantState new_state = 2;
+  uint64 epoch = 3;
+}
+
+// sent by participants to the moderator when a NACK is received
+// as reply for UpdateParticipantStatePayload(online). This means
+// that the epoch changed while the participant was offline and
+// we need to create a new key for MLS
+message RejoinRequestPayload {
+  Name participant = 1;
+  bytes key_package = 2;
+}
+
+// reply from the moderator that contains the
+// welcome commit triggered buy the rejoin request
+message RejoinReplyPayload {
+  // the last commit id send by the moderator
+  uint32 commit_id = 1;
+  // welcome mls message
+  bytes mls_content = 2;
+}
+
+// SubscriptionAck is delivered directly to the requesting connection in response
+// to a Subscribe or Unsubscribe that carried a non-zero subscription_id field.
+// It is never routed through the subscription table.
+message SubscriptionAck {
+  // Echoes the subscription_id from the originating Subscribe or Unsubscribe request.
+  uint64 subscription_id = 1;
+  // True if the subscription operation succeeded.
+  bool success = 2;
+  // Non-empty only when success == false.
+  string error = 3;
+}
+
+// Link Negotiation
+// Sent upon connection establishment to negotiate a common link identifier
+// and exchange SLIM version information. Not routed; handled locally by
+// the receiving SLIM instance.
+message LinkNegotiationPayload {
+  // Common link identifier agreed upon by both peers.
+  // The connecting side generates this value; the accepting side echoes it back.
+  string link_id = 1;
+  // SLIM version of the sender (semver string, e.g. "0.11.4").
+  string slim_version = 2;
+  // True if this message is a reply to a negotiation request.
+  bool is_reply = 3;
+  // X25519 ephemeral public key (32 bytes) for per-link HMAC key agreement between nodes.
+  // Empty when absent (legacy peers); both sides must send a valid key to enable header HMAC.
+  bytes link_ecdh_public_key = 4;
+  // Connection type advertised by the initiator.
+  LinkConnectionType connection_type = 5;
+  // Unique node identifier of the sender.
+  // Used by peer replicas to identify which node is on the other end of a connection.
+  // Empty for legacy peers that don't send this field.
+  string node_id = 6;
+  // Peer group identifier. When non-empty and connection_type is LINK_CONNECTION_TYPE_PEER,
+  // the server verifies both sides belong to the same peer group before
+  // upgrading the connection. Empty for non-peer connections.
+  string deployment_name = 7;
+  // ML-KEM-768: initiator sends 1184 byte encapsulation key;
+  // responder sends 1088 byte ciphertext. Empty = classical encryption only.
+  optional bytes link_kem_payload = 8;
+}
+
+// Connection type for link negotiation.
+enum LinkConnectionType {
+  // Remote connection (default, backward compatible with peers that don't send this field).
+  LINK_CONNECTION_TYPE_REMOTE = 0;
+  // Peer connection (intra-deployment replica).
+  LINK_CONNECTION_TYPE_PEER = 1;
+  // Edge connection (app/SDK to first-hop SLIM node).
+  LINK_CONNECTION_TYPE_EDGE = 2;
+}

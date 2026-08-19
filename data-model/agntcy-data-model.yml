@@ -1,0 +1,222 @@
+generated: '2026-08-19'
+method: derived
+source: json-schema/agntcy-oasf-record.json, json-schema/agntcy-oasf-dictionary.json, grpc/ (OASF, DIR, Identity), openapi/agntcy-acp-openapi.json,
+  openapi/agntcy-identity-service-openapi.yaml
+note: AGNTCY spans four independent data models rather than one. They are recorded separately; the only cross-model join is
+  the OASF record, which the Directory stores by CID and the Identity Service can wrap in a badge.
+domains:
+- domain: OASF — the agent record
+  root: record
+  root_schema: json-schema/agntcy-oasf-record.json
+  entities:
+  - entity: record
+    required_fields:
+    - name
+    - version
+    - schema_version
+    - description
+    - authors
+    - created_at
+    optional_fields:
+    - annotations
+    description: 'Schema for agentic AI data representation: the workload''s modules, constraints, artifact locators, versioning
+      and ownership.'
+  - entity: skill
+    schema: grpc/agntcy-oasf-types-v1-skill.proto
+    description: 'Taxonomy entry describing a capability an agent has. Hierarchical: categories contain skills contain sub-skills.'
+  - entity: domain
+    schema: grpc/agntcy-oasf-types-v1-domain.proto
+    description: Taxonomy entry describing the subject area an agent works in. Hierarchical.
+  - entity: module
+    schema: grpc/agntcy-oasf-types-v1-module.proto
+    description: Composable extension attaching additional information to a record.
+  - entity: locator
+    schema: json-schema/agntcy-oasf-locator.json
+    description: Where the agent artifact actually lives, e.g. docker-image:...
+  - entity: signature
+    schema: grpc/agntcy-dir-sign-v1-signature.proto
+    description: Detached signature over a record.
+  relationships:
+  - from: record
+    to: skill
+    type: has_many
+    via: skills
+  - from: record
+    to: domain
+    type: has_many
+    via: domains
+  - from: record
+    to: module
+    type: has_many
+    via: modules
+  - from: record
+    to: locator
+    type: has_many
+    via: locators
+  - from: skill
+    to: skill
+    type: has_many
+    via: parent_skill
+    note: self-referential hierarchy
+  - from: domain
+    to: domain
+    type: has_many
+    via: parent_domain
+    note: self-referential hierarchy
+- domain: DIR — the Agent Directory
+  identity_field: cid
+  identity_note: A multiformats CID derived from the artifact digest. It is the primary key and it makes writes idempotent.
+  entities:
+  - entity: record
+    proto: grpc/agntcy-dir-core-v1-record.proto
+    description: The stored OASF record, addressed by CID.
+  - entity: referrer
+    proto: grpc/agntcy-dir-core-v1-referrer.proto
+    description: Artifact attached to a record — signatures, public keys.
+  - entity: publication
+    proto: grpc/agntcy-dir-routing-v1-publication_service.proto
+    description: Announcement of a record label (skill, domain, module, locator) to the routing network.
+  - entity: peer
+    proto: grpc/agntcy-dir-routing-v1-routing_service.proto
+    description: A Directory instance in the DHT.
+  - entity: sync
+    proto: grpc/agntcy-dir-store-v1-sync_service.proto
+    description: A synchronization relationship between two Directory instances.
+  - entity: scan_report
+    proto: grpc/agntcy-dir-security-v1-scan_report.proto
+    description: Security scan result attached to a record.
+  - entity: event
+    proto: grpc/agntcy-dir-events-v1-event_service.proto
+    description: Streamed directory event, e.g. EVENT_TYPE_RECORD_PUSHED.
+  relationships:
+  - from: record
+    to: referrer
+    type: has_many
+    via: record_ref.cid
+  - from: record
+    to: signature
+    type: has_one
+    via: referrer
+  - from: publication
+    to: record
+    type: belongs_to
+    via: record_ref.cid
+  - from: event
+    to: record
+    type: belongs_to
+    via: record_ref.cid
+  - from: scan_report
+    to: record
+    type: belongs_to
+    via: record_ref.cid
+  - from: sync
+    to: peer
+    type: belongs_to
+    via: peer
+- domain: AGNTCY Identity
+  entities:
+  - entity: app
+    id_field: appId
+    source: openapi/agntcy-identity-service-openapi.yaml
+    description: A registered agent, MCP server or tool.
+  - entity: badge
+    source: grpc/agntcy-identity-core-v1alpha1-vc.proto
+    description: A Verifiable Credential issued to an app, asserting its identity.
+  - entity: policy
+    id_field: policyId
+    description: Access-control policy.
+  - entity: rule
+    id_field: ruleId
+    description: A rule inside a policy.
+  - entity: device
+    id_field: deviceId
+    description: A registered device used for approval flows.
+  - entity: issuer
+    source: grpc/agntcy-identity-core-v1alpha1-issuer.proto
+    description: Registered issuer with a published JWKS.
+  - entity: resolver_metadata
+    source: grpc/agntcy-identity-core-v1alpha1-id.proto
+    description: What an ID resolves to.
+  - entity: verifiable_credential
+    source: json-schema/agntcy-identity-credential-content.jsonschema.json
+  relationships:
+  - from: app
+    to: badge
+    type: has_one
+    via: appId
+    operation: AppService_GetBadge
+  - from: app
+    to: badge
+    type: has_many
+    via: appId
+    operation: BadgeService_IssueBadge
+  - from: policy
+    to: rule
+    type: has_many
+    via: policyId
+    operation: PolicyService_ListRules
+  - from: badge
+    to: issuer
+    type: belongs_to
+    via: issuer
+  - from: verifiable_credential
+    to: issuer
+    type: belongs_to
+    via: issuer
+  - from: id
+    to: resolver_metadata
+    type: has_one
+    via: IdService_Resolve
+  - from: app
+    to: record
+    type: has_one
+    via: AppService_CreateOasfApp
+    note: 'the join between Identity and OASF: an app can be created FROM an OASF record'
+- domain: ACP — Agent Connect Protocol
+  entities:
+  - entity: agent
+    id_field: agent_id
+    source: openapi/agntcy-acp-openapi.json
+  - entity: acp_descriptor
+    description: The capability descriptor an agent publishes.
+    operation: get_acp_descriptor_by_id
+  - entity: thread
+    id_field: thread_id
+    description: A stateful conversation with an agent.
+  - entity: run
+    id_field: run_id
+    description: One invocation of an agent, stateful (inside a thread) or stateless.
+  relationships:
+  - from: agent
+    to: acp_descriptor
+    type: has_one
+    via: agent_id
+    operation: get_acp_descriptor_by_id
+  - from: thread
+    to: run
+    type: has_many
+    via: thread_id
+    operation: list_thread_runs
+  - from: run
+    to: agent
+    type: belongs_to
+    via: agent_id
+  - from: thread
+    to: thread
+    type: has_one
+    via: copy_thread
+    note: a thread can be forked from another thread
+cross_domain_joins:
+- from: DIR.record
+  to: OASF.record
+  type: stores
+  note: The Directory stores OASF records verbatim and addresses them by CID.
+- from: Identity.app
+  to: OASF.record
+  type: derived_from
+  via: AppService_CreateOasfApp
+- from: DIR.record
+  to: A2A AgentCard
+  type: convertible
+  via: agntcy_oasf_import_record / agntcy_oasf_export_record
+  note: dir-mcp converts between OASF records and A2A cards, MCP server manifests and Agent Skills SKILL.md.

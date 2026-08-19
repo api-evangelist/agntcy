@@ -1,0 +1,242 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+package controlplane.proto.v1;
+
+import "controller/v1/controller.proto";
+import "data-plane/v1/data_plane.proto";
+
+service ControlPlaneService {
+  rpc ListNodeRoutes(Node) returns (controller.proto.v1.RouteListResponse) {}
+  rpc ListConnections(Node) returns (controller.proto.v1.ConnectionListResponse) {}
+  rpc ListNodes(NodeListRequest) returns (stream NodeEntry) {}
+  // List routes registered at the controller with optional filtering by source and destination node IDs
+  rpc ListRoutes(RouteListRequest) returns (stream RouteEntry) {}
+  // List links stored in the controller DB with optional filtering by source and destination node IDs
+  rpc ListLinks(LinkListRequest) returns (stream LinkEntry) {}
+  // List segments (expanded routing domains) with the domains in each segment
+  rpc ListSegments(SegmentListRequest) returns (SegmentListResponse) {}
+
+  // Topology mutation APIs (API-managed mode only).
+  // These RPCs fail with FAILED_PRECONDITION if the controller is running in config-managed mode.
+
+  // Add a new segment (routing domain). If a segment with the given name already exists,
+  // returns ALREADY_EXISTS.
+  rpc AddSegment(AddSegmentRequest) returns (AddSegmentResponse) {}
+  // Remove a segment by name. Deletes all associated domain memberships and links.
+  // Returns NOT_FOUND if the segment does not exist.
+  rpc RemoveSegment(RemoveSegmentRequest) returns (RemoveSegmentResponse) {}
+  // Add a bidirectional link between two domains within a segment.
+  // The segment must already exist. Idempotent — succeeds if the link already exists.
+  rpc AddTopologyLink(AddTopologyLinkRequest) returns (AddTopologyLinkResponse) {}
+  // Remove a bidirectional link between two domains within a segment.
+  // Returns NOT_FOUND if the segment or link does not exist.
+  rpc RemoveTopologyLink(RemoveTopologyLinkRequest) returns (RemoveTopologyLinkResponse) {}
+
+  // --- Registration auth domain management APIs ---
+
+  // List registered auth domains. Works in both config and API mode.
+  // In shared_secret mode: returns domains with configured/stored secrets.
+  // In SPIRE mode: returns domains of currently connected nodes.
+  // When auth is disabled: returns empty list.
+  rpc ListDomains(ListDomainsRequest) returns (ListDomainsResponse) {}
+  // Add a domain with a shared secret (API mode + shared_secret only).
+  // Returns FAILED_PRECONDITION if in config mode.
+  // Returns UNIMPLEMENTED if auth mode is SPIRE or disabled.
+  rpc AddDomain(AddDomainRequest) returns (AddDomainResponse) {}
+  // Remove a domain. Disconnects all nodes in that domain (API mode only).
+  // Returns FAILED_PRECONDITION if in config mode.
+  rpc RemoveDomain(RemoveDomainRequest) returns (RemoveDomainResponse) {}
+}
+
+message ConfigurationCommand {
+  controller.proto.v1.ConfigurationCommand configuration_command = 1;
+  string nodeId = 2;
+}
+
+message Node {
+  string id = 1;
+}
+
+message NodeListRequest {}
+
+enum NodeStatus {
+  NODE_STATUS_UNSPECIFIED = 0;
+  CONNECTED = 1;
+  NOT_CONNECTED = 2;
+}
+
+message NodeEntry {
+  string id = 1;
+  repeated controller.proto.v1.ConnectionDetails connections = 2;
+  NodeStatus status = 4;
+  string domain = 5;
+}
+
+message NodeListResponse {
+  repeated NodeEntry entries = 1;
+}
+
+// Request to list routes, filtered by optional nodeId and destNodeId
+message RouteListRequest {
+  // the identifier of the source node to filter routes
+  string srcNodeId = 1; // optional
+
+  string destNodeId = 2; // optional
+}
+
+// Route status enum
+enum RouteStatus {
+  ROUTE_STATUS_UNSPECIFIED = 0;
+  ROUTE_STATUS_APPLIED = 1;
+  ROUTE_STATUS_FAILED = 2;
+  ROUTE_STATUS_DELETED = 3;
+  ROUTE_STATUS_PENDING = 4;
+}
+
+// Route message representing a single route
+message RouteEntry {
+  string id = 1;
+  string source_node_id = 2;
+  string dest_node_id = 3;
+  // deprecated
+  string dest_endpoint = 4;
+  // deprecated
+  string conn_config_data = 5;
+  dataplane.proto.v1.Name name = 6;
+  RouteStatus status = 7;
+  string status_msg = 8;
+  reserved 9;
+  int64 last_updated = 10; // Unix timestamp
+  string link_id = 11;
+}
+
+// Response containing a list of route representations
+message RouteListResponse {
+  // list of routes
+  repeated RouteEntry routes = 1;
+}
+
+// Request to list links, filtered by optional source and destination node IDs
+message LinkListRequest {
+  // the identifier of the source node to filter links
+  string srcNodeId = 1; // optional
+
+  // the identifier of the destination node to filter links
+  string destNodeId = 2; // optional
+}
+
+// Link status enum
+enum LinkStatus {
+  LINK_STATUS_UNSPECIFIED = 0;
+  LINK_STATUS_PENDING = 1;
+  LINK_STATUS_APPLIED = 2;
+  LINK_STATUS_FAILED = 3;
+}
+
+// Link message representing a single controller DB link
+message LinkEntry {
+  string id = 1;
+  string link_id = 2;
+  string source_node_id = 3;
+  string dest_node_id = 4;
+  string dest_endpoint = 5;
+  string conn_config_data = 6;
+  LinkStatus status = 7;
+  string status_msg = 8;
+  bool deleted = 9;
+  int64 last_updated = 10; // Unix timestamp
+}
+
+// Response containing a list of links
+message LinkListResponse {
+  repeated LinkEntry links = 1;
+}
+
+// Request to list segments
+message SegmentListRequest {}
+
+// A segment with its member domains and adjacency edges
+message SegmentEntry {
+  string name = 1;
+  repeated string domains = 2;
+  repeated SegmentEdge edges = 3;
+}
+
+// An edge in the segment graph (bidirectional link between two domains)
+message SegmentEdge {
+  string domain_a = 1;
+  string domain_b = 2;
+}
+
+// Response containing a list of segments
+message SegmentListResponse {
+  repeated SegmentEntry segments = 1;
+}
+
+// --- Topology mutation messages (API-managed mode only) ---
+
+// Add a new segment (routing domain)
+message AddSegmentRequest {
+  string name = 1;
+}
+
+message AddSegmentResponse {}
+
+// Remove a segment by name, cascading deletion of domains and links
+message RemoveSegmentRequest {
+  string name = 1;
+}
+
+message RemoveSegmentResponse {}
+
+// Add a bidirectional link between two domains within a segment.
+// The segment must already exist. If segment is empty, defaults to "default".
+message AddTopologyLinkRequest {
+  string domain_a = 1;
+  string domain_b = 2;
+  string segment = 3; // optional, defaults to "default"
+}
+
+message AddTopologyLinkResponse {
+  // Warnings about missing domains (link stored but no physical link created yet).
+  repeated string warnings = 1;
+}
+
+// Remove a bidirectional link between two domains within a segment.
+// If segment is empty, defaults to "default".
+message RemoveTopologyLinkRequest {
+  string domain_a = 1;
+  string domain_b = 2;
+  string segment = 3; // optional, defaults to "default"
+}
+
+message RemoveTopologyLinkResponse {}
+
+// --- Registration auth domain management messages ---
+
+message ListDomainsRequest {}
+
+message ListDomainsResponse {
+  repeated DomainEntry domains = 1;
+}
+
+message DomainEntry {
+  string domain_name = 1;
+  // Node IDs currently connected in this domain (empty if no nodes connected yet).
+  repeated string nodes = 2;
+}
+
+message AddDomainRequest {
+  string domain_name = 1;
+  string secret = 2;
+}
+
+message AddDomainResponse {}
+
+message RemoveDomainRequest {
+  string domain_name = 1;
+}
+
+message RemoveDomainResponse {}

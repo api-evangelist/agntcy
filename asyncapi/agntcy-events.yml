@@ -1,0 +1,37 @@
+generated: '2026-08-19'
+method: derived
+source: grpc/agntcy-dir-events-v1-event_service.proto, https://buf.build/agntcy/dir/docs/main:agntcy.dir.events.v1, https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-cli-reference.md
+spec_type: null
+asyncapi_published: false
+webhooks_published: false
+note: AGNTCY HAS a real event surface and publishes NEITHER an AsyncAPI document NOR webhooks. Directory events are delivered
+  as a gRPC server stream (agntcy.dir.events.v1.EventService), consumed with dirctl events listen -o jsonl. Because there
+  is no AsyncAPI and no webhook catalog, no AsyncAPI and no Webhooks pointer is emitted — this file records the event surface
+  that exists, not a claim about a document that does not. SLIM is a separate pub/sub-capable messaging transport with its
+  own protos in grpc/.
+surfaces:
+- name: Directory events
+  transport: grpc-server-streaming
+  proto: grpc/agntcy-dir-events-v1-event_service.proto
+  package: agntcy.dir.events.v1
+  registry: https://buf.build/agntcy/dir/docs/main:agntcy.dir.events.v1
+  consumer: dirctl events listen -o jsonl
+  observed_event_types:
+  - EVENT_TYPE_RECORD_PUSHED
+  observed_event_types_note: Only the event type quoted verbatim in the published CLI reference is listed. The full enum is
+    in the proto and on buf.build; it is not restated here from memory.
+- name: SLIM messaging
+  transport: slim
+  protos:
+  - grpc/agntcy-slim-data-plane-v1-data_plane.proto
+  - grpc/agntcy-slim-controlplane-v1-controlplane.proto
+  - grpc/agntcy-slim-channel-manager-v1-commands.proto
+  spec: https://github.com/agntcy/slim-spec
+  note: Secure Low-Latency Interactive Messaging — the AGNTCY transport layer, with SLIMRPC bindings for the A2A SDKs in Go,
+    JS/TS, Java, .NET and Python.
+- name: Directory sync
+  transport: grpc
+  proto: grpc/agntcy-dir-store-v1-sync_service.proto
+  note: Peer-to-peer synchronization between Directory instances.
+x-gap: A published AsyncAPI 3.x for agntcy.dir.events.v1 would make the Directory event surface machine-readable. Today an
+  agent has to read a .proto to discover it.

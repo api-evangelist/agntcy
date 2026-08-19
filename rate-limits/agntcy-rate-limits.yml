@@ -1,0 +1,20 @@
+generated: '2026-08-19'
+method: searched
+source: https://docs.agntcy.org/, https://dir.agntcy.org/, https://github.com/agntcy/dir/blob/main/docs/content/dir/, and
+  live response headers from https://schema.oasf.outshift.com/
+limit_count: 0
+limits: []
+headers: []
+exhaustion_status: null
+note: AGNTCY documents no rate limits on any surface. The one AGNTCY-hosted API — the OASF Schema Server at https://schema.oasf.outshift.com
+  — returned no RateLimit-*, X-RateLimit-* or Retry-After headers on an unauthenticated request on 2026-08-19; the response
+  headers were server, date, content-type, content-length, cache-control, referrer-policy, x-content-type-options, x-download-options,
+  x-frame-options, x-permitted-cross-domain-policies and x-request-id. Everything else AGNTCY ships is self-hosted, so limits
+  are whatever the operator configures. An honest zero.
+evidence:
+- url: https://schema.oasf.outshift.com/
+  status: 200
+  observed: no rate-limit headers present
+- url: https://schema.oasf.outshift.com/api/versions
+  status: 200
+  observed: no rate-limit headers present

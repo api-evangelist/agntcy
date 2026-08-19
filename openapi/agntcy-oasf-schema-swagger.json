@@ -1,0 +1,1316 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "title": "The OASF Schema API",
+    "version": "0.6.0",
+    "x-provenance": {
+      "method": "harvested",
+      "authored_by": "AGNTCY (Outshift by Cisco)",
+      "harvested_by": "API Evangelist",
+      "harvested_on": "2026-08-19",
+      "first_party": true,
+      "provider_published": true,
+      "source_host": "agntcy.org / outshift.com",
+      "note": "Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200)."
+    },
+    "x-evidence": [
+      {
+        "type": "source",
+        "url": "https://spec.acp.agntcy.org/"
+      },
+      {
+        "type": "source",
+        "url": "https://schema.oasf.outshift.com/doc"
+      },
+      {
+        "type": "source",
+        "url": "https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml"
+      }
+    ]
+  },
+  "paths": {
+    "/api/1.1.0/data_types": {
+      "get": {
+        "description": "Get OASF schema data types.",
+        "operationId": "SchemaWeb.SchemaController.data_types",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Data types",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/dictionary": {
+      "get": {
+        "description": "Get OASF schema dictionary.",
+        "operationId": "SchemaWeb.SchemaController.dictionary",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Dictionary",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/domain_categories": {
+      "get": {
+        "description": "Get OASF domains taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension').",
+        "operationId": "SchemaWeb.SchemaController.domain_categories",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID of parent to filter children. Returns only children of this parent.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No class found with the specified id or name"
+          }
+        },
+        "summary": "Get domains taxonomy tree",
+        "tags": [
+          "Taxonomy"
+        ]
+      }
+    },
+    "/api/1.1.0/domains": {
+      "get": {
+        "description": "Get OASF schema domains. Returns all domains when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single domain. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.",
+        "operationId": "SchemaWeb.SchemaController.domains",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID to get a specific domain.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name to get a specific domain. Can include extension prefix (e.g., 'dev/cpu_usage').",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No domain found with the specified id or name"
+          }
+        },
+        "summary": "List domains or get a specific domain",
+        "tags": [
+          "Classes and Objects"
+        ]
+      }
+    },
+    "/api/1.1.0/extensions": {
+      "get": {
+        "description": "Get OASF schema extensions.",
+        "operationId": "SchemaWeb.SchemaController.extensions",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "List schema extensions",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/module_categories": {
+      "get": {
+        "description": "Get OASF modules taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension'). If both id and name are provided, they must refer to the same node, otherwise returns 400 Bad Request.",
+        "operationId": "SchemaWeb.SchemaController.module_categories",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID of parent to filter children. Returns only children of this parent.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No class found with the specified id or name"
+          }
+        },
+        "summary": "Get modules taxonomy tree",
+        "tags": [
+          "Taxonomy"
+        ]
+      }
+    },
+    "/api/1.1.0/modules": {
+      "get": {
+        "description": "Get OASF schema modules. Returns all modules when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single module. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.",
+        "operationId": "SchemaWeb.SchemaController.modules",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID to get a specific module.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name to get a specific module. Can include extension prefix (e.g., 'dev/cpu_usage').",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No module found with the specified id or name"
+          }
+        },
+        "summary": "List modules or get a specific module",
+        "tags": [
+          "Classes and Objects"
+        ]
+      }
+    },
+    "/api/1.1.0/objects": {
+      "get": {
+        "description": "Get OASF schema objects. When a name is provided, returns a single object. The object name may contain a schema extension name, for example \"dev/os_service\".",
+        "operationId": "SchemaWeb.SchemaController.objects",
+        "parameters": [
+          {
+            "description": "Object name to retrieve a specific object",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not Found - No object found with the specified name"
+          }
+        },
+        "summary": "List objects or get a specific object",
+        "tags": [
+          "Classes and Objects"
+        ]
+      }
+    },
+    "/api/1.1.0/profiles": {
+      "get": {
+        "description": "Get OASF schema profiles.",
+        "operationId": "SchemaWeb.SchemaController.profiles",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "List profiles",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/profiles/{name}": {
+      "get": {
+        "description": "Get OASF schema profile by name. The profile name may contain a schema extension name. For example, \"linux/linux_users\".",
+        "operationId": "SchemaWeb.SchemaController.profile",
+        "parameters": [
+          {
+            "description": "Profile name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Profile <code>name</code> not found"
+          }
+        },
+        "summary": "Profile",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/schema": {
+      "get": {
+        "description": "Get OASF schema definitions, including data types, objects, classes, and the dictionary of attributes.",
+        "operationId": "SchemaWeb.SchemaController.schema",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Get schema",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/skill_categories": {
+      "get": {
+        "description": "Get OASF skills taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension').",
+        "operationId": "SchemaWeb.SchemaController.skill_categories",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID of parent to filter children. Returns only children of this parent.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No class found with the specified id or name"
+          }
+        },
+        "summary": "Get skills taxonomy tree",
+        "tags": [
+          "Taxonomy"
+        ]
+      }
+    },
+    "/api/1.1.0/skills": {
+      "get": {
+        "description": "Get OASF schema skills. Returns all skills when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single skill. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.",
+        "operationId": "SchemaWeb.SchemaController.skills",
+        "parameters": [
+          {
+            "description": "Related schema extensions to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "extensions",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Optional numeric ID to get a specific skill.",
+            "in": "query",
+            "name": "id",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Optional name to get a specific skill. Can include extension prefix (e.g., 'dev/cpu_usage').",
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - id and name parameters refer to different classes"
+          },
+          "404": {
+            "description": "Not Found - No skill found with the specified id or name"
+          }
+        },
+        "summary": "List skills or get a specific skill",
+        "tags": [
+          "Classes and Objects"
+        ]
+      }
+    },
+    "/api/1.1.0/translate/domain": {
+      "post": {
+        "description": "The purpose of this API is to translate the provided domain class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.",
+        "operationId": "SchemaWeb.SchemaController.translate_domain",
+        "parameters": [
+          {
+            "default": 1,
+            "description": "Controls how attribute names and enumerated values are translated.<br/>\nThe format is _mode=[1|2|3]. The default mode is `1` -- translate enumerated values.\n\n|Value|Description|Example|\n|-----|-----------|-------|\n|1|Translate only the enumerated values|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"id\": 101, \"name\": \"technology/internet_of_things\"}</code><br/><i>Note: Classes are automatically enriched with both id and name. For enum fields with siblings, the sibling field is also added.</i>|\n|2|Translate enumerated values and attribute names|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"ID\": 101, \"Name\": \"technology/internet_of_things\"}</code><br/><i>Note: Attribute names are translated to their captions. Classes are automatically enriched with both id and name.</i>|\n|3|Verbose translation|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"id\": {\"caption\": \"Internet of Things (IoT)\",\"name\": \"ID\",\"type\": \"integer_t\",\"value\": 101}, \"name\": {\"caption\": \"Name\",\"name\": \"Name\",\"type\": \"string_t\",\"value\": \"technology/internet_of_things\"}}</code>|\n",
+            "in": "query",
+            "name": "_mode",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "  Controls how spaces in the translated attribute names are handled.<br/>\n  By default, the translated attribute names may contain spaces (for example, Class Time).\n  You can remove the spaces or replace the spaces with another string. For example, if you\n  want to forward to a database that does not support spaces.<br/>\n  The format is _spaces=[&lt;empty&gt;|string].\n\n  |Value|Description|Example|\n  |-----|-----------|-------|\n  |&lt;empty&gt;|The spaces in the translated names are removed.|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"ID\": \"Internet of Things (IoT)\"}</code>|\n  |string|The spaces in the translated names are replaced with the given string.|For example, the string is an underscore (_).<br/>Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"ID\": \"Internet of Things (IoT)\"}</code>|\n",
+            "in": "query",
+            "name": "_spaces",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The domain class data to be translated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - unexpected body, expected a JSON object or array"
+          }
+        },
+        "summary": "Translate domain class",
+        "tags": [
+          "Translation"
+        ]
+      }
+    },
+    "/api/1.1.0/translate/module": {
+      "post": {
+        "description": "The purpose of this API is to translate the provided module class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.",
+        "operationId": "SchemaWeb.SchemaController.translate_module",
+        "parameters": [
+          {
+            "default": 1,
+            "description": "Controls how attribute names and enumerated values are translated.<br/>\nThe format is _mode=[1|2|3]. The default mode is `1` -- translate enumerated values.\n\n|Value|Description|Example|\n|-----|-----------|-------|\n|1|Translate only the enumerated values|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"id\": 101, \"name\": \"core/observability\"}</code><br/><i>Note: Classes are automatically enriched with both id and name. For enum fields with siblings, the sibling field is also added.</i>|\n|2|Translate enumerated values and attribute names|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"ID\": 101, \"Name\": \"core/observability\"}</code><br/><i>Note: Attribute names are translated to their captions. Classes are automatically enriched with both id and name.</i>|\n|3|Verbose translation|Untranslated:<br/><code>{\"id\": 101}</code><br/><br/>Translated:<br/><code>{\"id\": {\"caption\": \"Observability\",\"name\": \"ID\",\"type\": \"integer_t\",\"value\": 101}, \"name\": {\"caption\": \"Name\",\"name\": \"Name\",\"type\": \"string_t\",\"value\": \"core/observability\"}}</code>|\n",
+            "in": "query",
+            "name": "_mode",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "  Controls how spaces in the translated attribute names are handled.<br/>\n  By default, the translated attribute names may contain spaces (for example, Class Time).\n  You can remove the spaces or replace the spaces with another string. For example, if you\n  want to forward to a database that does not support spaces.<br/>\n  The format is _spaces=[&lt;empty&gt;|string].\n\n  |Value|Description|\n  |-----|-----------|\n  |&lt;empty&gt;|The spaces in the translated names are removed.|\n  |string|The spaces in the translated names are replaced with the given string.|\n",
+            "in": "query",
+            "name": "_spaces",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The module class data to be translated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - unexpected body, expected a JSON object or array"
+          }
+        },
+        "summary": "Translate module class",
+        "tags": [
+          "Translation"
+        ]
+      }
+    },
+    "/api/1.1.0/translate/object/{name}": {
+      "post": {
+        "description": "The purpose of this API is to translate the provided object data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.",
+        "operationId": "SchemaWeb.SchemaController.translate_object",
+        "parameters": [
+          {
+            "description": "Object name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": 1,
+            "description": "Controls how attribute names and enumerated values are translated.<br/>\nThe format is _mode=[1|2|3]. The default mode is `1` -- translate enumerated values.\n\n|Value|Description|Example|\n|-----|-----------|-------|\n|1|Translate only the enumerated values|Untranslated:<br/><code>{\"type\": 1}</code><br/><br/>Translated:<br/><code>{\"type\": 1}</code><br/><i>Note: For enum fields with siblings, the sibling field is added automatically.</i>|\n|2|Translate enumerated values and attribute names|Untranslated:<br/><code>{\"type\": 1}</code><br/><br/>Translated:<br/><code>{\"Type\": 1}</code><br/><i>Note: Attribute names are translated to their captions.</i>|\n|3|Verbose translation|Untranslated:<br/><code>{\"type\": 1}</code><br/><br/>Translated:<br/><code>{\"type\": {\"caption\": \"Example Type\",\"name\": \"Type\",\"type\": \"integer_t\",\"value\": 1}}</code>|\n",
+            "in": "query",
+            "name": "_mode",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "  Controls how spaces in the translated attribute names are handled.<br/>\n  By default, the translated attribute names may contain spaces (for example, Class Time).\n  You can remove the spaces or replace the spaces with another string. For example, if you\n  want to forward to a database that does not support spaces.<br/>\n  The format is _spaces=[&lt;empty&gt;|string].\n\n  |Value|Description|\n  |-----|-----------|\n  |&lt;empty&gt;|The spaces in the translated names are removed.|\n  |string|The spaces in the translated names are replaced with the given string.|\n",
+            "in": "query",
+            "name": "_spaces",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The object data to be translated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - unexpected body, expected a JSON object or array"
+          }
+        },
+        "summary": "Translate object",
+        "tags": [
+          "Translation"
+        ]
+      }
+    },
+    "/api/1.1.0/translate/skill": {
+      "post": {
+        "description": "The purpose of this API is to translate the provided skill class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.",
+        "operationId": "SchemaWeb.SchemaController.translate_skill",
+        "parameters": [
+          {
+            "default": 1,
+            "description": "Controls how attribute names and enumerated values are translated.<br/>\nThe format is _mode=[1|2|3]. The default mode is `1` -- translate enumerated values.\n\n|Value|Description|Example|\n|-----|-----------|-------|\n|1|Translate only the enumerated values|Untranslated:<br/><code>{\"id\": 10101}</code><br/><br/>Translated:<br/><code>{\"id\": 10101, \"name\": \"analytical_skills/natural_language_processing/contextual_comprehension\"}</code><br/><i>Note: Classes are automatically enriched with both id and name. For enum fields with siblings, the sibling field is also added.</i>|\n|2|Translate enumerated values and attribute names|Untranslated:<br/><code>{\"id\": 10101}</code><br/><br/>Translated:<br/><code>{\"ID\": 10101, \"Name\": \"analytical_skills/natural_language_processing/contextual_comprehension\"}</code><br/><i>Note: Attribute names are translated to their captions. Classes are automatically enriched with both id and name.</i>|\n|3|Verbose translation|Untranslated:<br/><code>{\"id\": 10101}</code><br/><br/>Translated:<br/><code>{\"id\": {\"caption\": \"Contextual Comprehension\",\"name\": \"ID\",\"type\": \"integer_t\",\"value\": 10101}, \"name\": {\"caption\": \"Name\",\"name\": \"Name\",\"type\": \"string_t\",\"value\": \"analytical_skills/natural_language_processing/contextual_comprehension\"}}</code>|\n",
+            "in": "query",
+            "name": "_mode",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "allowEmptyValue": true,
+            "description": "  Controls how spaces in the translated attribute names are handled.<br/>\n  By default, the translated attribute names may contain spaces (for example, Class Time).\n  You can remove the spaces or replace the spaces with another string. For example, if you\n  want to forward to a database that does not support spaces.<br/>\n  The format is _spaces=[&lt;empty&gt;|string].\n\n  |Value|Description|Example|\n  |-----|-----------|-------|\n  |&lt;empty&gt;|The spaces in the translated names are removed.|Untranslated:<br/><code>{\"id\": 10101}</code><br/><br/>Translated:<br/><code>{\"ID\": \"Contextual Comprehension\"}</code>|\n  |string|The spaces in the translated names are replaced with the given string.|For example, the string is an underscore (_).<br/>Untranslated:<br/><code>{\"id\": 10101}</code><br/><br/>Translated:<br/><code>{\"ID\": \"Contextual Comprehension\"}</code>|\n",
+            "in": "query",
+            "name": "_spaces",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "description": "The skill class data to be translated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request - unexpected body, expected a JSON object or array"
+          }
+        },
+        "summary": "Translate skill class",
+        "tags": [
+          "Translation"
+        ]
+      }
+    },
+    "/api/1.1.0/validate/domain": {
+      "post": {
+        "description": "This API validates the provided domain class data against the OASF schema, returning a response containing validation errors and warnings.",
+        "operationId": "SchemaWeb.SchemaController.validate_domain",
+        "parameters": [
+          {
+            "default": false,
+            "description": "When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.\n",
+            "in": "query",
+            "name": "missing_recommended",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "The domain class to be validated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Validate domain class",
+        "tags": [
+          "Validation"
+        ]
+      }
+    },
+    "/api/1.1.0/validate/module": {
+      "post": {
+        "description": "This API validates the provided module class data against the OASF schema, returning a response containing validation errors and warnings.",
+        "operationId": "SchemaWeb.SchemaController.validate_module",
+        "parameters": [
+          {
+            "default": false,
+            "description": "When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.\n",
+            "in": "query",
+            "name": "missing_recommended",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "The module class to be validated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Validate module class",
+        "tags": [
+          "Validation"
+        ]
+      }
+    },
+    "/api/1.1.0/validate/object/{name}": {
+      "post": {
+        "description": "This API validates the provided object data against the OASF schema, returning a response containing validation errors and warnings.",
+        "operationId": "SchemaWeb.SchemaController.validate_object",
+        "parameters": [
+          {
+            "description": "Object name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": false,
+            "description": "When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.\n",
+            "in": "query",
+            "name": "missing_recommended",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "The object to be validated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Validate object",
+        "tags": [
+          "Validation"
+        ]
+      }
+    },
+    "/api/1.1.0/validate/skill": {
+      "post": {
+        "description": "This API validates the provided skill class data against the OASF schema, returning a response containing validation errors and warnings.",
+        "operationId": "SchemaWeb.SchemaController.validate_skill",
+        "parameters": [
+          {
+            "default": false,
+            "description": "When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.\n",
+            "in": "query",
+            "name": "missing_recommended",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "description": "The skill class to be validated",
+            "in": "body",
+            "name": "data",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Validate skill class",
+        "tags": [
+          "Validation"
+        ]
+      }
+    },
+    "/api/1.1.0/version": {
+      "get": {
+        "description": "Get OASF schema, server, and API versions.",
+        "operationId": "SchemaWeb.SchemaController.version",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Version",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/api/1.1.0/versions": {
+      "get": {
+        "description": "Get available OASF schema versions with server and API metadata.",
+        "operationId": "SchemaWeb.SchemaController.versions",
+        "parameters": [],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Versions",
+        "tags": [
+          "Schema"
+        ]
+      }
+    },
+    "/sample/1.1.0/domains/{name}": {
+      "get": {
+        "description": "This API returns randomly generated sample data for the given domain class name. The class name may contain a schema extension name. For example, \"dev/cpu_usage\".",
+        "operationId": "SchemaWeb.SchemaController.sample_domain",
+        "parameters": [
+          {
+            "description": "Domain class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Domain class <code>name</code> not found"
+          }
+        },
+        "summary": "Domain class sample data",
+        "tags": [
+          "Sample Data"
+        ]
+      }
+    },
+    "/sample/1.1.0/modules/{name}": {
+      "get": {
+        "description": "This API returns randomly generated sample data for the given module class name. The class name may contain a schema extension name. For example, \"dev/cpu_usage\".",
+        "operationId": "SchemaWeb.SchemaController.sample_module",
+        "parameters": [
+          {
+            "description": "Module class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Module class <code>name</code> not found"
+          }
+        },
+        "summary": "Module class sample data",
+        "tags": [
+          "Sample Data"
+        ]
+      }
+    },
+    "/sample/1.1.0/objects/{name}": {
+      "get": {
+        "description": "This API returns randomly generated sample data for the given object name. The object name may contain a schema extension name. For example, \"dev/os_service\".",
+        "operationId": "SchemaWeb.SchemaController.sample_object",
+        "parameters": [
+          {
+            "description": "Object name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Object <code>name</code> not found"
+          }
+        },
+        "summary": "Object sample data",
+        "tags": [
+          "Sample Data"
+        ]
+      }
+    },
+    "/sample/1.1.0/skills/{name}": {
+      "get": {
+        "description": "This API returns randomly generated sample data for the given skill class name. The class name may contain a schema extension name. For example, \"dev/cpu_usage\".",
+        "operationId": "SchemaWeb.SchemaController.sample_skill",
+        "parameters": [
+          {
+            "description": "Skill class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Skill class <code>name</code> not found"
+          }
+        },
+        "summary": "Skill class sample data",
+        "tags": [
+          "Sample Data"
+        ]
+      }
+    },
+    "/schema/1.1.0/domains/{name}": {
+      "get": {
+        "description": "Get OASF schema domain class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. ",
+        "operationId": "SchemaWeb.SchemaController.json_domain_class",
+        "parameters": [
+          {
+            "description": "Domain class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Java package name",
+            "in": "query",
+            "name": "package_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Domain class <code>name</code> not found"
+          }
+        },
+        "summary": "Domain",
+        "tags": [
+          "JSON Schema"
+        ]
+      }
+    },
+    "/schema/1.1.0/modules/{name}": {
+      "get": {
+        "description": "Get OASF schema module class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. ",
+        "operationId": "SchemaWeb.SchemaController.json_module_class",
+        "parameters": [
+          {
+            "description": "Module class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Java package name",
+            "in": "query",
+            "name": "package_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Module class <code>name</code> not found"
+          }
+        },
+        "summary": "Module",
+        "tags": [
+          "JSON Schema"
+        ]
+      }
+    },
+    "/schema/1.1.0/objects/{name}": {
+      "get": {
+        "description": "Get OASF object by name, using JSON schema Draft-07 format (see http://json-schema.org). The object name may contain a schema extension name. For example, \"dev/printer\".",
+        "operationId": "SchemaWeb.SchemaController.json_object",
+        "parameters": [
+          {
+            "description": "Object name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Java package name",
+            "in": "query",
+            "name": "package_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Object <code>name</code> not found"
+          }
+        },
+        "summary": "Object",
+        "tags": [
+          "JSON Schema"
+        ]
+      }
+    },
+    "/schema/1.1.0/skills/{name}": {
+      "get": {
+        "description": "Get OASF schema skill class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. ",
+        "operationId": "SchemaWeb.SchemaController.json_skill_class",
+        "parameters": [
+          {
+            "description": "Skill class name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Related profiles to include in response.",
+            "in": "query",
+            "items": {
+              "type": "string"
+            },
+            "name": "profiles",
+            "required": false,
+            "type": "array"
+          },
+          {
+            "description": "Java package name",
+            "in": "query",
+            "name": "package_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Skill class <code>name</code> not found"
+          }
+        },
+        "summary": "Skill",
+        "tags": [
+          "JSON Schema"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0"
+}

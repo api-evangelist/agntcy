@@ -1,0 +1,31 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for AGNTCY Identity Service API
+  version: 1.0.0
+extends: openapi/agntcy-identity-service-openapi.yaml
+x-generated: '2026-08-19'
+x-method: generated
+x-source: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/providers/agntcy/
+    x-apievangelist-harvested: '2026-08-19'
+    x-apievangelist-source: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+    x-apievangelist-provider: AGNTCY
+    x-apievangelist-parent: Cisco (Outshift)
+    x-apievangelist-governance: Linux Foundation (LF Projects, LLC)
+    x-apievangelist-license: Apache-2.0
+- target: $.info
+  update:
+    x-apievangelist-artifacts:
+      authentication: authentication/agntcy-authentication.yml
+      conventions: conventions/agntcy-conventions.yml
+      errors: errors/agntcy-problem-types.yml
+      lifecycle: lifecycle/agntcy-lifecycle.yml
+      data-model: data-model/agntcy-data-model.yml
+      mcp: mcp/agntcy-mcp.yml
+      tool-crosswalk: mcp/agntcy-tool-crosswalk.yml
+      packages: packages/agntcy-packages.yml
+      rate-limits: rate-limits/agntcy-rate-limits.yml
+      plans: plans/agntcy-plans-pricing.yml

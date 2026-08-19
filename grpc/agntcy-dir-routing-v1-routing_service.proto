@@ -1,0 +1,151 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package agntcy.dir.routing.v1;
+
+import "agntcy/dir/core/v1/record.proto";
+import "agntcy/dir/routing/v1/peer.proto";
+import "agntcy/dir/routing/v1/record_query.proto";
+import "agntcy/dir/search/v1/record_query.proto";
+import "google/protobuf/empty.proto";
+
+// Defines an interface for announcement and discovery
+// of records across interconnected network.
+//
+// Middleware should be used to control who can perform these RPCs.
+// Policies for the middleware can be handled via separate service.
+service RoutingService {
+  // Announce to the network that this peer is providing a given record.
+  // This enables other peers to discover this record and retrieve it
+  // from this peer. Listeners can use this event to perform custom operations,
+  // for example by cloning the record.
+  //
+  // Items need to be periodically republished (eg. 24h) to the network
+  // to avoid stale data. Republication should be done in the background.
+  rpc Publish(PublishRequest) returns (google.protobuf.Empty);
+
+  // Stop serving this record to the network. If other peers try
+  // to retrieve this record, the peer will refuse the request.
+  rpc Unpublish(UnpublishRequest) returns (google.protobuf.Empty);
+
+  // Search records based on the request across the network.
+  // This will search the network for the record with the given parameters.
+  //
+  // It is possible that the records are stale or that they do not exist.
+  // Some records may be provided by multiple peers.
+  //
+  // Results from the search can be used as an input
+  // to Pull operation to retrieve the records.
+  rpc Search(SearchRequest) returns (stream SearchResponse);
+
+  // List all records that this peer is currently providing
+  // that match the given parameters.
+  // This operation does not interact with the network.
+  rpc List(ListRequest) returns (stream ListResponse);
+
+  // GetProviderCount returns the number of distinct peers (including this node)
+  // currently announcing the given CID in the routing layer.
+  // Used by the reconciler to populate the provider_count popularity signal.
+  rpc GetProviderCount(GetProviderCountRequest) returns (GetProviderCountResponse);
+}
+
+message PublishRequest {
+  oneof request {
+    // References to the records to be published.
+    RecordRefs record_refs = 1;
+
+    // Queries to match against the records to be published.
+    RecordQueries queries = 2;
+
+    // Publish every stored record.
+    bool all_records = 3;
+  }
+}
+
+message UnpublishRequest {
+  oneof request {
+    // References to the records to be unpublished.
+    RecordRefs record_refs = 1;
+
+    // Queries to match against the records to be unpublished.
+    RecordQueries queries = 2;
+
+    // TODO: Future enhancement - Unpublish all stored records.
+    // bool all_records = 3;
+  }
+}
+
+message RecordRefs {
+  repeated core.v1.RecordRef refs = 1;
+}
+
+message RecordQueries {
+  repeated search.v1.RecordQuery queries = 1;
+}
+
+message SearchRequest {
+  // List of queries to match against the records.
+  repeated RecordQuery queries = 1;
+
+  // Minimal target query match score.
+  // For example, if min_match_score=2, it will return records that match
+  // at least two of the queries.
+  // If not set, it will return records that match at least one query.
+  optional uint32 min_match_score = 2;
+
+  // Limit the number of results returned.
+  // If not set, it will return all discovered records.
+  // Note that this is a soft limit, as the search may return more results
+  // than the limit if there are multiple peers providing the same record.
+  optional uint32 limit = 3;
+
+  // TODO: we may want to add a way to filter results by peer.
+}
+
+message SearchResponse {
+  // The record that matches the search query.
+  core.v1.RecordRef record_ref = 1;
+
+  // The peer that provided the record.
+  Peer peer = 2;
+
+  // The queries that were matched.
+  repeated RecordQuery match_queries = 3;
+
+  // The score of the search match.
+  uint32 match_score = 4;
+}
+
+message ListRequest {
+  // List of queries to match against the records.
+  // If set, all queries must match for the record to be returned.
+  repeated RecordQuery queries = 1;
+
+  // Limit the number of results returned.
+  // If not set, it will return all records that this peer is providing.
+  optional uint32 limit = 2;
+}
+
+message ListResponse {
+  // The record that matches the list queries.
+  core.v1.RecordRef record_ref = 1;
+
+  // Labels associated with this record (skills, domains, modules)
+  // Derived from the record content for CLI display purposes
+  repeated string labels = 2;
+}
+
+message GetProviderCountRequest {
+  // CID of the record to query.
+  string cid = 1;
+}
+
+message GetProviderCountResponse {
+  // Number of distinct peers (including the local node) currently announcing
+  // this CID in the routing layer. This is a point-in-time gauge derived from
+  // the local routing datastore — it reflects peers seen since the last DHT
+  // refresh, not a live network query.
+  uint32 count = 1;
+}

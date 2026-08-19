@@ -1,0 +1,51 @@
+generated: '2026-08-19'
+method: searched
+source: https://agntcy.org/changelog
+url: https://agntcy.org/changelog
+scheme: semver, per project, aggregated from GitHub releases across the agntcy org
+note: AGNTCY aggregates every project release into one dated feed. Entries below are the recent window read on 2026-08-19,
+  not the full history.
+current_version:
+  dir: v1.7.0
+  oasf-sdk: v1.2.0
+entries:
+- project: dir
+  version: v1.7.0
+  date: '2026-08-18'
+  breaking: false
+  highlights:
+  - New POST /v1/search HTTP endpoint with parity to dirctl search, removing the gRPC-only constraint for programmatic and
+    gateway-driven search.
+  - New POST /v1/extract endpoint for OASF taxonomy extraction from free-form text.
+  - OASF extractor unified across dirctl, the gateway and import workflows.
+  - dirctl routing publish --all publishes every locally stored record to the DHT in one operation.
+  - Directory API and OCI registry endpoints can now be advertised separately in routing.
+  - Client and CLI refresh OIDC tokens on the fly.
+  source: https://github.com/agntcy/dir/releases/tag/v1.7.0
+- project: oasf-sdk
+  version: v1.2.0
+  date: '2026-08-11'
+  breaking: false
+  source: https://github.com/agntcy/oasf-sdk/releases/tag/v1.2.0
+- project: dir
+  version: v1.6.3
+  date: '2026-08-07'
+  breaking: false
+  source: https://github.com/agntcy/dir/releases/tag/v1.6.3
+- project: dir
+  version: v1.6.2
+  date: '2026-07-29'
+  breaking: false
+  source: https://github.com/agntcy/dir/releases/tag/v1.6.2
+- project: dir
+  version: v1.6.1
+  date: '2026-07-22'
+  breaking: false
+  source: https://github.com/agntcy/dir/releases/tag/v1.6.1
+- project: dir
+  version: v1.6.0
+  date: '2026-07-22'
+  breaking: false
+  source: https://github.com/agntcy/dir/releases/tag/v1.6.0
+x-gap: The v1.7.0 release adds POST /v1/search and POST /v1/extract to the Directory HTTP gateway, but AGNTCY publishes no
+  OpenAPI describing either. Those two operations are currently documented only in prose.

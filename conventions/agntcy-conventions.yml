@@ -1,0 +1,109 @@
+generated: '2026-08-19'
+method: searched
+source: https://github.com/agntcy/dir/blob/main/docs/content/dir/ (api-reference, component-store, component-oidc-authentication,
+  cli-reference), https://github.com/agntcy/dir-mcp/blob/main/docs/directory-mcp.md, plus derivation from openapi/ and grpc/
+  in this repo
+note: AGNTCY has no single API. These conventions are per-surface and are recorded that way rather than flattened into one
+  false house style.
+authentication:
+  styles:
+  - oidc-jwt-bearer
+  - api-key-header
+  - spiffe-x509
+  - spiffe-jwt
+  - mtls
+  - none
+  detail: 'Identity Service: Authorization bearer JWT (AccessToken, issued in an OIDC flow) or x-id-api-key header. Directory:
+    SPIFFE/SPIRE in-cluster, optional oidc-gateway for external access (auth modes none, insecure, x509, jwt, token, tls,
+    oidc). OASF Schema API: unauthenticated.'
+  artifact: authentication/agntcy-authentication.yml
+idempotency:
+  supported: true
+  mechanism: content-addressing
+  header: null
+  detail: 'Directory writes are idempotent by construction: a push derives a multiformats CID from the artifact digest, so
+    pushing the same record twice resolves to the same immutable object rather than creating a duplicate. SLIM control-plane
+    RPCs document idempotency explicitly (AddTopologyLink: "Idempotent — succeeds if the link already exists"). dirctl install/uninstall
+    are documented as idempotent. There is NO Idempotency-Key request header on any AGNTCY REST surface, and none of the four
+    published OpenAPI documents declares one.'
+  retention: permanent — the CID is the identity of the record, not a short-lived replay key
+  sources:
+  - https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-component-store.md
+  - grpc/agntcy-slim-controlplane-v1-controlplane.proto
+  - https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-cli-reference.md
+pagination:
+  styles:
+  - surface: AGNTCY Identity Service
+    style: page-number
+    params:
+    - page
+    - size
+    source: openapi/agntcy-identity-service-openapi.yaml
+  - surface: Agent Connect Protocol
+    style: limit-offset
+    params:
+    - limit
+    - offset
+    - before
+    source: openapi/agntcy-acp-openapi.json
+  - surface: Directory MCP search
+    style: limit-offset
+    params:
+    - limit
+    - offset
+    response_fields:
+    - count
+    - has_more
+    default_limit: 100
+    max_limit: 1000
+    source: https://github.com/agntcy/dir-mcp/blob/main/docs/directory-mcp.md
+  - surface: OASF Schema API
+    style: none
+    note: Taxonomy endpoints return whole trees; hierarchy is navigated with the id / name parent filters instead of pages.
+filtering:
+  style: structured-filters-with-wildcards
+  detail: 'Directory search accepts names, versions, skill_ids, skill_names, locators, module_names, module_ids, domain_ids,
+    domain_names, authors, created_ats, schema_versions. Wildcards: * (zero or more), ? (exactly one), [abc] (character class).
+    Multiple filters combine with OR.'
+  source: https://github.com/agntcy/dir-mcp/blob/main/docs/directory-mcp.md
+versioning:
+  style: uri-path
+  detail: OASF Schema API embeds the schema version in the path (/api/1.1.0/...); Identity uses /v1alpha1/...; DIR proto packages
+    carry the version (agntcy.dir.store.v1). Every released OASF version stays addressable.
+  artifact: lifecycle/agntcy-lifecycle.yml
+error_envelope:
+  surfaces:
+  - surface: AGNTCY Identity
+    shape: google.rpc.Status {code, message, details[]} plus agntcy.identity.core.v1alpha1.ErrorInfo {reason, message}
+  - surface: Agent Directory
+    shape: gRPC status codes (InvalidArgument, NotFound, FailedPrecondition, Internal, Canceled, Unauthenticated, PermissionDenied)
+  - surface: Agent Connect Protocol
+    shape: plain application/json bodies on 404 / 409 / 422
+  - surface: OASF Schema API
+    shape: plain application/json bodies on 400 / 404
+  rfc9457: false
+  artifact: errors/agntcy-problem-types.yml
+request_tracing:
+  header: x-request-id
+  detail: The hosted OASF schema server (Phoenix) returns an x-request-id response header on every request. No AGNTCY documentation
+    names a client-supplied trace header; distributed tracing is handled out of band by the OpenTelemetry-based observe SDK.
+  observed_on: https://schema.oasf.outshift.com/
+  source: live response headers 2026-08-19
+rate_limit_signaling:
+  headers: []
+  note: No RateLimit-* or X-RateLimit-* headers were observed and none are documented.
+  artifact: rate-limits/agntcy-rate-limits.yml
+output_formats:
+  cli:
+  - human
+  - json
+  - jsonl
+  - raw
+  detail: 'dirctl --output/-o; structured formats write data to stdout and messages to stderr so piping to jq is clean. Excluded
+    commands: validate, context, auth, daemon, mcp serve, version.'
+  source: https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-cli-reference.md
+transport:
+  primary: grpc
+  detail: Directory is gRPC-first (buf.build/agntcy/dir). SLIM is a separate low-latency messaging transport with its own
+    control plane and data plane protos. ACP is the REST projection for invoking remote agents. SLIMRPC transports exist for
+    the A2A SDKs in five languages.

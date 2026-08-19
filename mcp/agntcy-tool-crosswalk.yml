@@ -1,0 +1,218 @@
+generated: '2026-08-19'
+method: derived
+source: mcp/agntcy-mcp.yml bound against openapi/agntcy-oasf-schema-swagger.json, openapi/agntcy-acp-openapi.json, openapi/agntcy-identity-service-openapi.yaml
+  and openapi/agntcy-identity-node-openapi.yaml
+note: Bound by name and documented semantics. The live MCP tools/list could not be introspected because the server is local-stdio
+  only, so no HTTP endpoint exists to POST tools/list at; the tool set here is the one AGNTCY publishes verbatim in docs/directory-mcp.md.
+  Confidence is set accordingly.
+surfaces:
+  openapi:
+  - file: openapi/agntcy-oasf-schema-swagger.json
+    gated: false
+    live_base: https://schema.oasf.outshift.com/api
+  - file: openapi/agntcy-acp-openapi.json
+    gated: false
+    live_base: null
+    note: Interface specification; no AGNTCY-hosted base.
+  - file: openapi/agntcy-identity-service-openapi.yaml
+    gated: false
+    live_base: null
+    note: Self-hosted; servers[] is http://localhost:4000.
+  - file: openapi/agntcy-identity-node-openapi.yaml
+    gated: false
+    live_base: null
+    note: Self-hosted; servers[] is http://0.0.0.0:4000.
+  graphql: null
+  grpc:
+    registry: https://buf.build/agntcy/dir
+    note: Directory is gRPC-first; five of the twelve MCP tools bind here, not to any OpenAPI.
+  mcp:
+    transport: stdio
+    gated: true
+    note: No remote URL, so tools/list cannot be probed anonymously.
+crosswalk:
+- tool: agntcy_oasf_list_versions
+  category: schema
+  rest:
+  - SchemaWeb.SchemaController.versions
+  binding: rest
+  confidence: high
+  note: Backed by GET /api/{version}/versions on the hosted OASF Schema API.
+- tool: agntcy_oasf_get_schema
+  category: schema
+  rest:
+  - SchemaWeb.SchemaController.schema
+  binding: rest
+  confidence: high
+- tool: agntcy_oasf_get_schema_skills
+  category: schema
+  rest:
+  - SchemaWeb.SchemaController.skill_categories
+  - SchemaWeb.SchemaController.skills
+  binding: rest
+  confidence: high
+  note: The hierarchical parent_skill navigation maps onto the skill_categories id/name query parameters.
+- tool: agntcy_oasf_get_schema_domains
+  category: schema
+  rest:
+  - SchemaWeb.SchemaController.domain_categories
+  - SchemaWeb.SchemaController.domains
+  binding: rest
+  confidence: high
+- tool: agntcy_oasf_validate_record
+  category: schema
+  rest:
+  - SchemaWeb.SchemaController.validate_object
+  binding: rest
+  confidence: medium
+  note: POST /api/{version}/validate/object/{name} with name=record is the REST equivalent; the tool wraps it and hides the
+    object name.
+- tool: agntcy_oasf_import_record
+  category: interop
+  rest: []
+  binding: none
+  confidence: low
+  note: Format conversion runs inside dirctl. Nearest REST relatives are translate/skill, translate/domain and translate/module,
+    which translate taxonomy values only, not whole records.
+- tool: agntcy_oasf_export_record
+  category: interop
+  rest: []
+  binding: none
+  confidence: low
+  note: 'Same as import: conversion is client-side in dirctl.'
+mcp_only:
+- tool: agntcy_dir_push_record
+  reason: Directory is gRPC-only. Backed by agntcy.dir.store.v1.StoreService Push, not by any OpenAPI operation.
+- tool: agntcy_dir_search_local
+  reason: Backed by agntcy.dir.search.v1.SearchService. A POST /v1/search HTTP gateway endpoint shipped in dir v1.7.0 but
+    AGNTCY publishes no OpenAPI describing it.
+- tool: agntcy_dir_pull_record
+  reason: Backed by agntcy.dir.store.v1.StoreService Pull (gRPC).
+- tool: agntcy_dir_verify_name
+  reason: Backed by agntcy.dir.naming.v1 name verification (gRPC) plus a domain /.well-known/jwks.json read.
+- tool: agntcy_dir_verify_record
+  reason: Backed by agntcy.dir.sign.v1.SignService verification (gRPC).
+- tool: agntcy_oasf_import_record
+  reason: Client-side format conversion in dirctl; no server operation of any kind.
+- tool: agntcy_oasf_export_record
+  reason: Client-side format conversion in dirctl; no server operation of any kind.
+rest_only:
+- capability: OASF schema browsing
+  operations:
+  - SchemaWeb.SchemaController.data_types
+  - SchemaWeb.SchemaController.dictionary
+  - SchemaWeb.SchemaController.extensions
+  - SchemaWeb.SchemaController.module_categories
+  - SchemaWeb.SchemaController.modules
+  - SchemaWeb.SchemaController.objects
+  - SchemaWeb.SchemaController.profile
+  - SchemaWeb.SchemaController.profiles
+- capability: OASF sample generation
+  operations:
+  - SchemaWeb.SchemaController.sample_domain
+  - SchemaWeb.SchemaController.sample_module
+  - SchemaWeb.SchemaController.sample_object
+  - SchemaWeb.SchemaController.sample_skill
+- capability: OASF JSON Schema retrieval
+  operations:
+  - SchemaWeb.SchemaController.json_domain_class
+  - SchemaWeb.SchemaController.json_module_class
+  - SchemaWeb.SchemaController.json_object
+  - SchemaWeb.SchemaController.json_skill_class
+- capability: OASF taxonomy translate/validate (non-record)
+  operations:
+  - SchemaWeb.SchemaController.translate_domain
+  - SchemaWeb.SchemaController.translate_module
+  - SchemaWeb.SchemaController.translate_object
+  - SchemaWeb.SchemaController.translate_skill
+  - SchemaWeb.SchemaController.validate_domain
+  - SchemaWeb.SchemaController.validate_module
+  - SchemaWeb.SchemaController.validate_skill
+- capability: Agent Connect Protocol run + thread lifecycle
+  operations:
+  - cancel_stateless_run
+  - cancel_thread_run
+  - copy_thread
+  - create_and_stream_stateless_run_output
+  - create_and_stream_thread_run_output
+  - create_and_wait_for_stateless_run_output
+  - create_and_wait_for_thread_run_output
+  - create_stateless_run
+  - create_thread
+  - create_thread_run
+  - delete_stateless_run
+  - delete_thread
+  - delete_thread_run
+  - get_acp_descriptor_by_id
+  - get_agent_by_id
+  - get_stateless_run
+  - get_thread
+  - get_thread_history
+  - get_thread_run
+  - list_thread_runs
+  - patch_thread
+  - resume_stateless_run
+  - resume_thread_run
+  - search_agents
+  - search_stateless_runs
+  - search_threads
+  - stream_stateless_run_output
+  - stream_thread_run_output
+  - wait_for_stateless_run_output
+  - wait_for_thread_run_output
+  note: ACP is a protocol every compliant agent server implements; no AGNTCY MCP tool wraps it.
+- capability: AGNTCY Identity Service (apps, badges, policies, devices, auth)
+  operations:
+  - AppService_CreateApp
+  - AppService_CreateOasfApp
+  - AppService_DeleteApp
+  - AppService_GetApp
+  - AppService_GetAppsCount
+  - AppService_GetBadge
+  - AppService_GetTasks
+  - AppService_ListApps
+  - AppService_RefreshAppApiKey
+  - AppService_UpdateApp
+  - AuthService_AppInfo
+  - AuthService_ApproveToken
+  - AuthService_Authorize
+  - AuthService_ExtAuthz
+  - AuthService_Token
+  - BadgeService_IssueBadge
+  - BadgeService_VerifyBadge
+  - DeviceService_AddDevice
+  - DeviceService_DeleteDevice
+  - DeviceService_ListDevices
+  - DeviceService_RegisterDevice
+  - DeviceService_TestDevice
+  - PolicyService_CreatePolicy
+  - PolicyService_CreateRule
+  - PolicyService_DeletePolicy
+  - PolicyService_DeleteRule
+  - PolicyService_GetPoliciesCount
+  - PolicyService_GetPolicy
+  - PolicyService_GetRule
+  - PolicyService_ListPolicies
+  - PolicyService_ListRules
+  - PolicyService_UpdatePolicy
+  - PolicyService_UpdateRule
+  - SettingsService_GetSettings
+  - SettingsService_SetApiKey
+  - SettingsService_SetIssuer
+- capability: AGNTCY Identity Node (ids, issuers, verifiable credentials)
+  operations:
+  - IdService_Generate
+  - IdService_Resolve
+  - IssuerService_GetWellKnown
+  - IssuerService_Register
+  - VcService_GetWellKnown
+  - VcService_Publish
+  - VcService_Revoke
+  - VcService_Search
+  - VcService_Verify
+coverage:
+  tools_named: 12
+  tools_bound_to_rest: 5
+  tools_mcp_only: 7
+  rest_ops_total: 106
+  rest_ops_with_a_tool: 7

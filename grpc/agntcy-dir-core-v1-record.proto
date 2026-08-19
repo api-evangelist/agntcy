@@ -1,0 +1,90 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package agntcy.dir.core.v1;
+
+import "google/protobuf/struct.proto";
+import "buf/validate/validate.proto";
+import "agntcy/dir/core/v1/rules.proto";
+import "agntcy/dir/core/v1/referrer.proto";
+
+// Defines a reference or a globally unique content identifier of a record.
+message RecordRef {
+  // Globally-unique content identifier (CID) of the record.
+  // Specs: https://github.com/multiformats/cid
+  string cid = 1 [
+    (buf.validate.field).string.(core.v1.is_cid) = true,
+    (buf.validate.field).required = true
+  ];
+}
+
+// Represents a named reference to a Record with version information.
+message NamedRecordRef {
+  // The name of the record.
+  string name = 1;
+
+  // The version of the record.
+  string version = 2;
+
+  // The CID of the record.
+  string cid = 3;
+}
+
+// Defines metadata about a record.
+message RecordMeta {
+  // CID of the record.
+  string cid = 1;
+
+  // Annotations attached to the record.
+  map<string, string> annotations = 2;
+
+  // Schema version of the record.
+  string schema_version = 3;
+
+  // Creation timestamp of the record in the RFC3339 format.
+  // Specs: https://www.rfc-editor.org/rfc/rfc3339.html
+  string created_at = 4;
+}
+
+// Record is a generic object that encapsulates data of different Record types.
+//
+// Supported schemas:
+//
+// v0.7.0: https://schema.oasf.outshift.com/0.7.0/objects/record
+// v0.8.0: https://schema.oasf.outshift.com/0.8.0/objects/record
+// v1.0.0: https://schema.oasf.outshift.com/1.0.0/objects/record
+message Record {
+  google.protobuf.Struct data = 1;
+}
+
+// RecordReferrer represents a referrer object or an association
+// to a record. The actual structure of the referrer object can vary
+// depending on the type of referrer (e.g., signature, public key, etc.).
+//
+// RecordReferrer types in the `agntcy.dir.` namespace are reserved for
+// Directory-specific schemas and will be validated across Dir services.
+message RecordReferrer {
+    // The type of the referrer.
+    // For example, "agntcy.dir.sign.v1.Signature" for signatures.
+    string type = 1 [
+      (buf.validate.field).string.(core.v1.is_referrer_type) = true
+    ];
+
+    // Record reference to which this referrer is associated.
+    core.v1.RecordRef record_ref = 2;
+
+    // Annotations attached to the referrer object.
+    map<string, string> annotations = 3;
+
+    // Creation timestamp of the record in the RFC3339 format.
+    // Specs: https://www.rfc-editor.org/rfc/rfc3339.html
+    string created_at = 4;
+
+    // The actual data of the referrer.
+    google.protobuf.Struct data = 5;
+
+    // The CID of the referrer.
+    core.v1.ReferrerRef referrer_ref = 6;
+}

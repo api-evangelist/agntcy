@@ -1,0 +1,118 @@
+generated: '2026-08-19'
+method: searched
+source: https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-cli-reference.md
+name: dirctl
+description: Command-line client for the AGNTCY Agent Directory. Also the process that hosts the Directory MCP server (dirctl
+  mcp serve).
+docs: https://dir.agntcy.org/latest/dir/dir-cli-reference/
+install:
+- method: homebrew
+  command: brew tap agntcy/dir https://github.com/agntcy/dir && brew trust agntcy/dir && brew install dirctl
+  source: https://dir.agntcy.org/latest/dir/dir-quickstart/
+- method: binary
+  command: curl -L https://github.com/agntcy/dir/releases/latest/download/dirctl-linux-amd64 -o dirctl
+  source: https://dir.agntcy.org/latest/dir/dir-quickstart/
+- method: container
+  command: docker pull ghcr.io/agntcy/dir-ctl:latest
+  source: https://dir.agntcy.org/latest/dir/dir-quickstart/
+- method: npm
+  command: npx -y @agntcy/dir-mcp
+  note: the @agntcy/dir-mcp package ships both dir-mcp and dirctl bins
+  source: https://www.npmjs.com/package/@agntcy/dir-mcp
+global_options:
+  output_formats:
+  - human
+  - json
+  - jsonl
+  - raw
+  server: --server-addr / DIRECTORY_CLIENT_SERVER_ADDRESS
+  context: --context
+  auth_mode: --auth-mode (none|insecure|x509|jwt|token|tls|oidc)
+command_groups:
+- group: Setup
+  commands:
+  - init
+- group: Daemon
+  commands:
+  - daemon start
+  - daemon stop
+  - daemon status
+  - daemon config init
+- group: Auth
+  commands:
+  - auth login
+  - auth logout
+  - auth status
+- group: Context
+  commands:
+  - context list
+  - context current
+  - context set
+  - context show
+  - context validate
+- group: Storage
+  commands:
+  - push
+  - pull
+  - delete
+  - info
+- group: Import / Export
+  commands:
+  - import
+  - export
+- group: Routing
+  commands:
+  - routing publish
+  - routing unpublish
+  - routing list
+  - routing search
+  - routing info
+- group: Search
+  commands:
+  - search
+- group: Security
+  commands:
+  - sign
+  - verify
+  - validate
+  - naming verify
+- group: Sync
+  commands:
+  - sync create
+  - sync status
+  - sync list
+  - sync delete
+- group: Events
+  commands:
+  - events listen
+- group: MCP
+  commands:
+  - mcp serve
+- group: Install
+  commands:
+  - install run
+  - install uninstall
+  - install list
+  - uninstall
+- group: Diagnostics
+  commands:
+  - doctor
+  - version
+key_flows:
+- flow: authenticate against a remote Directory
+  example: dirctl auth login --oidc-issuer "https://idp.ads.outshift.io" --oidc-client-id "dirctl"
+- flow: push a record and capture its CID
+  example: CID=$(dirctl push record.json -o raw)
+- flow: search the routing network by skill
+  example: dirctl routing search --skill "AI" -o json | jq '.[] | .record_ref.cid'
+- flow: stream directory events
+  example: dirctl events listen -o jsonl | jq -c 'select(.type == "EVENT_TYPE_RECORD_PUSHED")'
+- flow: run the MCP server for an IDE
+  example: dirctl mcp serve
+first_run:
+  command: dirctl init
+  note: 'Guided first-run setup that provisions the OASF extractor assets (~89 MB). Idempotent: nothing is re-downloaded when
+    assets are present and current. Opt-out in an interactive terminal; a non-interactive run skips unless --yes is passed.'
+  flags:
+    --oasf-url: OASF schema endpoint (default https://schema.oasf.outshift.com)
+    --asset-dir: default ~/.agntcy/oasf-sdk/extractor

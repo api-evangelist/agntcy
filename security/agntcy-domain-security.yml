@@ -1,0 +1,35 @@
+generated: '2026-08-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: agntcy.org
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  7 05:29:51 2026 GMT
+  hsts: false
+- host: outshift.cisco.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Jan 13 18:26:40 2027 GMT
+  hsts: false
+- host: 0.0.0.0
+  https: false
+domains:
+- domain: agntcy.org
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine
+- domain: cisco.com
+  dnssec: false
+  caa:
+  - 0 issue "pki.goog"
+  - 128 issuewild "ssl.com"
+  - 0 issue "digicert.com"
+  - 128 issuewild "digicert.com"
+  - 0 issue "letsencrypt.org"
+  - 128 issuewild "identrust.com"
+  spf: true
+  dmarc: true
+  dmarc_policy: reject

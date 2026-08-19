@@ -1,0 +1,174 @@
+// Copyright AGNTCY Contributors (https://github.com/agntcy)
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+package controller.proto.v1;
+
+import "data-plane/v1/data_plane.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/agntcy/slim/control-plane/common/proto/controller/v1;controllerv1";
+
+service ControllerService {
+  rpc OpenControlChannel(stream ControlMessage) returns (stream ControlMessage) {}
+}
+
+message ControlMessage {
+  string message_id = 1;
+
+  oneof payload {
+    ConfigurationCommand config_command = 2;
+    Ack ack = 3;
+    RouteListRequest route_list_request = 4;
+    RouteListResponse route_list_response = 5;
+    ConnectionListRequest connection_list_request = 6;
+    ConnectionListResponse connection_list_response = 7;
+    RegisterNodeRequest register_node_request = 8;
+    RegisterNodeResponse register_node_response = 9;
+    DeregisterNodeRequest deregister_node_request = 10;
+    DeregisterNodeResponse deregister_node_response = 11;
+    ConfigurationCommandAck config_command_ack = 20;
+  }
+}
+
+message Connection {
+  string link_id = 1;
+  string config_data = 2;
+}
+
+message ConnectionAck {
+  string link_id = 1;
+  bool success = 2;
+  string errorMsg = 3;
+}
+
+message Route {
+  dataplane.proto.v1.Name name = 1;
+  optional string link_id = 2;
+  optional ConnectionDirection direction = 3;
+}
+
+message RouteAck {
+  Route route = 1;
+  bool success = 2;
+  string error_msg = 3;
+}
+
+message ConfigurationCommand {
+  repeated Connection connections_to_create = 1;
+  repeated Route routes_to_set = 2;
+  repeated Route routes_to_delete = 3;
+  repeated string connections_to_delete = 4;
+  bool reconcile = 5;
+  // Incoming connections received by the node (after link negotiation).
+  // Sent node→controller so the controller can claim the unclaimed link.
+  repeated ConnectionEntry connections_received = 6;
+}
+
+message ConfigurationCommandAck {
+  string original_message_id = 1;
+  repeated ConnectionAck connections_status = 2;
+  repeated RouteAck routes_status = 3;
+}
+
+message Ack {
+  string original_message_id = 1;
+  bool success = 2;
+  repeated string messages = 3;
+}
+
+message RouteListRequest {}
+
+message RouteListResponse {
+  string original_message_id = 1;
+  repeated RouteEntry entries = 2;
+  bool done = 3;
+}
+
+message RouteEntry {
+  dataplane.proto.v1.Name name = 1;
+  repeated ConnectionEntry connections = 2;
+}
+
+enum ConnectionType {
+  CONNECTION_TYPE_LOCAL = 0;
+  CONNECTION_TYPE_REMOTE = 1;
+  CONNECTION_TYPE_PEER = 2;
+  CONNECTION_TYPE_EDGE = 3;
+}
+
+enum ConnectionDirection {
+  CONNECTION_DIRECTION_OUTGOING = 0;
+  CONNECTION_DIRECTION_INCOMING = 1;
+}
+
+message ConnectionEntry {
+  uint64 id = 1;
+  ConnectionType connection_type = 2;
+  string config_data = 3;
+  optional string link_id = 4;
+  ConnectionDirection direction = 5;
+  // Remote peer's node identifier (set after link negotiation).
+  optional string peer_node_id = 6;
+}
+
+message ConnectionListRequest {}
+
+message ConnectionListResponse {
+  string original_message_id = 1;
+  repeated ConnectionEntry entries = 2;
+  bool done = 3;
+}
+
+message Node {
+  string id = 1;
+}
+
+enum AuthMethod {
+  AUTH_METHOD_NONE = 0;
+  AUTH_METHOD_SPIRE = 1;
+  AUTH_METHOD_BASIC = 2;
+  AUTH_METHOD_JWT = 3;
+  AUTH_METHOD_OIDC = 4;
+}
+
+message ConnectionDetails {
+  string endpoint = 1;
+  optional string external_endpoint = 2;
+  bool tls_required = 3;
+  AuthMethod auth_method = 4;
+  optional string spire_trust_domain = 5;
+  google.protobuf.Struct metadata = 6;
+}
+
+message RegisterNodeRequest {
+  string node_id = 1;
+  repeated ConnectionDetails connection_details = 2;
+  optional string domain_name = 3;
+  // Active connections on the data plane at the time of registration.
+  // Allows the control plane to reconcile link state without an extra round-trip.
+  repeated ConnectionEntry connections = 4;
+  // Active routes on the data plane at the time of registration.
+  repeated Route routes = 5;
+  // Credentials proving authorization to join the claimed domain.
+  // Empty string when no auth is configured.
+  string credentials = 6;
+}
+
+message RegisterNodeResponse {
+  string original_message_id = 1;
+  bool success = 2;
+  // Current desired state for the node — connections to maintain and routes to set.
+  repeated Connection connections = 3;
+  repeated Route routes = 4;
+}
+
+message DeregisterNodeRequest {
+  Node node = 1;
+}
+
+message DeregisterNodeResponse {
+  string original_message_id = 1;
+  bool success = 2;
+}

@@ -1,0 +1,99 @@
+generated: '2026-08-19'
+method: searched
+source: openapi/agntcy-identity-service-openapi.yaml plus the AGNTCY Directory authentication documentation
+summary:
+  types:
+  - apiKey
+  - http
+  - openIdConnect
+  - mutualTLS
+  - none
+  api_key_in:
+  - header
+  oauth2_flows: []
+schemes:
+- name: AccessToken
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: An IAM JWT token issued to a user during an OIDC flow.
+  sources:
+  - openapi/agntcy-identity-service-openapi.yaml
+- name: ApiKey
+  type: apiKey
+  in: header
+  parameter: x-id-api-key
+  description: An IAM Api key.
+  sources:
+  - openapi/agntcy-identity-service-openapi.yaml
+docs: https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-component-oidc-authentication.md
+note: AGNTCY has four independent auth models, only one of which appears in an OpenAPI. The two schemes below are derived
+  from the Identity Service spec; the surfaces block records the rest, which are documented in prose only. No oauth2 securityScheme
+  is declared in any published spec, so no scopes/ artifact is emitted even though OIDC is used.
+surfaces:
+- surface: OASF Schema API
+  host: https://schema.oasf.outshift.com
+  auth: none
+  evidence: openapi/agntcy-oasf-schema-swagger.json declares no securityDefinitions; live GET /api/versions returned 200 anonymously
+    on 2026-08-19
+- surface: AGNTCY Identity Service
+  auth:
+  - bearer-jwt
+  - api-key
+  schemes:
+  - 'AccessToken (Authorization: Bearer <IAM JWT issued during an OIDC flow)'
+  - ApiKey (x-id-api-key header)
+  token_flow:
+  - AuthService_Authorize
+  - AuthService_Token
+  key_rotation: AppService_RefreshAppApiKey
+  evidence: openapi/agntcy-identity-service-openapi.yaml components.securitySchemes
+- surface: AGNTCY Identity Node
+  auth: none-declared
+  evidence: openapi/agntcy-identity-node-openapi.yaml declares no securitySchemes; the node is self-hosted and fronted by
+    the operator
+- surface: Agent Directory (DIR)
+  auth:
+  - spiffe-x509
+  - spiffe-jwt
+  - spiffe-token
+  - mtls
+  - oidc
+  - insecure
+  - none
+  default: auto-detect (OIDC if a cached token, issuer or client id is present; falls back to insecure for local development)
+  primary_trust_model: SPIFFE/SPIRE for in-cluster workload and service-to-service identity
+  external_access: optional oidc-gateway (Envoy) accepting OIDC JWT, SPIFFE JWT-SVID and SPIFFE X.509-SVID, able to expose
+    OIDC/JWT and X.509-SVID mTLS on separate hostnames
+  client_env:
+  - DIRECTORY_CLIENT_AUTH_MODE
+  - DIRECTORY_CLIENT_AUTH_TOKEN
+  - DIRECTORY_CLIENT_OIDC_ISSUER
+  - DIRECTORY_CLIENT_OIDC_CLIENT_ID
+  - DIRECTORY_CLIENT_SPIFFE_SOCKET_PATH
+  - DIRECTORY_CLIENT_JWT_AUDIENCE
+  - DIRECTORY_CLIENT_TLS_CERT_FILE
+  - DIRECTORY_CLIENT_TLS_KEY_FILE
+  - DIRECTORY_CLIENT_TLS_CA_FILE
+  interactive_login: dirctl auth login --oidc-issuer <url> --oidc-client-id dirctl (PKCE, --no-browser or --device); tokens
+    cached issuer-scoped under ~/.config/dirctl/tokens/
+  ci: 'GitHub Actions OIDC via --oidc-audience with job permission id-token: write; dirctl mints and renews its own tokens'
+  tested_idps:
+  - Zitadel
+  - Keycloak
+  - Auth0
+  - Okta
+  - Microsoft Entra ID
+  - Dex
+  evidence: https://github.com/agntcy/dir/blob/main/docs/content/dir/dir-component-oidc-authentication.md and dir-cli-reference.md
+- surface: Agent Connect Protocol
+  auth: implementation-defined
+  evidence: openapi/agntcy-acp-openapi.json declares no securitySchemes and no servers[]; ACP is an interface each agent server
+    implements under its own auth
+well_known_jwks:
+  served_by: AGNTCY Identity Node and by any domain publishing record names
+  operations:
+  - IssuerService_GetWellKnown (/v1alpha1/issuer/{commonName}/.well-known/jwks.json)
+  - VcService_GetWellKnown (/v1alpha1/vc/{id}/.well-known/vcs.json)
+  note: Directory name verification reads a claimed domain /.well-known/jwks.json to prove ownership of a URL-based record
+    name. AGNTCY defines these paths but serves none of them itself.
