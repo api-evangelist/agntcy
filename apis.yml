@@ -1,0 +1,52 @@
+aid: agntcy
+name: AGNTCY
+description: 'AGNTCY is the open collective for agent interoperability initiated by Outshift, Cisco''s incubation
+  group, and now developed in the open across more than fifty active repositories. It publishes specifications rather
+  than a product API: OASF (Open Agentic Schema Framework) for describing agents, the Agent Directory (DIR) for
+  announcing and discovering multi-agent systems, SLIM (Secure Low-Latency Interactive Messaging) as a transport,
+  and an Identity specification for onboarding and verifying agent identities. It ships SDKs in Python, JavaScript,
+  Go and Rust, an MCP server for DIR, and SLIM transports for the A2A SDKs in five languages.'
+url: https://raw.githubusercontent.com/api-evangelist/agntcy/refs/heads/main/apis.yml
+type: Index
+access: 3rd-Party
+position: Consumer
+x-type: company
+x-source: cisco-family-buildout:2026-08-19
+x-parent: cisco
+x-relationship: initiative
+x-contract-status: spec
+x-contract-note: This entry publishes specifications rather than a product API. Its artifacts are the specs themselves.
+specificationVersion: '0.23'
+created: '2026-08-19'
+modified: '2026-08-19'
+tags:
+- AI Agents
+- Interoperability
+- Specification
+- Open Source
+- Agent Discovery
+- Identity
+apis: []
+common:
+- type: Portal
+  url: https://agntcy.org/
+- type: Documentation
+  url: https://docs.agntcy.org/
+- type: APIReference
+  url: https://docs.agntcy.org/
+- type: ParentCompany
+  url: https://apis.io/providers/cisco/
+  name: Cisco
+- type: GitHubOrganization
+  url: https://github.com/agntcy
+- type: MCPServer
+  url: https://github.com/agntcy/dir-mcp
+- type: Website
+  url: https://outshift.cisco.com/
+- type: GitHubOrganization
+  url: https://github.com/CiscoDevNet
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
