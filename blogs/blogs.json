@@ -1,0 +1,11 @@
+{
+  "repo": "agntcy",
+  "feeds": [
+    {
+      "source": "https://join.slack.com/t/agntcy/shared_invite/zt-3xozr6nzq-i6LXv2P8l2kVW4_Prnny2w",
+      "error": "HTTPError"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-08-22T20:20:02Z"
+}
