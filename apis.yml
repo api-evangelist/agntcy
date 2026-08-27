@@ -65,122 +65,10 @@ tags_raw:
 - Observability
 - Linux Foundation
 apis:
-- name: OASF Schema API
-  description: 'The Open Agentic Schema Framework schema server API. Browse and retrieve the OASF schema, walk the
-    skill / domain / module taxonomies, generate samples, translate taxonomy values, and validate agent records.
-    Hosted by Outshift by Cisco, unauthenticated, and version-addressed: schema versions 0.7.0, 0.8.0, 1.0.0 and
-    1.1.0 are all still served. This is the only AGNTCY-operated API.'
-  humanURL: https://schema.oasf.outshift.com/doc
-  baseURL: https://schema.oasf.outshift.com/api
-  image: https://agntcy.org/logo/preview-thumbnail-new.png
-  tags:
-  - Schema
-  - Taxonomy
-  - Validation
-  - AI Agents
-  properties:
-  - type: OpenAPI
-    url: openapi/agntcy-oasf-schema-swagger.json
-  - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
-  - type: Overlay
-    url: overlays/agntcy-oasf-schema-overlay.yaml
-  - type: Documentation
-    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
-  - type: APIReference
-    url: https://schema.oasf.outshift.com/doc
-  - type: Console
-    url: https://schema.oasf.outshift.com/doc
-  - type: SourceCode
-    url: https://github.com/agntcy/oasf
-  - type: JSONSchema
-    url: json-schema/agntcy-oasf-record.json
-  - type: Protobuf
-    url: grpc/agntcy-oasf-types-v1-record.proto
-  x-evidence:
-    probed: '2026-08-19'
-    base_status: 200
-    note: GET https://schema.oasf.outshift.com/api/versions returned 200 anonymously.
-- name: Agent Connect Protocol (ACP)
-  description: 'A standard REST interface for invoking and configuring remote agents: agent discovery and descriptors,
-    stateful threads, thread runs, and stateless runs, each with create / wait / stream / resume / cancel paths.
-    OpenAPI 3.1.1, version 0.2.3, 30 operations. ACP is a specification every compliant agent server implements
-    — it declares no servers[] and AGNTCY hosts no instance of it.'
-  humanURL: https://spec.acp.agntcy.org/
-  image: https://agntcy.org/logo/preview-thumbnail-new.png
-  tags:
-  - AI Agents
-  - Interoperability
-  - Specification
-  - OpenAPI
-  properties:
-  - type: OpenAPI
-    url: openapi/agntcy-acp-openapi.json
-  - type: Overlay
-    url: overlays/agntcy-acp-overlay.yaml
-  - type: APIReference
-    url: https://spec.acp.agntcy.org/
-  - type: SourceCode
-    url: https://github.com/agntcy/acp-spec
-  - type: Documentation
-    url: https://docs.agntcy.org/
-  x-no-base-url: The ACP OpenAPI declares no servers[] block, because ACP is an interface implemented by each agent
-    server rather than a service AGNTCY operates. Recorded as absent rather than guessed from the spec host.
-- name: AGNTCY Identity Service API
-  description: 'Manages identity and access control in the AGNTCY ecosystem: register agents, MCP servers and tools
-    as apps (including directly from an OASF record), issue and verify W3C Verifiable Credential badges, manage
-    policies and rules, register approval devices, and run the OIDC authorize/token and external-authorization flows.
-    OpenAPI 3.0.3, 36 operations, with bearer-JWT and x-id-api-key security schemes.'
-  humanURL: https://identity-docs.outshift.com/openapi/service/v1alpha1
-  image: https://agntcy.org/logo/preview-thumbnail-new.png
-  tags:
-  - Identity
-  - Verifiable Credentials
-  - Authorization
-  - AI Agents
-  properties:
-  - type: OpenAPI
-    url: openapi/agntcy-identity-service-openapi.yaml
-  - type: Overlay
-    url: overlays/agntcy-identity-service-overlay.yaml
-  - type: Documentation
-    url: https://identity-docs.outshift.com/docs/intro/
-  - type: APIReference
-    url: https://identity-docs.outshift.com/docs/api
-  - type: SourceCode
-    url: https://github.com/agntcy/identity-service
-  - type: Authentication
-    url: authentication/agntcy-authentication.yml
-  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://localhost:4000 and no AGNTCY-operated
-    instance exists — identity-service.outshift.com, referenced in the docs sitemap, does not resolve (DNS failure)
-    as of 2026-08-19.
-- name: AGNTCY Identity Node API
-  description: The identity node that generates and resolves agent IDs, registers issuers and serves their JWKS,
-    and publishes, revokes, searches and verifies Verifiable Credentials. OpenAPI 3.0.3, 9 operations, generated
-    from the protobuf service definitions.
-  humanURL: https://github.com/agntcy/identity
-  image: https://agntcy.org/logo/preview-thumbnail-new.png
-  tags:
-  - Identity
-  - Verifiable Credentials
-  - JWKS
-  - AI Agents
-  properties:
-  - type: OpenAPI
-    url: openapi/agntcy-identity-node-openapi.yaml
-  - type: Overlay
-    url: overlays/agntcy-identity-node-overlay.yaml
-  - type: SourceCode
-    url: https://github.com/agntcy/identity
-  - type: Protobuf
-    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
-  - type: JSONSchema
-    url: json-schema/agntcy-identity-credential-content.jsonschema.json
-  x-no-base-url: Self-hosted. The published OpenAPI declares servers[] http://0.0.0.0:4000 (local environment);
-    AGNTCY operates no node.
 - name: Agent Directory (DIR)
-  description: Distributed announce and discovery of multi-agent systems. gRPC-first, with services for storage
-    (content-addressed by CID), routing over a DHT, structured search, signing and verification, domain name verification,
+  description: >-
+    Distributed announce and discovery of multi-agent systems. gRPC-first, with services for storage (content-addressed
+    by CID), routing over a DHT, structured search, signing and verification, domain name verification,
     peer sync, streaming events and runtime discovery. Canonical schemas are published on buf.build.
   humanURL: https://dir.agntcy.org/
   image: https://agntcy.org/logo/preview-thumbnail-new.png
@@ -210,9 +98,922 @@ apis:
     url: mcp/agntcy-tool-crosswalk.yml
   - type: CLI
     url: cli/agntcy-cli.yml
-  x-no-base-url: Self-hosted gRPC. dirctl defaults to 0.0.0.0:8888 for a local node; remote access goes through
-    an operator-run oidc-gateway. AGNTCY publishes no public Directory endpoint.
+  x-no-base-url: >-
+    Self-hosted gRPC. dirctl defaults to 0.0.0.0:8888 for a local node; remote access goes through an
+    operator-run oidc-gateway. AGNTCY publishes no public Directory endpoint.
+- aid: agntcy:agntcy-agents-api
+  name: AGNTCY Agents API
+  description: "Agents are AI workflows that can be configured and/or executed on this server.  This means\
+    \ that a client of this server can start a Run on any of the Agents supported by this server.\nEach\
+    \ agent may support different features of ACP, also each agent specifies the schemas of the objects\
+    \ carried by ACP for  configuration, input, output, interrupts and state. \nDetails of the ACP features\
+    \ and the schemas are kept in the ACP descriptor of the specific agent.  This object can be retrieved\
+    \ through this ACP interface or is found in the ACP extension of the agent record in the agent directory.\n\
+    See `Agent` and `AgentACPDescriptor` models below for more info."
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-agents-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-appservice-api
+  name: AGNTCY App Service API
+  description: AppService manages apps.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - AppService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-appservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-authservice-api
+  name: AGNTCY Auth Service API
+  description: AuthService manages auth.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - AuthService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-authservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-badgeservice-api
+  name: AGNTCY Badge Service API
+  description: BadgeService manages badges.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - BadgeService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-badgeservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-classes-and-objects-api
+  name: AGNTCY Classes and Objects API
+  description: The Classes and Objects API from AGNTCY — 4 operation(s) for classes and objects.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Classes and Objects
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-classes-and-objects-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-deviceservice-api
+  name: AGNTCY Device Service API
+  description: DeviceService manages device.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - DeviceService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-deviceservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-idservice-api
+  name: AGNTCY ID Service API
+  description: IdService is the service that provides ID operations.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - IdService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-idservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-issuerservice-api
+  name: AGNTCY Issuer Service API
+  description: IssuerService is the service that provides ISSUER node operations.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - IssuerService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-issuerservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-json-schema-api
+  name: AGNTCY JSON Schema API
+  description: The JSON Schema API from AGNTCY — 4 operation(s) for json schema.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - JSON Schema
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-json-schema-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-policyservice-api
+  name: AGNTCY Policy Service API
+  description: PolicyService manages policy.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - PolicyService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-policyservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-sample-data-api
+  name: AGNTCY Sample Data API
+  description: The Sample Data API from AGNTCY — 4 operation(s) for sample data.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Sample Data
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-sample-data-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-schema-api
+  name: AGNTCY Schema API
+  description: The Schema API from AGNTCY — 8 operation(s) for schema.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Schema
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-schema-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-settingsservice-api
+  name: AGNTCY Settings Service API
+  description: SettingsService manages settings.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - SettingsService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-settingsservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-stateless-runs-api
+  name: AGNTCY Stateless Runs API
+  description: >-
+    A Run represents an execution of an agent.
+
+    The output of a Run can be a final result or an interrupt.
+
+    Result from a run can be retrieved by polling or by blocking and waiting for the result.
+
+    See `Run`  and `RunOutput` models below for more info.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Stateless Runs
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-stateless-runs-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-taxonomy-api
+  name: AGNTCY Taxonomy API
+  description: The Taxonomy API from AGNTCY — 3 operation(s) for taxonomy.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Taxonomy
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-taxonomy-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-thread-runs-api
+  name: AGNTCY Thread Runs API
+  description: "Thread Runs are runs created on a thread. \nA Thread Run can be created on a thread **only**\
+    \ if there is no run in the `pending` status on the same thread, i.e. if the thread is in the state\
+    \ `idle`\nNote that runs over the same thread can be executed on different agents, as long as the\
+    \ agents support the same thread state format.\nSee `Thread` and `RunCreateStateful` for more info."
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Thread Runs
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-thread-runs-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-threads-api
+  name: AGNTCY Threads API
+  description: "If supported by the involved agents, Run can be grouped in Threads. \nWhen a run is executed\
+    \ on a thread is called Thread Run. At the end of a Thread Run, the server keeps a thread state associated\
+    \ to the thread.\nA thread keeps track of agent states at every step so that continuity of the context\
+    \ is preserved. Moreover, such a book-keeping enables us some granular controls like debugging, interrupting\
+    \ or replaying a run/invocation.\n\nA thread state is a data context defined by the developer and\
+    \ can be anything and it gets passed through from one invocation to another so that business logic\
+    \ is instrumented by data.\n\nA thread keeps track of the whole state history. At every step, it also\
+    \ applies a checkpoint, which is primarily a `uuid`, so that it is easier to refer to a chunk of the\
+    \ history.\n\nOne can easily query the last state, a specific state (by checkpoint id), the whole\
+    \ state history, or, a part of the history (from a checkpoint).\n\nSee `Thread`, `ThreadState` and\
+    \ `Checkpoint` models below for more info."
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Threads
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-threads-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-translation-api
+  name: AGNTCY Translation API
+  description: The Translation API from AGNTCY — 4 operation(s) for translation.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Translation
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-translation-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-validation-api
+  name: AGNTCY Validation API
+  description: The Validation API from AGNTCY — 4 operation(s) for validation.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - Validation
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-validation-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
+- aid: agntcy:agntcy-vcservice-api
+  name: AGNTCY Vc Service API
+  description: VC is the service that provides VC operations.
+  humanURL: https://schema.oasf.outshift.com/doc
+  baseURL: https://schema.oasf.outshift.com/api
+  tags:
+  - VcService
+  properties:
+  - type: OpenAPI
+    url: openapi/agntcy-vcservice-api-openapi.yml
+  - type: Swagger
+    url: openapi/agntcy-oasf-schema-swagger.json
+  - type: Documentation
+    url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
+  - type: APIReference
+    url: https://schema.oasf.outshift.com/doc
+  - type: Console
+    url: https://schema.oasf.outshift.com/doc
+  - type: SourceCode
+    url: https://github.com/agntcy/oasf
+  - type: JSONSchema
+    url: json-schema/agntcy-oasf-record.json
+  - type: Protobuf
+    url: grpc/agntcy-oasf-types-v1-record.proto
+  - type: APIReference
+    url: https://spec.acp.agntcy.org/
+  - type: SourceCode
+    url: https://github.com/agntcy/acp-spec
+  - type: Documentation
+    url: https://docs.agntcy.org/
+  - type: Documentation
+    url: https://identity-docs.outshift.com/docs/intro/
+  - type: APIReference
+    url: https://identity-docs.outshift.com/docs/api
+  - type: SourceCode
+    url: https://github.com/agntcy/identity-service
+  - type: Authentication
+    url: authentication/agntcy-authentication.yml
+  - type: SourceCode
+    url: https://github.com/agntcy/identity
+  - type: Protobuf
+    url: grpc/agntcy-identity-node-v1alpha1-id_service.proto
+  - type: JSONSchema
+    url: json-schema/agntcy-identity-credential-content.jsonschema.json
 common:
+- type: Overlay
+  url: overlays/agntcy-oasf-schema-overlay.yaml
+- type: Overlay
+  url: overlays/agntcy-identity-service-overlay.yaml
+- type: Overlay
+  url: overlays/agntcy-identity-node-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/agntcy-agentic-access.yml
 - type: DomainSecurity
