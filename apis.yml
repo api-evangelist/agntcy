@@ -170,6 +170,8 @@ apis:
   humanURL: https://schema.oasf.outshift.com/doc
   baseURL: https://schema.oasf.outshift.com/api
   tags:
+  - App Service
+  tags_raw:
   - AppService
   properties:
   - type: OpenAPI
@@ -478,6 +480,8 @@ apis:
   humanURL: https://schema.oasf.outshift.com/doc
   baseURL: https://schema.oasf.outshift.com/api
   tags:
+  - JSON-Schema
+  tags_raw:
   - JSON Schema
   properties:
   - type: OpenAPI
