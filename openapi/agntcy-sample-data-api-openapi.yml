@@ -1,0 +1,135 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema Sample Data API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: Sample Data
+paths:
+  /sample/1.1.0/domains/{name}:
+    get:
+      description: This API returns randomly generated sample data for the given domain class name. The class name may contain a schema extension name. For example, "dev/cpu_usage".
+      operationId: SchemaWeb.SchemaController.sample_domain
+      parameters:
+      - description: Domain class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Domain class <code>name</code> not found
+      summary: Domain class sample data
+      tags:
+      - Sample Data
+  /sample/1.1.0/modules/{name}:
+    get:
+      description: This API returns randomly generated sample data for the given module class name. The class name may contain a schema extension name. For example, "dev/cpu_usage".
+      operationId: SchemaWeb.SchemaController.sample_module
+      parameters:
+      - description: Module class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Module class <code>name</code> not found
+      summary: Module class sample data
+      tags:
+      - Sample Data
+  /sample/1.1.0/objects/{name}:
+    get:
+      description: This API returns randomly generated sample data for the given object name. The object name may contain a schema extension name. For example, "dev/os_service".
+      operationId: SchemaWeb.SchemaController.sample_object
+      parameters:
+      - description: Object name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Object <code>name</code> not found
+      summary: Object sample data
+      tags:
+      - Sample Data
+  /sample/1.1.0/skills/{name}:
+    get:
+      description: This API returns randomly generated sample data for the given skill class name. The class name may contain a schema extension name. For example, "dev/cpu_usage".
+      operationId: SchemaWeb.SchemaController.sample_skill
+      parameters:
+      - description: Skill class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Skill class <code>name</code> not found
+      summary: Skill class sample data
+      tags:
+      - Sample Data

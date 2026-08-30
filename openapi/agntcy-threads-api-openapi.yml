@@ -1,0 +1,499 @@
+openapi: 3.2.0
+info:
+  title: Agent Connect Protocol Threads API
+  version: 0.2.3
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+  description: "If supported by the involved agents, Run can be grouped in Threads. \nWhen a run is executed on a thread is called Thread Run. At the end of a Thread Run, the server keeps a thread state associated to the thread.\nA thread keeps track of agent states at every step so that continuity of the context is preserved. Moreover, such a book-keeping enables us some granular controls like debugging, interrupting or replaying a run/invocation.\n\nA thread state is a data context defined by the developer and can be anything and it gets passed through from one invocation to another so that business logic is instrumented by data.\n\nA thread keeps track of the whole state history. At every step, it also applies a checkpoint, which is primarily a `uuid`, so that it is easier to refer to a chunk of the history.\n\nOne can easily query the last state, a specific state (by checkpoint id), the whole state history, or, a part of the history (from a checkpoint).\n\nSee `Thread`, `ThreadState` and `Checkpoint` models below for more info."
+tags:
+- name: Threads
+  description: "If supported by the involved agents, Run can be grouped in Threads. \nWhen a run is executed on a thread is called Thread Run. At the end of a Thread Run, the server keeps a thread state associated to the thread.\nA thread keeps track of agent states at every step so that continuity of the context is preserved. Moreover, such a book-keeping enables us some granular controls like debugging, interrupting or replaying a run/invocation.\n\nA thread state is a data context defined by the developer and can be anything and it gets passed through from one invocation to another so that business logic is instrumented by data.\n\nA thread keeps track of the whole state history. At every step, it also applies a checkpoint, which is primarily a `uuid`, so that it is easier to refer to a chunk of the history.\n\nOne can easily query the last state, a specific state (by checkpoint id), the whole state history, or, a part of the history (from a checkpoint).\n\nSee `Thread`, `ThreadState` and `Checkpoint` models below for more info."
+paths:
+  /threads:
+    post:
+      tags:
+      - Threads
+      summary: Create an empty Thread
+      description: 'Create a new thread. '
+      operationId: create_thread
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadCreate'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /threads/search:
+    post:
+      tags:
+      - Threads
+      summary: Search Threads
+      description: 'Search for threads.
+
+
+        This endpoint also functions as the endpoint to list all threads.'
+      operationId: search_threads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Thread'
+                type: array
+                title: Response Search Agents Agents Search Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /threads/{thread_id}/history:
+    get:
+      tags:
+      - Threads
+      summary: Get Thread History
+      description: Get all past states for a thread.
+      operationId: get_thread_history
+      parameters:
+      - description: The ID of the thread.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Thread Id
+          description: The ID of the thread.
+        name: thread_id
+        in: path
+      - required: false
+        schema:
+          type: integer
+          title: Limit
+          default: 10
+        name: limit
+        in: query
+      - required: false
+        schema:
+          type: string
+          title: Before
+        name: before
+        in: query
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ThreadState'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /threads/{thread_id}/copy:
+    post:
+      tags:
+      - Threads
+      summary: Copy Thread
+      description: Create a new thread with a copy of the state and checkpoints from an existing thread.
+      operationId: copy_thread
+      parameters:
+      - description: The ID of the thread.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Thread Id
+          description: The ID of the thread.
+        name: thread_id
+        in: path
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /threads/{thread_id}:
+    parameters:
+    - description: The ID of the thread.
+      required: true
+      schema:
+        type: string
+        format: uuid
+        title: Thread ID
+        description: The ID of the thread.
+      name: thread_id
+      in: path
+    get:
+      tags:
+      - Threads
+      summary: Get Thread
+      description: 'Get a thread from its ID. '
+      operationId: get_thread
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+      - Threads
+      summary: Delete a thread. If the thread contains any pending run, deletion fails.
+      description: Delete a thread.
+      operationId: delete_thread
+      responses:
+        '204':
+          description: Success
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+      - Threads
+      summary: Patch Thread
+      description: Update a thread.
+      operationId: patch_thread
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreadPatch'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+          title: Role
+          description: The role of the message.
+        content:
+          title: Content
+          description: The content of the message.
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              anyOf:
+              - type: object
+                properties:
+                  text:
+                    type: string
+                  type:
+                    const: text
+                  metadata:
+                    type: object
+                required:
+                - text
+                - type
+                title: MessageTextBlock
+              - type: object
+                properties:
+                  type:
+                    type: string
+                  metadata:
+                    type: object
+                required:
+                - type
+                title: MessageAnyBlock
+        id:
+          type: string
+          title: Id
+          description: The ID of the message.
+        metadata:
+          type: object
+          title: Metadata
+          description: The metadata of the message.
+      required:
+      - role
+      - content
+    ThreadStatus:
+      type: string
+      enum:
+      - idle
+      - busy
+      - interrupted
+      - error
+    ThreadStateSchema:
+      title: Thread State Schema
+      description: The thread state. The schema is described in agent ACP descriptor under 'spec.thread_state'.
+      oneOf:
+      - type: object
+        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+      - type: string
+        description: String thread state to the agent.
+      - type: integer
+        description: Integer thread state to the agent.
+      - type: number
+        description: Number thread state to the agent.
+      - type: boolean
+        description: Boolean thread state to the agent.
+      - type: array
+        description: Array input to the agent.
+        items: {}
+    ThreadCheckpoint:
+      properties:
+        checkpoint_id:
+          type: string
+          format: uuid
+          title: Checkpoint Id
+          description: The ID of the checkpoint.
+      type: object
+      required:
+      - checkpoint_id
+      title: ThreadCheckpoint
+      description: Structured identifier for a thread checkpoint, ie. an entry in the thread's history.
+    ThreadSearchRequest:
+      properties:
+        metadata:
+          type: object
+          title: Metadata Filter
+          description: Matches all threads for which metadata has  keys and values equal to those specified in this object.
+        values:
+          type: object
+          title: Values
+          description: State values to filter on.
+        status:
+          $ref: '#/components/schemas/ThreadStatus'
+        limit:
+          type: integer
+          title: Limit
+          description: Maximum number to return.
+          default: 10
+          minimum: 1
+          maximum: 1000
+        offset:
+          type: integer
+          title: Offset
+          description: Offset to start from.
+          default: 0
+          minimum: 0
+      type: object
+      title: Thread Search Request
+      description: Payload for listing threads.
+    ErrorResponse:
+      type: string
+      title: ErrorResponse
+      description: Error message returned from the server
+    Thread:
+      type: object
+      title: Thread
+      description: Represents a collection of consecutive runs over a thread.  Thread is associated with a state. Runs for a thread can potentially happen across different agents, if the state format is compatible.
+      properties:
+        thread_id:
+          type: string
+          title: Thread ID
+          description: unique identifier of a thread
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: The time the thread was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: The last time the thread was updated.
+        metadata:
+          type: object
+          title: Metadata
+          description: Free form metadata for this thread
+        status:
+          type: string
+          enum:
+          - idle
+          - busy
+          - interrupted
+          - error
+          title: Status
+          description: The status of the thread.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current Messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+      required:
+      - thread_id
+      - created_at
+      - updated_at
+      - metadata
+      - status
+    ThreadCreate:
+      type: object
+      title: Thread
+      description: Detail of an empty thread to be created.
+      properties:
+        thread_id:
+          type: string
+          format: uuid
+          title: Thread Id
+          description: The ID of the thread. If not provided, a random UUID will be generated.
+        metadata:
+          type: object
+          title: Metadata
+          description: Free form metadata for this thread
+        if_exists:
+          type: string
+          enum:
+          - raise
+          - do_nothing
+          title: If Exists
+          description: How to handle duplicate creation. Must be either 'raise' (raise error if duplicate), or 'do_nothing' (return existing thread).
+          default: raise
+    ThreadPatch:
+      properties:
+        checkpoint:
+          $ref: '#/components/schemas/ThreadCheckpoint'
+          title: Checkpoint
+          description: The identifier of the checkpoint to branch from. Ignored for metadata-only patches. If not provided, defaults to the latest checkpoint.
+        metadata:
+          type: object
+          title: Metadata
+          description: Metadata to merge with existing thread metadata.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current Messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+      type: object
+      title: ThreadPatch
+      description: Payload for updating a thread.
+    ThreadState:
+      properties:
+        checkpoint:
+          $ref: '#/components/schemas/ThreadCheckpoint'
+          title: Checkpoint
+          description: The identifier for this checkpoint.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+        metadata:
+          type: object
+          title: Metadata
+          description: The checkpoint metadata.
+      type: object
+      required:
+      - checkpoint
+      - values
+      title: ThreadState

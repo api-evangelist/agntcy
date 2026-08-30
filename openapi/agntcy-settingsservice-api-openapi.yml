@@ -1,0 +1,282 @@
+openapi: 3.2.0
+info:
+  title: AGNTCY Identity Service Settings Service API
+  description: AGNTCY Identity Service API provides a set of endpoints for managing identity and access control within the Agntcy ecosystem.
+  contact:
+    name: Agntcy Team
+    url: https://github.com/agntcy/identity-service
+    email: identity@agntcy.org
+  version: v1alpha1
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+servers:
+- url: http://localhost:4000
+  description: Local environment
+security:
+- AccessToken: []
+  ApiKey: []
+tags:
+- name: SettingsService
+  description: SettingsService manages settings.
+paths:
+  /v1alpha1/settings:
+    get:
+      tags:
+      - SettingsService
+      description: Get Settings
+      operationId: SettingsService_GetSettings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/settings/api-key:
+    post:
+      tags:
+      - SettingsService
+      description: Set up API Key
+      operationId: SettingsService_SetApiKey
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/settings/issuer:
+    post:
+      tags:
+      - SettingsService
+      description: Set up Issuer
+      operationId: SettingsService_SetIssuer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIssuerRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuerSettings'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+components:
+  schemas:
+    DuoIdpSettings:
+      type: object
+      properties:
+        hostname:
+          type: string
+        integrationKey:
+          type: string
+        secretKey:
+          type: string
+      description: Duo IdP Settings
+    Settings:
+      type: object
+      properties:
+        apiKey:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/ApiKey'
+          description: An API Key for the Identity Service.
+        issuerSettings:
+          allOf:
+          - $ref: '#/components/schemas/IssuerSettings'
+          description: Settings for the Issuer.
+      description: Identity Settings
+    PingIdpSettings:
+      type: object
+      properties:
+        environmentId:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        region:
+          type: string
+      description: Ping IdP Settings
+    EntraIdpSettings:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Entra ID (Azure AD) IdP Settings
+    OryIdpSettings:
+      type: object
+      properties:
+        projectSlug:
+          type: string
+        apiKey:
+          type: string
+      description: Ory IdP Settings
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    IssuerSettings:
+      required:
+      - idpType
+      type: object
+      properties:
+        issuerId:
+          readOnly: true
+          type: string
+          description: "A unique identifier for the Issuer.\n This is typically the Issuer's ID in the Identity."
+        idpType:
+          enum:
+          - IDP_TYPE_UNSPECIFIED
+          - IDP_TYPE_DUO
+          - IDP_TYPE_OKTA
+          - IDP_TYPE_ORY
+          - IDP_TYPE_SELF
+          - IDP_TYPE_KEYCLOAK
+          - IDP_TYPE_PING
+          - IDP_TYPE_ENTRA_ID
+          type: string
+          description: The type of the IdP.
+          format: enum
+        duoIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/DuoIdpSettings'
+          description: Settings for the Duo Identity Provider.
+        oktaIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/OktaIdpSettings'
+          description: Settings for the Okta Identity Provider.
+        oryIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/OryIdpSettings'
+          description: Settings for the Ory Identity Provider.
+        keycloakIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/KeycloakIdpSettings'
+          description: Settings for the Keycloak Identity Provider.
+        pingIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/PingIdpSettings'
+          description: Settings for the Ping Identity Provider.
+        entraIdpSettings:
+          allOf:
+          - $ref: '#/components/schemas/EntraIdpSettings'
+          description: Settings for the Entra ID Identity Provider.
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the IssuerSettings was initially created
+          format: date-time
+        updatedAt:
+          readOnly: true
+          type: string
+          description: UpdatedAt records the timestamp of the last update to the IssuerSettings
+          format: date-time
+      description: Issuer Settings
+    OktaIdpSettings:
+      type: object
+      properties:
+        orgUrl:
+          type: string
+        clientId:
+          type: string
+        privateKey:
+          type: string
+      description: Okta IdP Settings
+    ApiKey:
+      type: object
+      properties:
+        apiKey:
+          type: string
+      description: An Identity API Key.
+    KeycloakIdpSettings:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+        realm:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Keycloak IdP Settings
+    SetIssuerRequest:
+      required:
+      - issuerSettings
+      type: object
+      properties:
+        issuerSettings:
+          allOf:
+          - $ref: '#/components/schemas/IssuerSettings'
+          description: The Issuer Settings to set up.
+  securitySchemes:
+    AccessToken:
+      type: http
+      description: An IAM JWT token issued to a user during an OIDC flow.
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKey:
+      type: apiKey
+      description: An IAM Api key.
+      name: x-id-api-key
+      in: header

@@ -1,0 +1,322 @@
+openapi: 3.2.0
+info:
+  title: AGNTCY Identity Service Badge Service API
+  description: AGNTCY Identity Service API provides a set of endpoints for managing identity and access control within the Agntcy ecosystem.
+  contact:
+    name: Agntcy Team
+    url: https://github.com/agntcy/identity-service
+    email: identity@agntcy.org
+  version: v1alpha1
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+servers:
+- url: http://localhost:4000
+  description: Local environment
+security:
+- AccessToken: []
+  ApiKey: []
+tags:
+- name: BadgeService
+  description: BadgeService manages badges.
+paths:
+  /v1alpha1/apps/{appId}/badges:
+    post:
+      tags:
+      - BadgeService
+      description: Create a new Badge.
+      operationId: BadgeService_IssueBadge
+      parameters:
+      - name: appId
+        in: path
+        description: App Id.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueBadgeRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Badge'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/badges/verify:
+    post:
+      tags:
+      - BadgeService
+      description: Verify a badge.
+      operationId: BadgeService_VerifyBadge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyBadgeRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+components:
+  schemas:
+    Proof:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of the proof
+        proofPurpose:
+          type: string
+          description: The proof purpose
+        proofValue:
+          type: string
+          description: The proof value
+      description: "A data integrity proof provides information about the proof mechanism,\n parameters required to verify that proof, and the proof value itself."
+    IssueOASFBadgeRequest:
+      type: object
+      properties:
+        schemaBase64:
+          type: string
+          description: The OASF schema in a base64 encoded format
+    CredentialStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The URL identifying the schema file
+        type:
+          type: string
+          description: Type specifies the type of the file
+        createdAt:
+          type: string
+          description: The creation date and time of the status
+          format: date-time
+        purpose:
+          enum:
+          - CREDENTIAL_STATUS_PURPOSE_UNSPECIFIED
+          - CREDENTIAL_STATUS_PURPOSE_REVOCATION
+          type: string
+          description: The value of the purpose for the status entry
+          format: enum
+      description: "CredentialStatus represents the credentialStatus property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#status"
+    ErrorInfo:
+      type: object
+      properties:
+        reason:
+          type: string
+        message:
+          type: string
+    IssueMcpBadgeRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The MCP badge name.
+        url:
+          type: string
+          description: The MCP badge URL.
+        schemaBase64:
+          type: string
+          description: Or the MCP Schema in a base64 encoded format.
+    Badge:
+      type: object
+      properties:
+        verifiableCredential:
+          $ref: '#/components/schemas/VerifiableCredential'
+        appId:
+          type: string
+    IssueA2ABadgeRequest:
+      type: object
+      properties:
+        wellKnownUrl:
+          type: string
+          description: The A2A well_known_url.
+        schemaBase64:
+          type: string
+          description: Or the MCP Schema in a base64 encoded format.
+    VerifyBadgeRequest:
+      type: object
+      properties:
+        badge:
+          type: string
+          description: The JOSE enveloped badge to verify.
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    CredentialSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type specifies the type of the file
+        id:
+          type: string
+          description: The URL identifying the schema file
+      description: "CredentialSchema represents the credentialSchema property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas"
+    IssueBadgeRequest:
+      type: object
+      properties:
+        appId:
+          type: string
+          description: App Id.
+        a2a:
+          allOf:
+          - $ref: '#/components/schemas/IssueA2ABadgeRequest'
+          description: The A2A badge.
+        mcp:
+          allOf:
+          - $ref: '#/components/schemas/IssueMcpBadgeRequest'
+          description: The MCP badge.
+        oasf:
+          allOf:
+          - $ref: '#/components/schemas/IssueOASFBadgeRequest'
+          description: The OASF badge.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    VerificationResult:
+      type: object
+      properties:
+        status:
+          type: boolean
+          description: A boolean status
+        document:
+          allOf:
+          - $ref: '#/components/schemas/VerifiableCredential'
+          description: A conforming document which represents the Verifiable Credential
+        mediaType:
+          type: string
+          description: 'The media type of the Verifiable Credential (ex: application/vc)'
+        controller:
+          type: string
+          description: "The controller of the verification method associated with the securing mechanism,\n usually it represents the issuer."
+        controlledIdentifierDocument:
+          type: string
+          description: "A controlled identifier document that is associated with the verification method\n used to verify the securing mechanism (i,e the DID)"
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorInfo'
+          description: A list represents zero or more warnings generated by the verification process
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorInfo'
+          description: A list represents zero or more errors generated by the verification process
+      description: "The result returned from the verification process defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#verification"
+    BadgeClaims:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The ID as defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/#credential-subject"
+        badge:
+          type: string
+          description: The content of the badge
+      description: "BadgeClaims represents the content of a Badge VC defined [here]\n\n [here]: https://spec.identity.agntcy.org/docs/vc/intro/"
+    VerifiableCredential:
+      type: object
+      properties:
+        context:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#contexts
+        type:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#dfn-type
+        issuer:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuer
+        credentialSubject:
+          allOf:
+          - $ref: '#/components/schemas/BadgeClaims'
+          description: https://www.w3.org/TR/vc-data-model/#credential-subject
+        id:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#identifiers
+        issuanceDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuance-date
+        expirationDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#expiration
+        credentialSchema:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas
+        credentialStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialStatus'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#status
+        proof:
+          allOf:
+          - $ref: '#/components/schemas/Proof'
+          description: https://w3id.org/security#proof
+      description: "DataModel represents the W3C Verifiable Credential Data Model defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/"
+  securitySchemes:
+    AccessToken:
+      type: http
+      description: An IAM JWT token issued to a user during an OIDC flow.
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKey:
+      type: apiKey
+      description: An IAM Api key.
+      name: x-id-api-key
+      in: header

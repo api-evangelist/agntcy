@@ -1,0 +1,191 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema Classes and Objects API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: Classes and Objects
+paths:
+  /api/1.1.0/domains:
+    get:
+      description: Get OASF schema domains. Returns all domains when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single domain. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.
+      operationId: SchemaWeb.SchemaController.domains
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID to get a specific domain.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name to get a specific domain. Can include extension prefix (e.g., 'dev/cpu_usage').
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No domain found with the specified id or name
+      summary: List domains or get a specific domain
+      tags:
+      - Classes and Objects
+  /api/1.1.0/modules:
+    get:
+      description: Get OASF schema modules. Returns all modules when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single module. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.
+      operationId: SchemaWeb.SchemaController.modules
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID to get a specific module.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name to get a specific module. Can include extension prefix (e.g., 'dev/cpu_usage').
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No module found with the specified id or name
+      summary: List modules or get a specific module
+      tags:
+      - Classes and Objects
+  /api/1.1.0/objects:
+    get:
+      description: Get OASF schema objects. When a name is provided, returns a single object. The object name may contain a schema extension name, for example "dev/os_service".
+      operationId: SchemaWeb.SchemaController.objects
+      parameters:
+      - description: Object name to retrieve a specific object
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found - No object found with the specified name
+      summary: List objects or get a specific object
+      tags:
+      - Classes and Objects
+  /api/1.1.0/skills:
+    get:
+      description: Get OASF schema skills. Returns all skills when no id or name is provided. If id (numeric) or name (string) query parameter is provided, returns a single skill. Name can include an extension prefix (e.g., 'dev/cpu_usage'). If both id and name are provided, they must refer to the same class.
+      operationId: SchemaWeb.SchemaController.skills
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID to get a specific skill.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name to get a specific skill. Can include extension prefix (e.g., 'dev/cpu_usage').
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No skill found with the specified id or name
+      summary: List skills or get a specific skill
+      tags:
+      - Classes and Objects

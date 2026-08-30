@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema Taxonomy API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: Taxonomy
+paths:
+  /api/1.1.0/domain_categories:
+    get:
+      description: Get OASF domains taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension').
+      operationId: SchemaWeb.SchemaController.domain_categories
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID of parent to filter children. Returns only children of this parent.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No class found with the specified id or name
+      summary: Get domains taxonomy tree
+      tags:
+      - Taxonomy
+  /api/1.1.0/module_categories:
+    get:
+      description: Get OASF modules taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension'). If both id and name are provided, they must refer to the same node, otherwise returns 400 Bad Request.
+      operationId: SchemaWeb.SchemaController.module_categories
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID of parent to filter children. Returns only children of this parent.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No class found with the specified id or name
+      summary: Get modules taxonomy tree
+      tags:
+      - Taxonomy
+  /api/1.1.0/skill_categories:
+    get:
+      description: Get OASF skills taxonomy tree with nested categories, subcategories, classes, and subclasses. If id (numeric) or name (string) query parameter is provided, returns only the children of that parent. Name can be in hierarchical format (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple format (e.g., 'contextual_comprehension').
+      operationId: SchemaWeb.SchemaController.skill_categories
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Optional numeric ID of parent to filter children. Returns only children of this parent.
+        in: query
+        name: id
+        required: false
+        schema:
+          type: integer
+      - description: Optional name of parent to filter children. Can be hierarchical (e.g., 'natural_language_processing/natural_language_understanding/contextual_comprehension') or simple (e.g., 'contextual_comprehension'). Returns only children of this parent.
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request - id and name parameters refer to different classes
+        '404':
+          description: Not Found - No class found with the specified id or name
+      summary: Get skills taxonomy tree
+      tags:
+      - Taxonomy

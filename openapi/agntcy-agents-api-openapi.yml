@@ -1,0 +1,401 @@
+openapi: 3.2.0
+info:
+  title: Agent Connect Protocol Agents API
+  version: 0.2.3
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+  description: "Agents are AI workflows that can be configured and/or executed on this server.  This means that a client of this server can start a Run on any of the Agents supported by this server.\nEach agent may support different features of ACP, also each agent specifies the schemas of the objects carried by ACP for  configuration, input, output, interrupts and state. \nDetails of the ACP features and the schemas are kept in the ACP descriptor of the specific agent.  This object can be retrieved through this ACP interface or is found in the ACP extension of the agent record in the agent directory.\nSee `Agent` and `AgentACPDescriptor` models below for more info."
+tags:
+- name: Agents
+  description: "Agents are AI workflows that can be configured and/or executed on this server.  This means that a client of this server can start a Run on any of the Agents supported by this server.\nEach agent may support different features of ACP, also each agent specifies the schemas of the objects carried by ACP for  configuration, input, output, interrupts and state. \nDetails of the ACP features and the schemas are kept in the ACP descriptor of the specific agent.  This object can be retrieved through this ACP interface or is found in the ACP extension of the agent record in the agent directory.\nSee `Agent` and `AgentACPDescriptor` models below for more info."
+paths:
+  /agents/search:
+    post:
+      tags:
+      - Agents
+      summary: Search Agents
+      description: 'Returns a list of agents matching the criteria provided in the request.
+
+
+        This endpoint also functions as the endpoint to list all agents.'
+      operationId: search_agents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentSearchRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Agent'
+                type: array
+                title: Matching Agent List
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /agents/{agent_id}:
+    get:
+      tags:
+      - Agents
+      summary: Get Agent
+      description: Get an agent by ID.
+      operationId: get_agent_by_id
+      parameters:
+      - description: The ID of the agent.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Agent Id
+          description: The ID of the agent.
+        name: agent_id
+        in: path
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /agents/{agent_id}/descriptor:
+    get:
+      tags:
+      - Agents
+      summary: Get Agent ACP Descriptor from its id
+      description: Get agent ACP descriptor by agent ID.
+      operationId: get_acp_descriptor_by_id
+      parameters:
+      - description: The ID of the agent.
+        required: true
+        schema:
+          type: string
+          format: uuid
+          title: Agent Id
+          description: The ID of the agent.
+        name: agent_id
+        in: path
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentACPDescriptor'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    AgentRef:
+      title: Agent Reference
+      description: Reference to an Agent Record in the Agent Directory, it includes name, version and a locator.
+      type: object
+      properties:
+        name:
+          description: Name of the agent that identifies the agent in its record
+          title: Name
+          type: string
+        version:
+          description: Version of the agent in its record. Should be formatted according to semantic versioning (https://semver.org)
+          title: Version
+          type: string
+        url:
+          title: Agent Record URL
+          description: URL of the record. Can be a network location, i.e. an entry in the Agent Directory or a file.
+          type: string
+          format: uri
+      required:
+      - name
+      - version
+    AgentACPSpec:
+      title: Agent ACP Specs
+      description: Specification of agent capabilities, config, input, output, and interrupts
+      type: object
+      properties:
+        capabilities:
+          type: object
+          title: Agent Capabilities
+          description: Declares what invocation features this agent is capable of.
+          properties:
+            threads:
+              type: boolean
+              title: Thread Support
+              default: false
+              description: This is `true` if the agent supports run threads. If this is `false`, then the threads tagged with `Threads` are not available. If missing, it means `false`
+            interrupts:
+              type: boolean
+              title: Interrupt Support
+              default: false
+              description: This is `true` if the agent runs can interrupt to request additional input and can be subsequently resumed. If missing, it means `false`
+            callbacks:
+              type: boolean
+              title: Callback Support
+              default: false
+              description: This is `true` if the agent supports a webhook to report run results. If this is `false`, providing a `webhook` at run creation has no effect. If missing, it means `false`
+            streaming:
+              type: object
+              title: Streaming Modes
+              description: Supported streaming modes. If missing, streaming is not supported.  If no mode is supported attempts to stream output will result in an error.
+              properties:
+                values:
+                  type: boolean
+                  title: Values Streaming
+                  description: This is `true` if the agent supports values streaming. If `false` or missing, values streaming is not supported. Values streaming consists of a stream of objects of type `ValueRunResultUpdate`, where each one sent over the stream fully replace the previous one.
+                custom:
+                  type: boolean
+                  title: Custom Objects Streaming
+                  description: This is `true` if the agent supports custom objects streaming. If `false` or missing, custom streaming is not supported. Custom Objects streaming consists of a stream of object whose schema is specified by the agent ACP descriptor under `specs.custom_streaming_update`.
+        input:
+          type: object
+          description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+          examples:
+          - type: object
+            required:
+            - name
+            properties:
+              name:
+                type: string
+              address:
+                type: string
+              age:
+                type: integer
+                format: int32
+                minimum: 0
+          - type: integer
+            format: int32
+            minimum: 0
+            description: User's age
+        output:
+          type: object
+          description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+          examples:
+          - type: object
+            required:
+            - name
+            properties: null
+            name:
+              type: string
+            address:
+              type: string
+            age:
+              type: integer
+              format: int32
+              minimum: 0
+          - type: integer
+            format: int32
+            minimum: 0
+            description: User's age
+        custom_streaming_update:
+          type: object
+          description: 'This describes the format of an Update in the streaming.  Must be specified if `streaming.custom` capability is true and cannot be specified otherwise. Format follows: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+          examples:
+          - type: object
+            required:
+            - name
+            properties: null
+            name:
+              type: string
+            address:
+              type: string
+            age:
+              type: integer
+              format: int32
+              minimum: 0
+        thread_state:
+          type: object
+          description: 'This describes the format of ThreadState.  Cannot be specified if `threads` capability is false. If not specified, when `threads` capability is true, then the API to retrieve ThreadState from a Thread or a Run is not available. This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+          examples:
+          - type: object
+            required:
+            - name
+            properties: null
+            name:
+              type: string
+            address:
+              type: string
+            age:
+              type: integer
+              format: int32
+              minimum: 0
+          - type: integer
+            format: int32
+            description: An integer value
+        config:
+          type: object
+          description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+          examples:
+          - type: object
+            required:
+            - name
+            properties: null
+            name:
+              type: string
+            address:
+              type: string
+            age:
+              type: integer
+              format: int32
+              minimum: 0
+          - type: integer
+            format: int32
+            minimum: 0
+            description: An integer value
+        interrupts:
+          type: array
+          description: List of possible interrupts that can be provided by the agent. If `interrupts` capability is true, this needs to have at least one item.
+          items:
+            type: object
+            properties:
+              interrupt_type:
+                description: Name of this interrupt type. Needs to be unique in the list of interrupts.
+                title: Interrupt Type Name
+                type: string
+              interrupt_payload:
+                type: object
+                description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+                examples:
+                - type: object
+                  required:
+                  - name
+                  properties: null
+                  name:
+                    type: string
+                  address:
+                    type: string
+                  age:
+                    type: integer
+                    format: int32
+                    minimum: 0
+              resume_payload:
+                type: object
+                description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+                examples:
+                - type: object
+                  required:
+                  - name
+                  properties: null
+                  name:
+                    type: string
+                  address:
+                    type: string
+                  age:
+                    type: integer
+                    format: int32
+                    minimum: 0
+            required:
+            - interrupt_type
+            - resume_payload
+            - interrupt_payload
+      required:
+      - capabilities
+      - input
+      - output
+      - config
+    AgentACPDescriptor:
+      title: Agent ACP Descriptor
+      description: Describe all the ACP specs of an agent, including schemas and protocol features.
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/AgentMetadata'
+        specs:
+          $ref: '#/components/schemas/AgentACPSpec'
+      required:
+      - metadata
+      - specs
+    AgentMetadata:
+      title: Agent Metadata
+      description: Basic information associated to the agent
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/AgentRef'
+        description:
+          description: Description of this agent, which should include what the intended use is, what tasks it accomplishes and how uses input and configs to produce the output and any other side effect
+          title: Description
+          type: string
+      required:
+      - ref
+      - description
+    ErrorResponse:
+      type: string
+      title: ErrorResponse
+      description: Error message returned from the server
+    AgentSearchRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Match all agents with the name specified.
+        version:
+          type: string
+          title: Version
+          description: Match all agents with the version specified. Formatted according to semantic versioning (https://semver.org)
+        limit:
+          type: integer
+          title: Limit
+          description: Maximum number to return.
+          default: 10
+          minimum: 1
+          maximum: 1000
+        offset:
+          type: integer
+          title: Offset
+          description: Offset to start from.
+          default: 0
+          minimum: 0
+      type: object
+      title: AgentSearchRequest
+      description: Payload for listing agents.
+    Agent:
+      title: Agent
+      description: A description of an agent supported by this server
+      type: object
+      properties:
+        agent_id:
+          type: string
+          format: uuid
+          title: Agent Id
+          description: Unique identifier of the agent in this server.
+        metadata:
+          $ref: '#/components/schemas/AgentMetadata'
+      required:
+      - agent_id
+      - metadata

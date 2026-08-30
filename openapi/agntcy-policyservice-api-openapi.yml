@@ -1,0 +1,648 @@
+openapi: 3.2.0
+info:
+  title: AGNTCY Identity Service Policy Service API
+  description: AGNTCY Identity Service API provides a set of endpoints for managing identity and access control within the Agntcy ecosystem.
+  contact:
+    name: Agntcy Team
+    url: https://github.com/agntcy/identity-service
+    email: identity@agntcy.org
+  version: v1alpha1
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+servers:
+- url: http://localhost:4000
+  description: Local environment
+security:
+- AccessToken: []
+  ApiKey: []
+tags:
+- name: PolicyService
+  description: PolicyService manages policy.
+paths:
+  /v1alpha1/policies:
+    get:
+      tags:
+      - PolicyService
+      description: List Policies.
+      operationId: PolicyService_ListPolicies
+      parameters:
+      - name: page
+        in: query
+        description: The current page of the pagination
+        schema:
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        description: The page size of the pagination
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: The search query
+        schema:
+          type: string
+      - name: appIds
+        in: query
+        description: A filter used to fetch policies only for the specified Agentic Services
+        schema:
+          type: array
+          items:
+            type: string
+      - name: rulesForAppIds
+        in: query
+        description: A filter used to fetch policies where the rules applies for the specified Agentic Services
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPoliciesResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    post:
+      tags:
+      - PolicyService
+      description: Create a new Policy.
+      operationId: PolicyService_CreatePolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePolicyRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/policies/all/count:
+    get:
+      tags:
+      - PolicyService
+      description: Get policies total count.
+      operationId: PolicyService_GetPoliciesCount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPoliciesCountResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/policies/{policyId}:
+    get:
+      tags:
+      - PolicyService
+      description: Get Policy by id
+      operationId: PolicyService_GetPolicy
+      parameters:
+      - name: policyId
+        in: path
+        description: Policy Id to get.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    delete:
+      tags:
+      - PolicyService
+      description: Delete an existing Policy.
+      operationId: PolicyService_DeletePolicy
+      parameters:
+      - name: policyId
+        in: path
+        description: Policy Id to delete.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    patch:
+      tags:
+      - PolicyService
+      description: Update a Policy.
+      operationId: PolicyService_UpdatePolicy
+      parameters:
+      - name: policyId
+        in: path
+        description: Policy Id to update.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePolicyRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/policies/{policyId}/rules:
+    get:
+      tags:
+      - PolicyService
+      description: List Rules.
+      operationId: PolicyService_ListRules
+      parameters:
+      - name: policyId
+        in: path
+        description: The Policy Id to which these Rules belong.
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The current page of the pagination
+        schema:
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        description: The page size of the pagination
+        schema:
+          type: integer
+          format: int32
+      - name: query
+        in: query
+        description: The search query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRulesResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    post:
+      tags:
+      - PolicyService
+      description: Create a new Rule.
+      operationId: PolicyService_CreateRule
+      parameters:
+      - name: policyId
+        in: path
+        description: The Policy Id to which these Rules belong.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRuleRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rule'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/policies/{policyId}/rules/{ruleId}:
+    get:
+      tags:
+      - PolicyService
+      description: Get Rule by id
+      operationId: PolicyService_GetRule
+      parameters:
+      - name: policyId
+        in: path
+        description: The Policy Id to which these Rules belong.
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        description: Rule Id to get.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rule'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    delete:
+      tags:
+      - PolicyService
+      description: Delete an existing Rule.
+      operationId: PolicyService_DeleteRule
+      parameters:
+      - name: policyId
+        in: path
+        description: The Policy Id to which these Rules belong.
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        description: Rule Id to delete.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    patch:
+      tags:
+      - PolicyService
+      description: Update a Rule.
+      operationId: PolicyService_UpdateRule
+      parameters:
+      - name: policyId
+        in: path
+        description: The Policy Id to which these Rules belong.
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        description: Rule Id to update.
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRuleRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rule'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+components:
+  schemas:
+    CreateRuleRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: The Policy Id to which these Rules belong.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        tasks:
+          type: array
+          items:
+            type: string
+          description: The tasks that this Rule applies to.
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the tasks
+          format: enum
+    UpdatePolicyRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: Policy Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
+    GetPoliciesCountResponse:
+      type: object
+      properties:
+        total:
+          type: string
+          description: The total count
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Task.
+        name:
+          readOnly: true
+          type: string
+          description: A human-readable name for the Task.
+        description:
+          readOnly: true
+          type: string
+          description: A human-readable description for the Task.
+        appId:
+          readOnly: true
+          type: string
+          description: An application ID for the Task.
+        toolName:
+          readOnly: true
+          type: string
+          description: A tool name for the Task.
+      description: Identity Service Policy Task
+    UpdateRuleRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: The Policy Id to which these Rules belong.
+        ruleId:
+          type: string
+          description: Rule Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        tasks:
+          type: array
+          items:
+            type: string
+          description: The tasks that this Rule applies to.
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the tasks
+          format: enum
+    ListRulesResponse:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: A list of Rules.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    Policy:
+      required:
+      - name
+      - assignedTo
+      - rules
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Policy.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this Policy applies to.
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: All the rules that apply to this Policy.
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the Policy was initially created
+          format: date-time
+      description: Identity Service Policy.
+    PagedResponse:
+      type: object
+      properties:
+        nextPage:
+          type: integer
+          description: Next page
+          format: int32
+        hasNextPage:
+          type: boolean
+          description: Has next page
+        total:
+          type: string
+          description: The total size of items
+        size:
+          type: integer
+          description: The size of the current page
+          format: int32
+      description: Pagination response
+    CreatePolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    Rule:
+      required:
+      - name
+      - tasks
+      - action
+      - needsApproval
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Rule.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        policyId:
+          readOnly: true
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+          description: The tasks that this Rule applies to.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the specified tasks
+          format: enum
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the Rule was initially created
+          format: date-time
+      description: Identity Service Policy Rule
+    ListPoliciesResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+          description: A list of Policies.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+  securitySchemes:
+    AccessToken:
+      type: http
+      description: An IAM JWT token issued to a user during an OIDC flow.
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKey:
+      type: apiKey
+      description: An IAM Api key.
+      name: x-id-api-key
+      in: header

@@ -1,0 +1,405 @@
+openapi: 3.2.0
+info:
+  title: Identity Node Vc Service API
+  description: Identity Node
+  contact:
+    name: Agntcy Team
+    url: https://github.com/agntcy/identity
+    email: identity@agntcy.org
+  version: v1alpha1
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+servers:
+- url: http://0.0.0.0:4000
+  description: Local environment
+security:
+- {}
+tags:
+- name: VcService
+  description: VC is the service that provides VC operations.
+paths:
+  /v1alpha1/vc/publish:
+    post:
+      tags:
+      - VcService
+      description: Publish an issued Verifiable Credential
+      operationId: VcService_Publish
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/vc/revoke:
+    post:
+      tags:
+      - VcService
+      description: Revoke a Verifiable Credential. THIS ACTION IS NOT REVERSIBLE.
+      operationId: VcService_Revoke
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevokeRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/vc/search:
+    post:
+      tags:
+      - VcService
+      description: Search for Verifiable Credentials based on the specified criteria
+      operationId: VcService_Search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/vc/verify:
+    post:
+      tags:
+      - VcService
+      description: Verify an existing Verifiable Credential
+      operationId: VcService_Verify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/vc/{id}/.well-known/vcs.json:
+    get:
+      tags:
+      - VcService
+      description: Returns the well-known Verifiable Credentials for the specified Id
+      operationId: VcService_GetWellKnown
+      parameters:
+      - name: id
+        in: path
+        description: The identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVcWellKnownResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+components:
+  schemas:
+    Time:
+      type: object
+      properties: {}
+    Proof:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of the proof
+        proofPurpose:
+          type: string
+          description: The proof purpose
+        proofValue:
+          type: string
+          description: The proof value
+      description: "A data integrity proof provides information about the proof mechanism,\n parameters required to verify that proof, and the proof value itself."
+    EnvelopedCredential:
+      type: object
+      properties:
+        envelopeType:
+          enum:
+          - CREDENTIAL_ENVELOPE_TYPE_UNSPECIFIED
+          - CREDENTIAL_ENVELOPE_TYPE_EMBEDDED_PROOF
+          - CREDENTIAL_ENVELOPE_TYPE_JOSE
+          type: string
+          description: EnvelopeType specifies the type of the envelope used to store the credential.
+          format: enum
+        value:
+          type: string
+          description: Value is the enveloped credential in the specified format.
+      description: EnvelopedCredential represents a Credential enveloped in a specific format.
+    CredentialStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The URL identifying the schema file
+        type:
+          type: string
+          description: Type specifies the type of the file
+        createdAt:
+          allOf:
+          - $ref: '#/components/schemas/Time'
+          description: The creation date and time of the status
+        purpose:
+          enum:
+          - CREDENTIAL_STATUS_PURPOSE_UNSPECIFIED
+          - CREDENTIAL_STATUS_PURPOSE_REVOCATION
+          type: string
+          description: The value of the purpose for the status entry
+          format: enum
+      description: "CredentialStatus represents the credentialStatus property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#status"
+    ErrorInfo:
+      type: object
+      properties:
+        reason:
+          enum:
+          - ERROR_REASON_UNSPECIFIED
+          - ERROR_REASON_INTERNAL
+          - ERROR_REASON_INVALID_CREDENTIAL_ENVELOPE_TYPE
+          - ERROR_REASON_INVALID_CREDENTIAL_ENVELOPE_VALUE_FORMAT
+          - ERROR_REASON_INVALID_ISSUER
+          - ERROR_REASON_ISSUER_NOT_REGISTERED
+          - ERROR_REASON_INVALID_VERIFIABLE_CREDENTIAL
+          - ERROR_REASON_IDP_REQUIRED
+          - ERROR_REASON_INVALID_PROOF
+          - ERROR_REASON_UNSUPPORTED_PROOF
+          - ERROR_REASON_RESOLVER_METADATA_NOT_FOUND
+          - ERROR_REASON_UNKNOWN_IDP
+          - ERROR_REASON_ID_ALREADY_REGISTERED
+          - ERROR_REASON_VERIFIABLE_CREDENTIAL_REVOKED
+          type: string
+          description: "The reason of the error, as defined by the ErrorReason enum.\n This is a constant unique value that helps identify the cause of\n the error."
+          format: enum
+        message:
+          type: string
+          description: "The message describing the error in a human-readable way. This\n field gives additional details about the error."
+      description: Describes the cause of the error with structured details.
+    PublishRequest:
+      type: object
+      properties:
+        vc:
+          allOf:
+          - $ref: '#/components/schemas/EnvelopedCredential'
+          description: The Verifiable Credential to publish
+        proof:
+          allOf:
+          - $ref: '#/components/schemas/Proof'
+          description: "Optional Proof of ownership of the Issuer's ResolverMetadata\n This should be provided when the Issuer is provided by an external IdP\n Example: a signed JWT"
+      description: Request to publish an issued Verifiable Credential
+    SearchRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID is the identifier.
+        schema:
+          allOf:
+          - $ref: '#/components/schemas/CredentialSchema'
+          description: Schema is the schema of the credential contained in the VC
+        content:
+          type: string
+          description: The credential content representation in JSON-LD format
+      description: Request to search for VCs based on the specified criteria
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    CredentialSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type specifies the type of the file
+        id:
+          type: string
+          description: The URL identifying the schema file
+      description: "CredentialSchema represents the credentialSchema property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas"
+    VerifyRequest:
+      type: object
+      properties:
+        vc:
+          allOf:
+          - $ref: '#/components/schemas/EnvelopedCredential'
+          description: The Verifiable Credential to verify
+      description: Request to verify an existing Verifiable Credential
+    RevokeRequest:
+      type: object
+      properties:
+        vc:
+          allOf:
+          - $ref: '#/components/schemas/EnvelopedCredential'
+          description: The Verifiable Credential to revoked
+        proof:
+          allOf:
+          - $ref: '#/components/schemas/Proof'
+          description: "Required Proof of ownership of the Issuer's ResolverMetadata\n This should be provided when the Issuer is provided by an external IdP\n Example: a signed JWT"
+      description: Request to revoke a published Verifiable Credential
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    SearchResponse:
+      type: object
+      properties:
+        vcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvelopedCredential'
+          description: The list of VCs that match the search criteria
+      description: Returns the VCs that match the search criteria
+    VerificationResult:
+      type: object
+      properties:
+        status:
+          type: boolean
+          description: A boolean status
+        document:
+          allOf:
+          - $ref: '#/components/schemas/VerifiableCredential'
+          description: A conforming document which represents the Verifiable Credential
+        mediaType:
+          type: string
+          description: 'The media type of the Verifiable Credential (ex: application/vc)'
+        controller:
+          type: string
+          description: "The controller of the verification method associated with the securing mechanism,\n usually it represents the issuer."
+        controlledIdentifierDocument:
+          type: string
+          description: "A controlled identifier document that is associated with the verification method\n used to verify the securing mechanism (i,e the DID)"
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorInfo'
+          description: A list represents zero or more warnings generated by the verification process
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorInfo'
+          description: A list represents zero or more errors generated by the verification process
+      description: "The result returned from the verification process defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#verification"
+    VerifiableCredential:
+      type: object
+      properties:
+        context:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#contexts
+        type:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#dfn-type
+        issuer:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuer
+        content:
+          type: object
+          description: https://www.w3.org/TR/vc-data-model/#credential-subject
+        id:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#identifiers
+        issuanceDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuance-date
+        expirationDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#expiration
+        credentialSchema:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas
+        credentialStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialStatus'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#status
+        proof:
+          allOf:
+          - $ref: '#/components/schemas/Proof'
+          description: https://w3id.org/security#proof
+      description: "DataModel represents the W3C Verifiable Credential Data Model defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/"
+    GetVcWellKnownResponse:
+      type: object
+      properties:
+        vcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvelopedCredential'
+          description: The list of VCs for the specified Id
+      description: Returns the well-known VCs for an Id

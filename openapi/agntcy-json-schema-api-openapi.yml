@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema JSON Schema API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: JSON Schema
+paths:
+  /schema/1.1.0/domains/{name}:
+    get:
+      description: 'Get OASF schema domain class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      operationId: SchemaWeb.SchemaController.json_domain_class
+      parameters:
+      - description: Domain class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Java package name
+        in: query
+        name: package_name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Domain class <code>name</code> not found
+      summary: Domain
+      tags:
+      - JSON Schema
+  /schema/1.1.0/modules/{name}:
+    get:
+      description: 'Get OASF schema module class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      operationId: SchemaWeb.SchemaController.json_module_class
+      parameters:
+      - description: Module class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Java package name
+        in: query
+        name: package_name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Module class <code>name</code> not found
+      summary: Module
+      tags:
+      - JSON Schema
+  /schema/1.1.0/objects/{name}:
+    get:
+      description: Get OASF object by name, using JSON schema Draft-07 format (see http://json-schema.org). The object name may contain a schema extension name. For example, "dev/printer".
+      operationId: SchemaWeb.SchemaController.json_object
+      parameters:
+      - description: Object name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Java package name
+        in: query
+        name: package_name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Object <code>name</code> not found
+      summary: Object
+      tags:
+      - JSON Schema
+  /schema/1.1.0/skills/{name}:
+    get:
+      description: 'Get OASF schema skill class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      operationId: SchemaWeb.SchemaController.json_skill_class
+      parameters:
+      - description: Skill class name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Java package name
+        in: query
+        name: package_name
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Skill class <code>name</code> not found
+      summary: Skill
+      tags:
+      - JSON Schema

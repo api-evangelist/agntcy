@@ -1,0 +1,295 @@
+openapi: 3.2.0
+info:
+  title: AGNTCY Identity Service Auth Service API
+  description: AGNTCY Identity Service API provides a set of endpoints for managing identity and access control within the Agntcy ecosystem.
+  contact:
+    name: Agntcy Team
+    url: https://github.com/agntcy/identity-service
+    email: identity@agntcy.org
+  version: v1alpha1
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+servers:
+- url: http://localhost:4000
+  description: Local environment
+security:
+- AccessToken: []
+  ApiKey: []
+tags:
+- name: AuthService
+  description: AuthService manages auth.
+paths:
+  /v1alpha1/auth/app_info:
+    get:
+      tags:
+      - AuthService
+      description: App info endpoint
+      operationId: AuthService_AppInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppInfoResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/auth/approve_token:
+    post:
+      tags:
+      - AuthService
+      description: Handle manual approval of external authorization requets
+      operationId: AuthService_ApproveToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/auth/authorize:
+    post:
+      tags:
+      - AuthService
+      description: Authorize a request from an Agent or MCP Server
+      operationId: AuthService_Authorize
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizeRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizeResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/auth/ext_authz:
+    post:
+      tags:
+      - AuthService
+      description: Handle external authorization requests
+      operationId: AuthService_ExtAuthz
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtAuthzRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content: {}
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+  /v1alpha1/auth/token:
+    post:
+      tags:
+      - AuthService
+      description: Request token for an Agent or MCP Server
+      operationId: AuthService_Token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        default:
+          description: Default error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+components:
+  schemas:
+    ApproveTokenRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: The device id used to handle the approval requestion
+        sessionId:
+          type: string
+          description: The session id related to the token that needs to be approved
+        otp:
+          type: string
+          description: The OTP sent to the device related to the request
+        approve:
+          type: boolean
+          description: 'The action made by the user (true: allow the token, false: deny the token)'
+    ExtAuthzRequest:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The access token to be authorized.
+        toolName:
+          type: string
+          description: The tool name that will be invoked
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The access token issued to the Agent or MCP Server.
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    AppInfoResponse:
+      type: object
+      properties:
+        app:
+          allOf:
+          - $ref: '#/components/schemas/App'
+          description: The App information.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    TokenRequest:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: Pass the code received from the authorization endpoint.
+    AuthorizeRequest:
+      type: object
+      properties:
+        resolverMetadataId:
+          type: string
+          description: The resolver metadata id for which authorization is requested.
+        toolName:
+          type: string
+          description: The MCP Server tool name.
+        userToken:
+          type: string
+          description: "The User context in the form of an id or access token.\n Mandatory for User Approval Flows."
+    AuthorizeResponse:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: "If authorization is successful, return a code to be used for\n the token endpoint."
+    App:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the App.
+        name:
+          type: string
+          description: A human-readable name for the App.
+        description:
+          type: string
+          description: A human-readable description for the App.
+        type:
+          enum:
+          - APP_TYPE_UNSPECIFIED
+          - APP_TYPE_AGENT_A2A
+          - APP_TYPE_AGENT_OASF
+          - APP_TYPE_MCP_SERVER
+          type: string
+          description: The type of the App.
+          format: enum
+        resolverMetadataId:
+          readOnly: true
+          type: string
+          description: The DID value
+        apiKey:
+          readOnly: true
+          type: string
+          description: The API Key Secret for the App.
+        status:
+          readOnly: true
+          enum:
+          - APP_STATUS_UNSPECIFIED
+          - APP_STATUS_ACTIVE
+          - APP_STATUS_PENDING
+          - APP_STATUS_REVOKED
+          type: string
+          description: The status of the App
+          format: enum
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the App was initially created
+          format: date-time
+      description: Identity Service App.
+  securitySchemes:
+    AccessToken:
+      type: http
+      description: An IAM JWT token issued to a user during an OIDC flow.
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKey:
+      type: apiKey
+      description: An IAM Api key.
+      name: x-id-api-key
+      in: header

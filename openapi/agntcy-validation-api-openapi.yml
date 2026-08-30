@@ -1,0 +1,141 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema Validation API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: Validation
+paths:
+  /api/1.1.0/validate/domain:
+    post:
+      description: This API validates the provided domain class data against the OASF schema, returning a response containing validation errors and warnings.
+      operationId: SchemaWeb.SchemaController.validate_domain
+      parameters:
+      - description: 'When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.
+
+          '
+        in: query
+        name: missing_recommended
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+      summary: Validate domain class
+      tags:
+      - Validation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: The domain class to be validated
+        required: true
+  /api/1.1.0/validate/module:
+    post:
+      description: This API validates the provided module class data against the OASF schema, returning a response containing validation errors and warnings.
+      operationId: SchemaWeb.SchemaController.validate_module
+      parameters:
+      - description: 'When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.
+
+          '
+        in: query
+        name: missing_recommended
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+      summary: Validate module class
+      tags:
+      - Validation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: The module class to be validated
+        required: true
+  /api/1.1.0/validate/object/{name}:
+    post:
+      description: This API validates the provided object data against the OASF schema, returning a response containing validation errors and warnings.
+      operationId: SchemaWeb.SchemaController.validate_object
+      parameters:
+      - description: Object name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: 'When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.
+
+          '
+        in: query
+        name: missing_recommended
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+      summary: Validate object
+      tags:
+      - Validation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: The object to be validated
+        required: true
+  /api/1.1.0/validate/skill:
+    post:
+      description: This API validates the provided skill class data against the OASF schema, returning a response containing validation errors and warnings.
+      operationId: SchemaWeb.SchemaController.validate_skill
+      parameters:
+      - description: 'When true, warnings are created for missing recommended attributes, otherwise recommended attributes are treated the same as optional.
+
+          '
+        in: query
+        name: missing_recommended
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: Success
+      summary: Validate skill class
+      tags:
+      - Validation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: The skill class to be validated
+        required: true

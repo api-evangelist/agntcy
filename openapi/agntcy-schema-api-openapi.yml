@@ -1,0 +1,142 @@
+openapi: 3.2.0
+info:
+  description: The Open Agentic Schema Framework (OASF) server API allows to access the JSON schema definitions and to validate and translate objects.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: OASF Schema API
+  version: 0.6.0
+  x-provenance:
+    method: harvested
+    authored_by: AGNTCY (Outshift by Cisco)
+    harvested_by: API Evangelist
+    harvested_on: '2026-08-19'
+    first_party: true
+    provider_published: true
+    source_host: agntcy.org / outshift.com
+    note: 'Four first-party machine-readable contracts: the Agent Connect Protocol OpenAPI 3.1.1, the OASF Schema API, and two AGNTCY Identity OpenAPI 3.0.3 documents. schema.oasf.outshift.com is the one genuinely callable AGNTCY-hosted API (unauthenticated, 200).'
+  x-evidence:
+  - type: source
+    url: https://spec.acp.agntcy.org/
+  - type: source
+    url: https://schema.oasf.outshift.com/doc
+  - type: source
+    url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
+tags:
+- name: Schema
+paths:
+  /api/1.1.0/data_types:
+    get:
+      description: Get OASF schema data types.
+      operationId: SchemaWeb.SchemaController.data_types
+      responses:
+        '200':
+          description: Success
+      summary: Data types
+      tags:
+      - Schema
+  /api/1.1.0/dictionary:
+    get:
+      description: Get OASF schema dictionary.
+      operationId: SchemaWeb.SchemaController.dictionary
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+      summary: Dictionary
+      tags:
+      - Schema
+  /api/1.1.0/extensions:
+    get:
+      description: Get OASF schema extensions.
+      operationId: SchemaWeb.SchemaController.extensions
+      responses:
+        '200':
+          description: Success
+      summary: List schema extensions
+      tags:
+      - Schema
+  /api/1.1.0/profiles:
+    get:
+      description: Get OASF schema profiles.
+      operationId: SchemaWeb.SchemaController.profiles
+      responses:
+        '200':
+          description: Success
+      summary: List profiles
+      tags:
+      - Schema
+  /api/1.1.0/profiles/{name}:
+    get:
+      description: Get OASF schema profile by name. The profile name may contain a schema extension name. For example, "linux/linux_users".
+      operationId: SchemaWeb.SchemaController.profile
+      parameters:
+      - description: Profile name
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Profile <code>name</code> not found
+      summary: Profile
+      tags:
+      - Schema
+  /api/1.1.0/schema:
+    get:
+      description: Get OASF schema definitions, including data types, objects, classes, and the dictionary of attributes.
+      operationId: SchemaWeb.SchemaController.schema
+      parameters:
+      - description: Related schema extensions to include in response.
+        in: query
+        name: extensions
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: Related profiles to include in response.
+        in: query
+        name: profiles
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Success
+      summary: Get schema
+      tags:
+      - Schema
+  /api/1.1.0/version:
+    get:
+      description: Get OASF schema, server, and API versions.
+      operationId: SchemaWeb.SchemaController.version
+      responses:
+        '200':
+          description: Success
+      summary: Version
+      tags:
+      - Schema
+  /api/1.1.0/versions:
+    get:
+      description: Get available OASF schema versions with server and API metadata.
+      operationId: SchemaWeb.SchemaController.versions
+      responses:
+        '200':
+          description: Success
+      summary: Versions
+      tags:
+      - Schema
