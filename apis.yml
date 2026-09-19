@@ -54,6 +54,10 @@ x-contract-note: 'Four first-party machine-readable contracts (106 operations): 
 specificationVersion: '0.23'
 created: '2026-08-19'
 modified: '2026-08-19'
+x-docs-platform: mkdocs
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-17
+x-docs-hosting: github-pages
 tags:
 - AI Agents
 - Interoperability
@@ -146,7 +150,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-agents-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -192,7 +196,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-appservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -236,7 +240,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-badgeservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -280,7 +284,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-classes-and-objects-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -324,7 +328,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-deviceservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -368,7 +372,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-idservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -412,7 +416,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-issuerservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -458,7 +462,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-json-schema-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -502,7 +506,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-policyservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -546,7 +550,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-sample-data-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -590,7 +594,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-schema-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -634,7 +638,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-settingsservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -685,7 +689,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-stateless-runs-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -729,7 +733,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-taxonomy-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -776,7 +780,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-thread-runs-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -830,7 +834,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-threads-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -874,7 +878,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-translation-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -918,7 +922,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-validation-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -962,7 +966,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-vcservice-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
@@ -1006,7 +1010,7 @@ apis:
   - type: OpenAPI
     url: openapi/agntcy-auth-service-api-openapi.yml
   - type: Swagger
-    url: openapi/agntcy-oasf-schema-swagger.json
+    url: openapi/_original/agntcy-oasf-schema-swagger.json
   - type: Documentation
     url: https://docs.agntcy.org/oasf/open-agentic-schema-framework/
   - type: APIReference
