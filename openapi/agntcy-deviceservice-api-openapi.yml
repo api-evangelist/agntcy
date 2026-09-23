@@ -70,6 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Device service list devices
+      x-summary-source: derived
     post:
       tags:
       - DeviceService
@@ -94,6 +96,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Device service add device
+      x-summary-source: derived
   /v1alpha1/device/{deviceId}:
     post:
       tags:
@@ -123,6 +127,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Device service register device
+      x-summary-source: derived
     delete:
       tags:
       - DeviceService
@@ -145,6 +151,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Device service delete device
+      x-summary-source: derived
   /v1alpha1/device/{deviceId}/test:
     post:
       tags:
@@ -168,8 +176,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Device service test device
+      x-summary-source: derived
 components:
   schemas:
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    ListDevicesResponse:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: A list of Apps.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    PagedResponse:
+      type: object
+      properties:
+        nextPage:
+          type: integer
+          description: Next page
+          format: int32
+        hasNextPage:
+          type: boolean
+          description: Has next page
+        total:
+          type: string
+          description: The total size of items
+        size:
+          type: integer
+          description: The size of the current page
+          format: int32
+      description: Pagination response
     Device:
       type: object
       properties:
@@ -192,60 +256,6 @@ components:
           description: The creation time of the Device.
           format: date-time
       description: Devices used for user approval
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    ListDevicesResponse:
-      type: object
-      properties:
-        devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-          description: A list of Apps.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
-    PagedResponse:
-      type: object
-      properties:
-        nextPage:
-          type: integer
-          description: Next page
-          format: int32
-        hasNextPage:
-          type: boolean
-          description: Has next page
-        total:
-          type: string
-          description: The total size of items
-        size:
-          type: integer
-          description: The size of the current page
-          format: int32
-      description: Pagination response
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
   securitySchemes:
     AccessToken:
       type: http

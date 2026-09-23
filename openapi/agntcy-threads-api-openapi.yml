@@ -18,17 +18,17 @@ info:
     url: https://schema.oasf.outshift.com/doc
   - type: source
     url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
-  description: "If supported by the involved agents, Run can be grouped in Threads. \nWhen a run is executed on a thread is called Thread Run. At the end of a Thread Run, the server keeps a thread state associated to the thread.\nA thread keeps track of agent states at every step so that continuity of the context is preserved. Moreover, such a book-keeping enables us some granular controls like debugging, interrupting or replaying a run/invocation.\n\nA thread state is a data context defined by the developer and can be anything and it gets passed through from one invocation to another so that business logic is instrumented by data.\n\nA thread keeps track of the whole state history. At every step, it also applies a checkpoint, which is primarily a `uuid`, so that it is easier to refer to a chunk of the history.\n\nOne can easily query the last state, a specific state (by checkpoint id), the whole state history, or, a part of the history (from a checkpoint).\n\nSee `Thread`, `ThreadState` and `Checkpoint` models below for more info."
+  description: If supported by the involved agents, Run can be grouped in Threads.
 tags:
 - name: Threads
-  description: "If supported by the involved agents, Run can be grouped in Threads. \nWhen a run is executed on a thread is called Thread Run. At the end of a Thread Run, the server keeps a thread state associated to the thread.\nA thread keeps track of agent states at every step so that continuity of the context is preserved. Moreover, such a book-keeping enables us some granular controls like debugging, interrupting or replaying a run/invocation.\n\nA thread state is a data context defined by the developer and can be anything and it gets passed through from one invocation to another so that business logic is instrumented by data.\n\nA thread keeps track of the whole state history. At every step, it also applies a checkpoint, which is primarily a `uuid`, so that it is easier to refer to a chunk of the history.\n\nOne can easily query the last state, a specific state (by checkpoint id), the whole state history, or, a part of the history (from a checkpoint).\n\nSee `Thread`, `ThreadState` and `Checkpoint` models below for more info."
+  description: If supported by the involved agents, Run can be grouped in Threads.
 paths:
   /threads:
     post:
       tags:
       - Threads
       summary: Create an empty Thread
-      description: 'Create a new thread. '
+      description: Create a new thread.
       operationId: create_thread
       requestBody:
         content:
@@ -189,7 +189,7 @@ paths:
       tags:
       - Threads
       summary: Get Thread
-      description: 'Get a thread from its ID. '
+      description: Get a thread from its ID.
       operationId: get_thread
       responses:
         '200':
@@ -213,7 +213,7 @@ paths:
     delete:
       tags:
       - Threads
-      summary: Delete a thread. If the thread contains any pending run, deletion fails.
+      summary: Delete a thread. If the thread contains any pending run, deletion fails
       description: Delete a thread.
       operationId: delete_thread
       responses:
@@ -264,6 +264,29 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    ThreadPatch:
+      properties:
+        checkpoint:
+          $ref: '#/components/schemas/ThreadCheckpoint'
+          title: Checkpoint
+          description: The identifier of the checkpoint to branch from. Ignored for metadata-only patches. If not provided, defaults to the latest checkpoint.
+        metadata:
+          type: object
+          title: Metadata
+          description: Metadata to merge with existing thread metadata.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current Messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+      type: object
+      title: ThreadPatch
+      description: Payload for updating a thread.
     Message:
       type: object
       properties:
@@ -311,42 +334,6 @@ components:
       required:
       - role
       - content
-    ThreadStatus:
-      type: string
-      enum:
-      - idle
-      - busy
-      - interrupted
-      - error
-    ThreadStateSchema:
-      title: Thread State Schema
-      description: The thread state. The schema is described in agent ACP descriptor under 'spec.thread_state'.
-      oneOf:
-      - type: object
-        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
-      - type: string
-        description: String thread state to the agent.
-      - type: integer
-        description: Integer thread state to the agent.
-      - type: number
-        description: Number thread state to the agent.
-      - type: boolean
-        description: Boolean thread state to the agent.
-      - type: array
-        description: Array input to the agent.
-        items: {}
-    ThreadCheckpoint:
-      properties:
-        checkpoint_id:
-          type: string
-          format: uuid
-          title: Checkpoint Id
-          description: The ID of the checkpoint.
-      type: object
-      required:
-      - checkpoint_id
-      title: ThreadCheckpoint
-      description: Structured identifier for a thread checkpoint, ie. an entry in the thread's history.
     ThreadSearchRequest:
       properties:
         metadata:
@@ -375,6 +362,65 @@ components:
       type: object
       title: Thread Search Request
       description: Payload for listing threads.
+    ThreadCheckpoint:
+      properties:
+        checkpoint_id:
+          type: string
+          format: uuid
+          title: Checkpoint Id
+          description: The ID of the checkpoint.
+      type: object
+      required:
+      - checkpoint_id
+      title: ThreadCheckpoint
+      description: Structured identifier for a thread checkpoint, ie. an entry in the thread's history.
+    ThreadCreate:
+      type: object
+      title: Thread
+      description: Detail of an empty thread to be created.
+      properties:
+        thread_id:
+          type: string
+          format: uuid
+          title: Thread Id
+          description: The ID of the thread. If not provided, a random UUID will be generated.
+        metadata:
+          type: object
+          title: Metadata
+          description: Free form metadata for this thread
+        if_exists:
+          type: string
+          enum:
+          - raise
+          - do_nothing
+          title: If Exists
+          description: How to handle duplicate creation. Must be either 'raise' (raise error if duplicate), or 'do_nothing' (return existing thread).
+          default: raise
+    ThreadState:
+      properties:
+        checkpoint:
+          $ref: '#/components/schemas/ThreadCheckpoint'
+          title: Checkpoint
+          description: The identifier for this checkpoint.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+        metadata:
+          type: object
+          title: Metadata
+          description: The checkpoint metadata.
+      type: object
+      required:
+      - checkpoint
+      - values
+      title: ThreadState
     ErrorResponse:
       type: string
       title: ErrorResponse
@@ -427,73 +473,27 @@ components:
       - updated_at
       - metadata
       - status
-    ThreadCreate:
-      type: object
-      title: Thread
-      description: Detail of an empty thread to be created.
-      properties:
-        thread_id:
-          type: string
-          format: uuid
-          title: Thread Id
-          description: The ID of the thread. If not provided, a random UUID will be generated.
-        metadata:
-          type: object
-          title: Metadata
-          description: Free form metadata for this thread
-        if_exists:
-          type: string
-          enum:
-          - raise
-          - do_nothing
-          title: If Exists
-          description: How to handle duplicate creation. Must be either 'raise' (raise error if duplicate), or 'do_nothing' (return existing thread).
-          default: raise
-    ThreadPatch:
-      properties:
-        checkpoint:
-          $ref: '#/components/schemas/ThreadCheckpoint'
-          title: Checkpoint
-          description: The identifier of the checkpoint to branch from. Ignored for metadata-only patches. If not provided, defaults to the latest checkpoint.
-        metadata:
-          type: object
-          title: Metadata
-          description: Metadata to merge with existing thread metadata.
-        values:
-          title: Values
-          description: The current state of the thread.
-          $ref: '#/components/schemas/ThreadStateSchema'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          title: Messages
-          description: The current Messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
-      type: object
-      title: ThreadPatch
-      description: Payload for updating a thread.
-    ThreadState:
-      properties:
-        checkpoint:
-          $ref: '#/components/schemas/ThreadCheckpoint'
-          title: Checkpoint
-          description: The identifier for this checkpoint.
-        values:
-          title: Values
-          description: The current state of the thread.
-          $ref: '#/components/schemas/ThreadStateSchema'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          title: Messages
-          description: The current messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
-        metadata:
-          type: object
-          title: Metadata
-          description: The checkpoint metadata.
-      type: object
-      required:
-      - checkpoint
-      - values
-      title: ThreadState
+    ThreadStatus:
+      type: string
+      enum:
+      - idle
+      - busy
+      - interrupted
+      - error
+    ThreadStateSchema:
+      title: Thread State Schema
+      description: The thread state. The schema is described in agent ACP descriptor under 'spec.thread_state'.
+      oneOf:
+      - type: object
+        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+      - type: string
+        description: String thread state to the agent.
+      - type: integer
+        description: Integer thread state to the agent.
+      - type: number
+        description: Number thread state to the agent.
+      - type: boolean
+        description: Boolean thread state to the agent.
+      - type: array
+        description: Array input to the agent.
+        items: {}

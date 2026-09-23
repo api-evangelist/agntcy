@@ -27,7 +27,7 @@ tags:
 paths:
   /api/1.1.0/translate/domain:
     post:
-      description: The purpose of this API is to translate the provided domain class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.
+      description: The purpose of this API is to translate the provided domain class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a JSON array of objects.
       operationId: SchemaWeb.SchemaController.translate_domain
       parameters:
       - description: 'Controls how attribute names and enumerated values are translated.<br/>
@@ -76,7 +76,7 @@ paths:
         required: true
   /api/1.1.0/translate/module:
     post:
-      description: The purpose of this API is to translate the provided module class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.
+      description: The purpose of this API is to translate the provided module class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a JSON array of objects.
       operationId: SchemaWeb.SchemaController.translate_module
       parameters:
       - description: 'Controls how attribute names and enumerated values are translated.<br/>
@@ -125,7 +125,7 @@ paths:
         required: true
   /api/1.1.0/translate/object/{name}:
     post:
-      description: The purpose of this API is to translate the provided object data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.
+      description: The purpose of this API is to translate the provided object data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a JSON array of objects.
       operationId: SchemaWeb.SchemaController.translate_object
       parameters:
       - description: Object name
@@ -180,7 +180,7 @@ paths:
         required: true
   /api/1.1.0/translate/skill:
     post:
-      description: The purpose of this API is to translate the provided skill class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a  JSON array of objects.
+      description: The purpose of this API is to translate the provided skill class data using the OASF schema. Each class is represented as a JSON object, while multiple classes are encoded as a JSON array of objects.
       operationId: SchemaWeb.SchemaController.translate_skill
       parameters:
       - description: 'Controls how attribute names and enumerated values are translated.<br/>

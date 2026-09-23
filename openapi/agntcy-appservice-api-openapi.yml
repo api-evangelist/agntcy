@@ -93,6 +93,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service list apps
+      x-summary-source: derived
     post:
       tags:
       - AppService
@@ -117,6 +119,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service create app
+      x-summary-source: derived
   /v1alpha1/apps/all/count:
     get:
       tags:
@@ -136,6 +140,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service get apps count
+      x-summary-source: derived
   /v1alpha1/apps/oasf:
     post:
       tags:
@@ -160,6 +166,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service create oasf app
+      x-summary-source: derived
   /v1alpha1/apps/{appId}:
     get:
       tags:
@@ -186,6 +194,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service get app
+      x-summary-source: derived
     delete:
       tags:
       - AppService
@@ -208,6 +218,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service delete app
+      x-summary-source: derived
     patch:
       tags:
       - AppService
@@ -239,6 +251,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service update app
+      x-summary-source: derived
   /v1alpha1/apps/{appId}/api-key/refresh:
     get:
       tags:
@@ -265,6 +279,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service refresh app api key
+      x-summary-source: derived
   /v1alpha1/apps/{appId}/badge:
     get:
       tags:
@@ -291,6 +307,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service get badge
+      x-summary-source: derived
   /v1alpha1/tasks:
     get:
       tags:
@@ -318,8 +336,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: App service get tasks
+      x-summary-source: derived
 components:
   schemas:
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    VerifiableCredential:
+      type: object
+      properties:
+        context:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#contexts
+        type:
+          type: array
+          items:
+            type: string
+          description: https://www.w3.org/TR/vc-data-model/#dfn-type
+        issuer:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuer
+        credentialSubject:
+          allOf:
+          - $ref: '#/components/schemas/BadgeClaims'
+          description: https://www.w3.org/TR/vc-data-model/#credential-subject
+        id:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#identifiers
+        issuanceDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#issuance-date
+        expirationDate:
+          type: string
+          description: https://www.w3.org/TR/vc-data-model/#expiration
+        credentialSchema:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas
+        credentialStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialStatus'
+          description: https://www.w3.org/TR/vc-data-model-2.0/#status
+        proof:
+          allOf:
+          - $ref: '#/components/schemas/Proof'
+          description: https://w3id.org/security#proof
+      description: "DataModel represents the W3C Verifiable Credential Data Model defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/"
+    BadgeClaims:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The ID as defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/#credential-subject"
+        badge:
+          type: string
+          description: The content of the badge
+      description: "BadgeClaims represents the content of a Badge VC defined [here]\n\n [here]: https://spec.identity.agntcy.org/docs/vc/intro/"
+    CreateOasfAppRequest:
+      type: object
+      properties:
+        schemaBase64:
+          type: string
+          description: The OASF schema in a base64 encoded format
     Proof:
       type: object
       properties:
@@ -333,24 +421,13 @@ components:
           type: string
           description: The proof value
       description: "A data integrity proof provides information about the proof mechanism,\n parameters required to verify that proof, and the proof value itself."
-    GetAppsCountResponse:
+    Badge:
       type: object
       properties:
-        counts:
-          type: array
-          items:
-            $ref: '#/components/schemas/AppTypeCountEntry'
-          description: The apps count per app type
-        total:
+        verifiableCredential:
+          $ref: '#/components/schemas/VerifiableCredential'
+        appId:
           type: string
-          description: The total count
-    GetTasksResponse_TaskList:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Task'
     Task:
       type: object
       properties:
@@ -375,50 +452,6 @@ components:
           type: string
           description: A tool name for the Task.
       description: Identity Service Policy Task
-    CredentialStatus:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The URL identifying the schema file
-        type:
-          type: string
-          description: Type specifies the type of the file
-        createdAt:
-          type: string
-          description: The creation date and time of the status
-          format: date-time
-        purpose:
-          enum:
-          - CREDENTIAL_STATUS_PURPOSE_UNSPECIFIED
-          - CREDENTIAL_STATUS_PURPOSE_REVOCATION
-          type: string
-          description: The value of the purpose for the status entry
-          format: enum
-      description: "CredentialStatus represents the credentialStatus property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#status"
-    GetTasksResponse:
-      type: object
-      properties:
-        result:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/GetTasksResponse_TaskList'
-          description: The list of tasks per Agentic Service type
-    Badge:
-      type: object
-      properties:
-        verifiableCredential:
-          $ref: '#/components/schemas/VerifiableCredential'
-        appId:
-          type: string
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     CredentialSchema:
       type: object
       properties:
@@ -429,84 +462,6 @@ components:
           type: string
           description: The URL identifying the schema file
       description: "CredentialSchema represents the credentialSchema property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas"
-    AppTypeCountEntry:
-      type: object
-      properties:
-        key:
-          enum:
-          - APP_TYPE_UNSPECIFIED
-          - APP_TYPE_AGENT_A2A
-          - APP_TYPE_AGENT_OASF
-          - APP_TYPE_MCP_SERVER
-          type: string
-          description: The type of the App
-          format: enum
-        value:
-          type: string
-          description: The count of apps of the given type
-    CreateOasfAppRequest:
-      type: object
-      properties:
-        schemaBase64:
-          type: string
-          description: The OASF schema in a base64 encoded format
-    PagedResponse:
-      type: object
-      properties:
-        nextPage:
-          type: integer
-          description: Next page
-          format: int32
-        hasNextPage:
-          type: boolean
-          description: Has next page
-        total:
-          type: string
-          description: The total size of items
-        size:
-          type: integer
-          description: The size of the current page
-          format: int32
-      description: Pagination response
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-    CreateOasfAppResponse:
-      type: object
-      properties:
-        app:
-          allOf:
-          - $ref: '#/components/schemas/App'
-          description: The created OASF App.
-        badge:
-          allOf:
-          - $ref: '#/components/schemas/Badge'
-          description: The issued badge for the OASF App.
-    ListAppsResponse:
-      type: object
-      properties:
-        apps:
-          type: array
-          items:
-            $ref: '#/components/schemas/App'
-          description: A list of Apps.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
     App:
       required:
       - name
@@ -556,60 +511,125 @@ components:
           description: CreatedAt records the timestamp of when the App was initially created
           format: date-time
       description: Identity Service App.
-    BadgeClaims:
+    Status:
       type: object
       properties:
-        id:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
           type: string
-          description: "The ID as defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/#credential-subject"
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    GetAppsCountResponse:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AppTypeCountEntry'
+          description: The apps count per app type
+        total:
+          type: string
+          description: The total count
+    GetTasksResponse:
+      type: object
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GetTasksResponse_TaskList'
+          description: The list of tasks per Agentic Service type
+    PagedResponse:
+      type: object
+      properties:
+        nextPage:
+          type: integer
+          description: Next page
+          format: int32
+        hasNextPage:
+          type: boolean
+          description: Has next page
+        total:
+          type: string
+          description: The total size of items
+        size:
+          type: integer
+          description: The size of the current page
+          format: int32
+      description: Pagination response
+    CreateOasfAppResponse:
+      type: object
+      properties:
+        app:
+          allOf:
+          - $ref: '#/components/schemas/App'
+          description: The created OASF App.
         badge:
-          type: string
-          description: The content of the badge
-      description: "BadgeClaims represents the content of a Badge VC defined [here]\n\n [here]: https://spec.identity.agntcy.org/docs/vc/intro/"
-    VerifiableCredential:
+          allOf:
+          - $ref: '#/components/schemas/Badge'
+          description: The issued badge for the OASF App.
+    AppTypeCountEntry:
       type: object
       properties:
-        context:
-          type: array
-          items:
-            type: string
-          description: https://www.w3.org/TR/vc-data-model/#contexts
-        type:
-          type: array
-          items:
-            type: string
-          description: https://www.w3.org/TR/vc-data-model/#dfn-type
-        issuer:
+        key:
+          enum:
+          - APP_TYPE_UNSPECIFIED
+          - APP_TYPE_AGENT_A2A
+          - APP_TYPE_AGENT_OASF
+          - APP_TYPE_MCP_SERVER
           type: string
-          description: https://www.w3.org/TR/vc-data-model/#issuer
-        credentialSubject:
+          description: The type of the App
+          format: enum
+        value:
+          type: string
+          description: The count of apps of the given type
+    ListAppsResponse:
+      type: object
+      properties:
+        apps:
+          type: array
+          items:
+            $ref: '#/components/schemas/App'
+          description: A list of Apps.
+        pagination:
           allOf:
-          - $ref: '#/components/schemas/BadgeClaims'
-          description: https://www.w3.org/TR/vc-data-model/#credential-subject
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    CredentialStatus:
+      type: object
+      properties:
         id:
           type: string
-          description: https://www.w3.org/TR/vc-data-model/#identifiers
-        issuanceDate:
+          description: The URL identifying the schema file
+        type:
           type: string
-          description: https://www.w3.org/TR/vc-data-model/#issuance-date
-        expirationDate:
+          description: Type specifies the type of the file
+        createdAt:
           type: string
-          description: https://www.w3.org/TR/vc-data-model/#expiration
-        credentialSchema:
+          description: The creation date and time of the status
+          format: date-time
+        purpose:
+          enum:
+          - CREDENTIAL_STATUS_PURPOSE_UNSPECIFIED
+          - CREDENTIAL_STATUS_PURPOSE_REVOCATION
+          type: string
+          description: The value of the purpose for the status entry
+          format: enum
+      description: "CredentialStatus represents the credentialStatus property of a Verifiable Credential.\n more information can be found [here]\n\n [here]: https://www.w3.org/TR/vc-data-model-2.0/#status"
+    GetTasksResponse_TaskList:
+      type: object
+      properties:
+        tasks:
           type: array
           items:
-            $ref: '#/components/schemas/CredentialSchema'
-          description: https://www.w3.org/TR/vc-data-model-2.0/#data-schemas
-        credentialStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/CredentialStatus'
-          description: https://www.w3.org/TR/vc-data-model-2.0/#status
-        proof:
-          allOf:
-          - $ref: '#/components/schemas/Proof'
-          description: https://w3id.org/security#proof
-      description: "DataModel represents the W3C Verifiable Credential Data Model defined [here]\n\n [here]: https://www.w3.org/TR/vc-data-model/"
+            $ref: '#/components/schemas/Task'
   securitySchemes:
     AccessToken:
       type: http

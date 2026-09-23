@@ -1,0 +1,26 @@
+# Front Door AI Index — agntcy — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: agntcy
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: outshift.cisco.com
+  final_host: outshift.cisco.com
+  ownership: own
+  owner: agntcy
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 4
+  host_score: 4
+  density: 97.56
+  words: 41
+  tiers:
+    agentic: 2
+    core: 2
+    model: 0
+  ambiguous: 0
+  top_terms:
+    AI: 2
+    agentic: 2

@@ -27,7 +27,7 @@ tags:
 paths:
   /schema/1.1.0/domains/{name}:
     get:
-      description: 'Get OASF schema domain class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      description: Get OASF schema domain class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name.
       operationId: SchemaWeb.SchemaController.json_domain_class
       parameters:
       - description: Domain class name
@@ -60,7 +60,7 @@ paths:
       - JSON Schema
   /schema/1.1.0/modules/{name}:
     get:
-      description: 'Get OASF schema module class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      description: Get OASF schema module class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name.
       operationId: SchemaWeb.SchemaController.json_module_class
       parameters:
       - description: Module class name
@@ -126,7 +126,7 @@ paths:
       - JSON Schema
   /schema/1.1.0/skills/{name}:
     get:
-      description: 'Get OASF schema skill class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name. '
+      description: Get OASF schema skill class by name, using JSON schema Draft-07 format (see http://json-schema.org). The class name may contain a schema extension name.
       operationId: SchemaWeb.SchemaController.json_skill_class
       parameters:
       - description: Skill class name

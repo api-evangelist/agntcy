@@ -84,6 +84,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service list policies
+      x-summary-source: derived
     post:
       tags:
       - PolicyService
@@ -108,6 +110,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service create policy
+      x-summary-source: derived
   /v1alpha1/policies/all/count:
     get:
       tags:
@@ -127,6 +131,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service get policies count
+      x-summary-source: derived
   /v1alpha1/policies/{policyId}:
     get:
       tags:
@@ -153,6 +159,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service get policy
+      x-summary-source: derived
     delete:
       tags:
       - PolicyService
@@ -175,6 +183,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service delete policy
+      x-summary-source: derived
     patch:
       tags:
       - PolicyService
@@ -206,6 +216,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service update policy
+      x-summary-source: derived
   /v1alpha1/policies/{policyId}/rules:
     get:
       tags:
@@ -249,6 +261,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service list rules
+      x-summary-source: derived
     post:
       tags:
       - PolicyService
@@ -280,6 +294,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service create rule
+      x-summary-source: derived
   /v1alpha1/policies/{policyId}/rules/{ruleId}:
     get:
       tags:
@@ -312,6 +328,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service get rule
+      x-summary-source: derived
     delete:
       tags:
       - PolicyService
@@ -340,6 +358,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service delete rule
+      x-summary-source: derived
     patch:
       tags:
       - PolicyService
@@ -377,124 +397,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Policy service update rule
+      x-summary-source: derived
 components:
   schemas:
-    CreateRuleRequest:
-      type: object
-      properties:
-        policyId:
-          type: string
-          description: The Policy Id to which these Rules belong.
-        name:
-          type: string
-          description: A human-readable name for the Rule.
-        description:
-          type: string
-          description: A human-readable description for the Rule.
-        tasks:
-          type: array
-          items:
-            type: string
-          description: The tasks that this Rule applies to.
-        needsApproval:
-          type: boolean
-          description: Need User Approval for this Rule.
-        action:
-          enum:
-          - RULE_ACTION_UNSPECIFIED
-          - RULE_ACTION_ALLOW
-          - RULE_ACTION_DENY
-          type: string
-          description: The action applied for the rule when calling the tasks
-          format: enum
-    UpdatePolicyRequest:
-      type: object
-      properties:
-        policyId:
-          type: string
-          description: Policy Id to update.
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
-    GetPoliciesCountResponse:
-      type: object
-      properties:
-        total:
-          type: string
-          description: The total count
-    Task:
-      type: object
-      properties:
-        id:
-          readOnly: true
-          type: string
-          description: A unique identifier for the Task.
-        name:
-          readOnly: true
-          type: string
-          description: A human-readable name for the Task.
-        description:
-          readOnly: true
-          type: string
-          description: A human-readable description for the Task.
-        appId:
-          readOnly: true
-          type: string
-          description: An application ID for the Task.
-        toolName:
-          readOnly: true
-          type: string
-          description: A tool name for the Task.
-      description: Identity Service Policy Task
-    UpdateRuleRequest:
-      type: object
-      properties:
-        policyId:
-          type: string
-          description: The Policy Id to which these Rules belong.
-        ruleId:
-          type: string
-          description: Rule Id to update.
-        name:
-          type: string
-          description: A human-readable name for the Rule.
-        description:
-          type: string
-          description: A human-readable description for the Rule.
-        tasks:
-          type: array
-          items:
-            type: string
-          description: The tasks that this Rule applies to.
-        needsApproval:
-          type: boolean
-          description: Need User Approval for this Rule.
-        action:
-          enum:
-          - RULE_ACTION_UNSPECIFIED
-          - RULE_ACTION_ALLOW
-          - RULE_ACTION_DENY
-          type: string
-          description: The action applied for the rule when calling the tasks
-          format: enum
-    ListRulesResponse:
-      type: object
-      properties:
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rule'
-          description: A list of Rules.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
     GoogleProtobufAny:
       type: object
       properties:
@@ -534,6 +440,150 @@ components:
           description: CreatedAt records the timestamp of when the Policy was initially created
           format: date-time
       description: Identity Service Policy.
+    GetPoliciesCountResponse:
+      type: object
+      properties:
+        total:
+          type: string
+          description: The total count
+    UpdatePolicyRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: Policy Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
+    ListPoliciesResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+          description: A list of Policies.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    UpdateRuleRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: The Policy Id to which these Rules belong.
+        ruleId:
+          type: string
+          description: Rule Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        tasks:
+          type: array
+          items:
+            type: string
+          description: The tasks that this Rule applies to.
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the tasks
+          format: enum
+    CreatePolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Task.
+        name:
+          readOnly: true
+          type: string
+          description: A human-readable name for the Task.
+        description:
+          readOnly: true
+          type: string
+          description: A human-readable description for the Task.
+        appId:
+          readOnly: true
+          type: string
+          description: An application ID for the Task.
+        toolName:
+          readOnly: true
+          type: string
+          description: A tool name for the Task.
+      description: Identity Service Policy Task
+    CreateRuleRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: The Policy Id to which these Rules belong.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        tasks:
+          type: array
+          items:
+            type: string
+          description: The tasks that this Rule applies to.
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the tasks
+          format: enum
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
     PagedResponse:
       type: object
       properties:
@@ -552,34 +602,18 @@ components:
           description: The size of the current page
           format: int32
       description: Pagination response
-    CreatePolicyRequest:
+    ListRulesResponse:
       type: object
       properties:
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
+        rules:
           type: array
           items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+            $ref: '#/components/schemas/Rule'
+          description: A list of Rules.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
     Rule:
       required:
       - name
@@ -623,18 +657,6 @@ components:
           description: CreatedAt records the timestamp of when the Rule was initially created
           format: date-time
       description: Identity Service Policy Rule
-    ListPoliciesResponse:
-      type: object
-      properties:
-        policies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy'
-          description: A list of Policies.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
   securitySchemes:
     AccessToken:
       type: http

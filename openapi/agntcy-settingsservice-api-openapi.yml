@@ -52,6 +52,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Settings service get settings
+      x-summary-source: derived
   /v1alpha1/settings/api-key:
     post:
       tags:
@@ -71,6 +73,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Settings service set api key
+      x-summary-source: derived
   /v1alpha1/settings/issuer:
     post:
       tags:
@@ -96,18 +100,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Settings service set issuer
+      x-summary-source: derived
 components:
   schemas:
-    DuoIdpSettings:
+    GoogleProtobufAny:
       type: object
       properties:
-        hostname:
+        '@type':
           type: string
-        integrationKey:
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    PingIdpSettings:
+      type: object
+      properties:
+        environmentId:
           type: string
-        secretKey:
+        clientId:
           type: string
-      description: Duo IdP Settings
+        clientSecret:
+          type: string
+        region:
+          type: string
+      description: Ping IdP Settings
+    SetIssuerRequest:
+      required:
+      - issuerSettings
+      type: object
+      properties:
+        issuerSettings:
+          allOf:
+          - $ref: '#/components/schemas/IssuerSettings'
+          description: The Issuer Settings to set up.
+    OryIdpSettings:
+      type: object
+      properties:
+        projectSlug:
+          type: string
+        apiKey:
+          type: string
+      description: Ory IdP Settings
+    ApiKey:
+      type: object
+      properties:
+        apiKey:
+          type: string
+      description: An Identity API Key.
     Settings:
       type: object
       properties:
@@ -121,60 +160,6 @@ components:
           - $ref: '#/components/schemas/IssuerSettings'
           description: Settings for the Issuer.
       description: Identity Settings
-    PingIdpSettings:
-      type: object
-      properties:
-        environmentId:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-        region:
-          type: string
-      description: Ping IdP Settings
-    EntraIdpSettings:
-      type: object
-      properties:
-        tenantId:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-      description: Entra ID (Azure AD) IdP Settings
-    OryIdpSettings:
-      type: object
-      properties:
-        projectSlug:
-          type: string
-        apiKey:
-          type: string
-      description: Ory IdP Settings
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
     IssuerSettings:
       required:
       - idpType
@@ -232,6 +217,32 @@ components:
           description: UpdatedAt records the timestamp of the last update to the IssuerSettings
           format: date-time
       description: Issuer Settings
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    DuoIdpSettings:
+      type: object
+      properties:
+        hostname:
+          type: string
+        integrationKey:
+          type: string
+        secretKey:
+          type: string
+      description: Duo IdP Settings
     OktaIdpSettings:
       type: object
       properties:
@@ -242,12 +253,16 @@ components:
         privateKey:
           type: string
       description: Okta IdP Settings
-    ApiKey:
+    EntraIdpSettings:
       type: object
       properties:
-        apiKey:
+        tenantId:
           type: string
-      description: An Identity API Key.
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Entra ID (Azure AD) IdP Settings
     KeycloakIdpSettings:
       type: object
       properties:
@@ -260,15 +275,6 @@ components:
         clientSecret:
           type: string
       description: Keycloak IdP Settings
-    SetIssuerRequest:
-      required:
-      - issuerSettings
-      type: object
-      properties:
-        issuerSettings:
-          allOf:
-          - $ref: '#/components/schemas/IssuerSettings'
-          description: The Issuer Settings to set up.
   securitySchemes:
     AccessToken:
       type: http

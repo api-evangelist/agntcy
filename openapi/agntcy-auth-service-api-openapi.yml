@@ -30,13 +30,13 @@ security:
 - AccessToken: []
   ApiKey: []
 tags:
-- name: AuthService
+- name: Auth Service
   description: AuthService manages auth.
 paths:
   /v1alpha1/auth/app_info:
     get:
       tags:
-      - AuthService
+      - Auth Service
       description: App info endpoint
       operationId: AuthService_AppInfo
       responses:
@@ -52,10 +52,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Auth service app info
+      x-summary-source: derived
   /v1alpha1/auth/approve_token:
     post:
       tags:
-      - AuthService
+      - Auth Service
       description: Handle manual approval of external authorization requets
       operationId: AuthService_ApproveToken
       requestBody:
@@ -74,10 +76,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Auth service approve token
+      x-summary-source: derived
   /v1alpha1/auth/authorize:
     post:
       tags:
-      - AuthService
+      - Auth Service
       description: Authorize a request from an Agent or MCP Server
       operationId: AuthService_Authorize
       requestBody:
@@ -99,10 +103,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Auth service authorize
+      x-summary-source: derived
   /v1alpha1/auth/ext_authz:
     post:
       tags:
-      - AuthService
+      - Auth Service
       description: Handle external authorization requests
       operationId: AuthService_ExtAuthz
       requestBody:
@@ -121,10 +127,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Auth service ext authz
+      x-summary-source: derived
   /v1alpha1/auth/token:
     post:
       tags:
-      - AuthService
+      - Auth Service
       description: Request token for an Agent or MCP Server
       operationId: AuthService_Token
       requestBody:
@@ -146,38 +154,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Status'
+      summary: Auth service token
+      x-summary-source: derived
 components:
   schemas:
-    ApproveTokenRequest:
-      type: object
-      properties:
-        deviceId:
-          type: string
-          description: The device id used to handle the approval requestion
-        sessionId:
-          type: string
-          description: The session id related to the token that needs to be approved
-        otp:
-          type: string
-          description: The OTP sent to the device related to the request
-        approve:
-          type: boolean
-          description: 'The action made by the user (true: allow the token, false: deny the token)'
-    ExtAuthzRequest:
-      type: object
-      properties:
-        accessToken:
-          type: string
-          description: The access token to be authorized.
-        toolName:
-          type: string
-          description: The tool name that will be invoked
-    TokenResponse:
-      type: object
-      properties:
-        accessToken:
-          type: string
-          description: The access token issued to the Agent or MCP Server.
     GoogleProtobufAny:
       type: object
       properties:
@@ -186,6 +166,12 @@ components:
           description: The type of the serialized message.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    TokenRequest:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: Pass the code received from the authorization endpoint.
     AppInfoResponse:
       type: object
       properties:
@@ -193,46 +179,12 @@ components:
           allOf:
           - $ref: '#/components/schemas/App'
           description: The App information.
-    Status:
+    TokenResponse:
       type: object
       properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
+        accessToken:
           type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-    TokenRequest:
-      type: object
-      properties:
-        authorizationCode:
-          type: string
-          description: Pass the code received from the authorization endpoint.
-    AuthorizeRequest:
-      type: object
-      properties:
-        resolverMetadataId:
-          type: string
-          description: The resolver metadata id for which authorization is requested.
-        toolName:
-          type: string
-          description: The MCP Server tool name.
-        userToken:
-          type: string
-          description: "The User context in the form of an id or access token.\n Mandatory for User Approval Flows."
-    AuthorizeResponse:
-      type: object
-      properties:
-        authorizationCode:
-          type: string
-          description: "If authorization is successful, return a code to be used for\n the token endpoint."
+          description: The access token issued to the Agent or MCP Server.
     App:
       required:
       - name
@@ -282,6 +234,64 @@ components:
           description: CreatedAt records the timestamp of when the App was initially created
           format: date-time
       description: Identity Service App.
+    ApproveTokenRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: The device id used to handle the approval requestion
+        sessionId:
+          type: string
+          description: The session id related to the token that needs to be approved
+        otp:
+          type: string
+          description: The OTP sent to the device related to the request
+        approve:
+          type: boolean
+          description: 'The action made by the user (true: allow the token, false: deny the token)'
+    AuthorizeResponse:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: "If authorization is successful, return a code to be used for\n the token endpoint."
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    AuthorizeRequest:
+      type: object
+      properties:
+        resolverMetadataId:
+          type: string
+          description: The resolver metadata id for which authorization is requested.
+        toolName:
+          type: string
+          description: The MCP Server tool name.
+        userToken:
+          type: string
+          description: "The User context in the form of an id or access token.\n Mandatory for User Approval Flows."
+    ExtAuthzRequest:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The access token to be authorized.
+        toolName:
+          type: string
+          description: The tool name that will be invoked
   securitySchemes:
     AccessToken:
       type: http

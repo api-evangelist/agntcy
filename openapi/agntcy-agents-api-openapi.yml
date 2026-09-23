@@ -18,10 +18,10 @@ info:
     url: https://schema.oasf.outshift.com/doc
   - type: source
     url: https://identity-docs.outshift.com/api/openapi/service/v1alpha1/openapi.yaml
-  description: "Agents are AI workflows that can be configured and/or executed on this server.  This means that a client of this server can start a Run on any of the Agents supported by this server.\nEach agent may support different features of ACP, also each agent specifies the schemas of the objects carried by ACP for  configuration, input, output, interrupts and state. \nDetails of the ACP features and the schemas are kept in the ACP descriptor of the specific agent.  This object can be retrieved through this ACP interface or is found in the ACP extension of the agent record in the agent directory.\nSee `Agent` and `AgentACPDescriptor` models below for more info."
+  description: Agents are AI workflows that can be configured and/or executed on this server.
 tags:
 - name: Agents
-  description: "Agents are AI workflows that can be configured and/or executed on this server.  This means that a client of this server can start a Run on any of the Agents supported by this server.\nEach agent may support different features of ACP, also each agent specifies the schemas of the objects carried by ACP for  configuration, input, output, interrupts and state. \nDetails of the ACP features and the schemas are kept in the ACP descriptor of the specific agent.  This object can be retrieved through this ACP interface or is found in the ACP extension of the agent record in the agent directory.\nSee `Agent` and `AgentACPDescriptor` models below for more info."
+  description: Agents are AI workflows that can be configured and/or executed on this server.
 paths:
   /agents/search:
     post:
@@ -123,27 +123,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    AgentRef:
-      title: Agent Reference
-      description: Reference to an Agent Record in the Agent Directory, it includes name, version and a locator.
+    AgentACPDescriptor:
+      title: Agent ACP Descriptor
+      description: Describe all the ACP specs of an agent, including schemas and protocol features.
       type: object
       properties:
-        name:
-          description: Name of the agent that identifies the agent in its record
-          title: Name
-          type: string
-        version:
-          description: Version of the agent in its record. Should be formatted according to semantic versioning (https://semver.org)
-          title: Version
-          type: string
-        url:
-          title: Agent Record URL
-          description: URL of the record. Can be a network location, i.e. an entry in the Agent Directory or a file.
-          type: string
-          format: uri
+        metadata:
+          $ref: '#/components/schemas/AgentMetadata'
+        specs:
+          $ref: '#/components/schemas/AgentACPSpec'
       required:
-      - name
-      - version
+      - metadata
+      - specs
     AgentACPSpec:
       title: Agent ACP Specs
       description: Specification of agent capabilities, config, input, output, and interrupts
@@ -328,36 +319,6 @@ components:
       - input
       - output
       - config
-    AgentACPDescriptor:
-      title: Agent ACP Descriptor
-      description: Describe all the ACP specs of an agent, including schemas and protocol features.
-      type: object
-      properties:
-        metadata:
-          $ref: '#/components/schemas/AgentMetadata'
-        specs:
-          $ref: '#/components/schemas/AgentACPSpec'
-      required:
-      - metadata
-      - specs
-    AgentMetadata:
-      title: Agent Metadata
-      description: Basic information associated to the agent
-      type: object
-      properties:
-        ref:
-          $ref: '#/components/schemas/AgentRef'
-        description:
-          description: Description of this agent, which should include what the intended use is, what tasks it accomplishes and how uses input and configs to produce the output and any other side effect
-          title: Description
-          type: string
-      required:
-      - ref
-      - description
-    ErrorResponse:
-      type: string
-      title: ErrorResponse
-      description: Error message returned from the server
     AgentSearchRequest:
       properties:
         name:
@@ -384,6 +345,45 @@ components:
       type: object
       title: AgentSearchRequest
       description: Payload for listing agents.
+    ErrorResponse:
+      type: string
+      title: ErrorResponse
+      description: Error message returned from the server
+    AgentMetadata:
+      title: Agent Metadata
+      description: Basic information associated to the agent
+      type: object
+      properties:
+        ref:
+          $ref: '#/components/schemas/AgentRef'
+        description:
+          description: Description of this agent, which should include what the intended use is, what tasks it accomplishes and how uses input and configs to produce the output and any other side effect
+          title: Description
+          type: string
+      required:
+      - ref
+      - description
+    AgentRef:
+      title: Agent Reference
+      description: Reference to an Agent Record in the Agent Directory, it includes name, version and a locator.
+      type: object
+      properties:
+        name:
+          description: Name of the agent that identifies the agent in its record
+          title: Name
+          type: string
+        version:
+          description: Version of the agent in its record. Should be formatted according to semantic versioning (https://semver.org)
+          title: Version
+          type: string
+        url:
+          title: Agent Record URL
+          description: URL of the record. Can be a network location, i.e. an entry in the Agent Directory or a file.
+          type: string
+          format: uri
+      required:
+      - name
+      - version
     Agent:
       title: Agent
       description: A description of an agent supported by this server
