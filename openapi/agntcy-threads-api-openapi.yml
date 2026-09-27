@@ -264,6 +264,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    ErrorResponse:
+      type: string
+      title: ErrorResponse
+      description: Error message returned from the server
     ThreadPatch:
       properties:
         checkpoint:
@@ -287,6 +291,48 @@ components:
       type: object
       title: ThreadPatch
       description: Payload for updating a thread.
+    ThreadStateSchema:
+      title: Thread State Schema
+      description: The thread state. The schema is described in agent ACP descriptor under 'spec.thread_state'.
+      oneOf:
+      - type: object
+        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+      - type: string
+        description: String thread state to the agent.
+      - type: integer
+        description: Integer thread state to the agent.
+      - type: number
+        description: Number thread state to the agent.
+      - type: boolean
+        description: Boolean thread state to the agent.
+      - type: array
+        description: Array input to the agent.
+        items: {}
+    ThreadState:
+      properties:
+        checkpoint:
+          $ref: '#/components/schemas/ThreadCheckpoint'
+          title: Checkpoint
+          description: The identifier for this checkpoint.
+        values:
+          title: Values
+          description: The current state of the thread.
+          $ref: '#/components/schemas/ThreadStateSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The current messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
+        metadata:
+          type: object
+          title: Metadata
+          description: The checkpoint metadata.
+      type: object
+      required:
+      - checkpoint
+      - values
+      title: ThreadState
     Message:
       type: object
       properties:
@@ -374,57 +420,6 @@ components:
       - checkpoint_id
       title: ThreadCheckpoint
       description: Structured identifier for a thread checkpoint, ie. an entry in the thread's history.
-    ThreadCreate:
-      type: object
-      title: Thread
-      description: Detail of an empty thread to be created.
-      properties:
-        thread_id:
-          type: string
-          format: uuid
-          title: Thread Id
-          description: The ID of the thread. If not provided, a random UUID will be generated.
-        metadata:
-          type: object
-          title: Metadata
-          description: Free form metadata for this thread
-        if_exists:
-          type: string
-          enum:
-          - raise
-          - do_nothing
-          title: If Exists
-          description: How to handle duplicate creation. Must be either 'raise' (raise error if duplicate), or 'do_nothing' (return existing thread).
-          default: raise
-    ThreadState:
-      properties:
-        checkpoint:
-          $ref: '#/components/schemas/ThreadCheckpoint'
-          title: Checkpoint
-          description: The identifier for this checkpoint.
-        values:
-          title: Values
-          description: The current state of the thread.
-          $ref: '#/components/schemas/ThreadStateSchema'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          title: Messages
-          description: The current messages of the thread. If messages are contained in Thread.values, implementations should remove them from values when returning messages. When this key isn't present it means the thread/agent doesn't support messages.
-        metadata:
-          type: object
-          title: Metadata
-          description: The checkpoint metadata.
-      type: object
-      required:
-      - checkpoint
-      - values
-      title: ThreadState
-    ErrorResponse:
-      type: string
-      title: ErrorResponse
-      description: Error message returned from the server
     Thread:
       type: object
       title: Thread
@@ -480,20 +475,25 @@ components:
       - busy
       - interrupted
       - error
-    ThreadStateSchema:
-      title: Thread State Schema
-      description: The thread state. The schema is described in agent ACP descriptor under 'spec.thread_state'.
-      oneOf:
-      - type: object
-        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
-      - type: string
-        description: String thread state to the agent.
-      - type: integer
-        description: Integer thread state to the agent.
-      - type: number
-        description: Number thread state to the agent.
-      - type: boolean
-        description: Boolean thread state to the agent.
-      - type: array
-        description: Array input to the agent.
-        items: {}
+    ThreadCreate:
+      type: object
+      title: Thread
+      description: Detail of an empty thread to be created.
+      properties:
+        thread_id:
+          type: string
+          format: uuid
+          title: Thread Id
+          description: The ID of the thread. If not provided, a random UUID will be generated.
+        metadata:
+          type: object
+          title: Metadata
+          description: Free form metadata for this thread
+        if_exists:
+          type: string
+          enum:
+          - raise
+          - do_nothing
+          title: If Exists
+          description: How to handle duplicate creation. Must be either 'raise' (raise error if duplicate), or 'do_nothing' (return existing thread).
+          default: raise

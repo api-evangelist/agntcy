@@ -104,6 +104,18 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    KeycloakIdpSettings:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+        realm:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Keycloak IdP Settings
     GoogleProtobufAny:
       type: object
       properties:
@@ -112,6 +124,22 @@ components:
           description: The type of the serialized message.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
     PingIdpSettings:
       type: object
       properties:
@@ -124,6 +152,14 @@ components:
         region:
           type: string
       description: Ping IdP Settings
+    OryIdpSettings:
+      type: object
+      properties:
+        projectSlug:
+          type: string
+        apiKey:
+          type: string
+      description: Ory IdP Settings
     SetIssuerRequest:
       required:
       - issuerSettings
@@ -133,14 +169,26 @@ components:
           allOf:
           - $ref: '#/components/schemas/IssuerSettings'
           description: The Issuer Settings to set up.
-    OryIdpSettings:
+    EntraIdpSettings:
       type: object
       properties:
-        projectSlug:
+        tenantId:
           type: string
-        apiKey:
+        clientId:
           type: string
-      description: Ory IdP Settings
+        clientSecret:
+          type: string
+      description: Entra ID (Azure AD) IdP Settings
+    DuoIdpSettings:
+      type: object
+      properties:
+        hostname:
+          type: string
+        integrationKey:
+          type: string
+        secretKey:
+          type: string
+      description: Duo IdP Settings
     ApiKey:
       type: object
       properties:
@@ -160,6 +208,16 @@ components:
           - $ref: '#/components/schemas/IssuerSettings'
           description: Settings for the Issuer.
       description: Identity Settings
+    OktaIdpSettings:
+      type: object
+      properties:
+        orgUrl:
+          type: string
+        clientId:
+          type: string
+        privateKey:
+          type: string
+      description: Okta IdP Settings
     IssuerSettings:
       required:
       - idpType
@@ -217,64 +275,6 @@ components:
           description: UpdatedAt records the timestamp of the last update to the IssuerSettings
           format: date-time
       description: Issuer Settings
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-    DuoIdpSettings:
-      type: object
-      properties:
-        hostname:
-          type: string
-        integrationKey:
-          type: string
-        secretKey:
-          type: string
-      description: Duo IdP Settings
-    OktaIdpSettings:
-      type: object
-      properties:
-        orgUrl:
-          type: string
-        clientId:
-          type: string
-        privateKey:
-          type: string
-      description: Okta IdP Settings
-    EntraIdpSettings:
-      type: object
-      properties:
-        tenantId:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-      description: Entra ID (Azure AD) IdP Settings
-    KeycloakIdpSettings:
-      type: object
-      properties:
-        baseUrl:
-          type: string
-        realm:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-      description: Keycloak IdP Settings
   securitySchemes:
     AccessToken:
       type: http

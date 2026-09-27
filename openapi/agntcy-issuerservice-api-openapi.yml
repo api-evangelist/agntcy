@@ -91,6 +91,19 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    RegisterIssuerResponse:
+      type: object
+      properties: {}
+      description: Returns a registration response for the issuer
+    Jwks:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/Jwk'
+          description: Keys represents the list of JSON Web Keys.
+      description: JWKS represents a set of JSON Web Keys (JWKs).
     GoogleProtobufAny:
       type: object
       properties:
@@ -99,23 +112,22 @@ components:
           description: The type of the serialized message.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    RegisterIssuerResponse:
-      type: object
-      properties: {}
-      description: Returns a registration response for the issuer
-    Proof:
+    Status:
       type: object
       properties:
-        type:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
           type: string
-          description: The type of the proof
-        proofPurpose:
-          type: string
-          description: The proof purpose
-        proofValue:
-          type: string
-          description: The proof value
-      description: "A data integrity proof provides information about the proof mechanism,\n parameters required to verify that proof, and the proof value itself."
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
     Jwk:
       type: object
       properties:
@@ -177,22 +189,27 @@ components:
           - $ref: '#/components/schemas/Proof'
           description: "Optional Proof of ownership of the Issuer's common_name\n This should be provided when the Issuer is provided by an external IdP\n Example: a signed JWT"
       description: Request to register an issuer
-    Status:
+    GetIssuerWellKnownResponse:
       type: object
       properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
+        jwks:
+          allOf:
+          - $ref: '#/components/schemas/Jwks'
+          description: The well-known Json Web Key Set (JWKS) document
+      description: Returns the content of the well-known JWKS document
+    Proof:
+      type: object
+      properties:
+        type:
           type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+          description: The type of the proof
+        proofPurpose:
+          type: string
+          description: The proof purpose
+        proofValue:
+          type: string
+          description: The proof value
+      description: "A data integrity proof provides information about the proof mechanism,\n parameters required to verify that proof, and the proof value itself."
     Issuer:
       type: object
       properties:
@@ -225,20 +242,3 @@ components:
           description: "This field specifies the authentication mechanism used by the issuer.\n It determines whether the issuer uses an external Identity Provider (IDP)\n or a self-issued key for authentication."
           format: enum
       description: A Identity Issuer
-    Jwks:
-      type: object
-      properties:
-        keys:
-          type: array
-          items:
-            $ref: '#/components/schemas/Jwk'
-          description: Keys represents the list of JSON Web Keys.
-      description: JWKS represents a set of JSON Web Keys (JWKs).
-    GetIssuerWellKnownResponse:
-      type: object
-      properties:
-        jwks:
-          allOf:
-          - $ref: '#/components/schemas/Jwks'
-          description: The well-known Json Web Key Set (JWKS) document
-      description: Returns the content of the well-known JWKS document

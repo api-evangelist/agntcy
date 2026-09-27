@@ -487,57 +487,30 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    ValueRunErrorUpdate:
-      title: Value Run Error Update
-      description: Partial result provided as value through streaming.
+    StreamUpdateSchema:
       type: object
-      allOf:
-      - $ref: '#/components/schemas/RunError'
-      - type: object
-        properties:
-          status:
-            title: Run Status
-            description: Status of the Run when this result was generated. This is particularly useful when this data structure is used for streaming results. As the server can indicate an interrupt or an error condition while streaming the result.
-            $ref: '#/components/schemas/RunStatus'
-        required:
-        - status
-    InterruptPayloadSchema:
-      title: Interrupt Payload
-      description: "This schema describes the interrupt payload. Actual schema describes a polimorphic object, which means a schema structured with `oneOf` and `discriminator`. The discriminator is the `interrupt_type`, while the schemas will be the ones defined in the agent spec under `interrupts`/`interrupt_payload` For example:          oneOf:\n  - $ref: '#/components/schemas/ApprovalInterruptPayload'\n  - $ref: '#/components/schemas/QuestionInterruptPayload'\ndiscriminator:\n  propertyName: interruput_type\n  mapping:\n    approval: '#/components/schemas/ApprovalInterruptPayload'\n    question: '#/components/schemas/QuestionInterruptPayload'"
-      oneOf:
-      - type: object
-        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
-      - type: string
-        description: String interrupt to the agent.
-      - type: integer
-        description: Integer interrupt to the agent.
-      - type: number
-        description: Number interrupt to the agent.
-      - type: boolean
-        description: Boolean interrupt to the agent.
-      - type: array
-        description: Array input to the agent.
-        items: {}
-    StreamingMode:
-      type: string
-      enum:
-      - values
-      - custom
-    RunInterrupt:
-      title: Run Interrupt
-      description: Interrupt occurred during a Run
+      title: Stream Update Schema
+      description: An update in the SSE event streaming where streaming mode is set to custom. The schema is described in agent ACP descriptor under 'spec.custom_streaming_update'.
+    RunResult:
+      title: Run Result
+      description: Final result of a Run.
       type: object
       properties:
         type:
           title: Output Type
           type: string
           enum:
-          - interrupt
-        interrupt:
-          $ref: '#/components/schemas/InterruptPayloadSchema'
+          - result
+        values:
+          $ref: '#/components/schemas/OutputSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: The messages returned by the run.
       required:
       - type
-      - interrupt
     Run:
       title: Agent Run
       description: Holds common information of a run
@@ -577,35 +550,27 @@ components:
       - created_at
       - updated_at
       - status
+    InputSchema:
+      title: Input Schema
+      description: The input of the agent. The schema is described in agent ACP descriptor under 'spec.input'.
+      oneOf:
+      - type: object
+        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+      - type: string
+        description: String input to the agent.
+      - type: integer
+        description: Integer input to the agent.
+      - type: number
+        description: Number input to the agent.
+      - type: boolean
+        description: Boolean input to the agent.
+      - type: array
+        description: Array input to the agent.
+        items: {}
     ErrorResponse:
       type: string
       title: ErrorResponse
       description: Error message returned from the server
-    CustomRunResultUpdate:
-      title: Custom Run Result Update
-      description: Object holding a custom defined update of the agent result during streaming.
-      type: object
-      properties:
-        type:
-          title: Streaming Output Type
-          type: string
-          enum:
-          - custom
-        run_id:
-          type: string
-          format: uuid
-          title: Run Id
-          description: The ID of the run.
-        status:
-          title: Run Status
-          description: Status of the Run when this result was generated
-          $ref: '#/components/schemas/RunStatus'
-        update:
-          $ref: '#/components/schemas/StreamUpdateSchema'
-      required:
-      - type
-      - status
-      - update
     ResumePayloadSchema:
       title: Resume Payload Schema
       description: "This schema describes the resume payload after an interrupt. Actual schema describes a polimorphic object, which means a schema structured with `oneOf` and `discriminator`. The discriminator is the `interrupt_type`, while the schemas will be those defined in the agent spec under `interrupts`/`resume_payload` For example:          oneOf:\n  - $ref: '#/components/schemas/ApprovalResumePayload'\n  - $ref: '#/components/schemas/QuestionResumePayload'\ndiscriminator:\n  propertyName: interrupt_type\n  mapping:\n    approval: '#/components/schemas/ApprovalResumePayload'\n    question: '#/components/schemas/QuestionResumePayload'"
@@ -623,6 +588,34 @@ components:
       - type: array
         description: Array input to the agent.
         items: {}
+    RunError:
+      title: Run Error
+      description: Run terminated with an error
+      type: object
+      properties:
+        type:
+          title: Output Type
+          type: string
+          enum:
+          - error
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+          description: The ID of the run.
+        errcode:
+          type: integer
+          title: Error Code
+          description: code of the error
+        description:
+          type: string
+          title: Error Description
+          description: description of the error
+      required:
+      - type
+      - run_id
+      - errcode
+      - description
     Message:
       type: object
       properties:
@@ -670,38 +663,6 @@ components:
       required:
       - role
       - content
-    RunError:
-      title: Run Error
-      description: Run terminated with an error
-      type: object
-      properties:
-        type:
-          title: Output Type
-          type: string
-          enum:
-          - error
-        run_id:
-          type: string
-          format: uuid
-          title: Run Id
-          description: The ID of the run.
-        errcode:
-          type: integer
-          title: Error Code
-          description: code of the error
-        description:
-          type: string
-          title: Error Description
-          description: description of the error
-      required:
-      - type
-      - run_id
-      - errcode
-      - description
-    StreamUpdateSchema:
-      type: object
-      title: Stream Update Schema
-      description: An update in the SSE event streaming where streaming mode is set to custom. The schema is described in agent ACP descriptor under 'spec.custom_streaming_update'.
     RunCreateStateful:
       allOf:
       - $ref: '#/components/schemas/RunCreate'
@@ -722,6 +683,81 @@ components:
             default: reject
       title: RunCreateStateful
       description: Payload for creating a stateful run.
+    RunStateful:
+      title: Agent Run Stateful
+      description: Holds all the information of a stateful run
+      allOf:
+      - $ref: '#/components/schemas/Run'
+      - type: object
+        properties:
+          creation:
+            $ref: '#/components/schemas/RunCreateStateful'
+            title: Creation
+            description: ''
+        required:
+        - creation
+    StreamingMode:
+      type: string
+      enum:
+      - values
+      - custom
+    InterruptPayloadSchema:
+      title: Interrupt Payload
+      description: "This schema describes the interrupt payload. Actual schema describes a polimorphic object, which means a schema structured with `oneOf` and `discriminator`. The discriminator is the `interrupt_type`, while the schemas will be the ones defined in the agent spec under `interrupts`/`interrupt_payload` For example:          oneOf:\n  - $ref: '#/components/schemas/ApprovalInterruptPayload'\n  - $ref: '#/components/schemas/QuestionInterruptPayload'\ndiscriminator:\n  propertyName: interruput_type\n  mapping:\n    approval: '#/components/schemas/ApprovalInterruptPayload'\n    question: '#/components/schemas/QuestionInterruptPayload'"
+      oneOf:
+      - type: object
+        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
+      - type: string
+        description: String interrupt to the agent.
+      - type: integer
+        description: Integer interrupt to the agent.
+      - type: number
+        description: Number interrupt to the agent.
+      - type: boolean
+        description: Boolean interrupt to the agent.
+      - type: array
+        description: Array input to the agent.
+        items: {}
+    ValueRunResultUpdate:
+      title: Value Run Result Update
+      description: Partial result provided as value through streaming.
+      type: object
+      properties:
+        type:
+          title: Streaming Output Type
+          type: string
+          enum:
+          - values
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+          description: The ID of the run.
+        status:
+          title: Run Status
+          description: Status of the Run when this result was generated. This is particularly useful when this data structure is used for streaming results. As the server can indicate an interrupt or an error condition while streaming the result.
+          $ref: '#/components/schemas/RunStatus'
+        values:
+          $ref: '#/components/schemas/OutputSchema'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          title: Messages
+          description: Stream of messages returned by the run.
+      required:
+      - type
+      - run_id
+      - status
+      - values
+    RunStatus:
+      type: string
+      enum:
+      - pending
+      - error
+      - success
+      - timeout
+      - interrupted
     RunCreate:
       properties:
         agent_id:
@@ -792,39 +828,6 @@ components:
       required: []
       title: RunCreateStateful
       description: Payload for creating a run.
-    RunOutput:
-      title: Run Output
-      description: Output of a Run. Can be the final result or an interrupt.
-      oneOf:
-      - $ref: '#/components/schemas/RunResult'
-      - $ref: '#/components/schemas/RunInterrupt'
-      - $ref: '#/components/schemas/RunError'
-      discriminator:
-        propertyName: type
-        mapping:
-          result: '#/components/schemas/RunResult'
-          interrupt: '#/components/schemas/RunInterrupt'
-          error: '#/components/schemas/RunError'
-    RunResult:
-      title: Run Result
-      description: Final result of a Run.
-      type: object
-      properties:
-        type:
-          title: Output Type
-          type: string
-          enum:
-          - result
-        values:
-          $ref: '#/components/schemas/OutputSchema'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          title: Messages
-          description: The messages returned by the run.
-      required:
-      - type
     OutputSchema:
       title: Output Schema
       description: The output of the agent. The schema is described in agent ACP descriptor under 'spec.output'.
@@ -842,55 +845,6 @@ components:
       - type: array
         description: Array input to the agent.
         items: {}
-    ConfigSchema:
-      title: Config
-      description: The configuration for this agent. The schema is described in agent ACP descriptor under 'spec.config'. If missing, default values are used.
-      oneOf:
-      - type: object
-        description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
-      - type: string
-        description: String config to the agent.
-      - type: integer
-        description: Integer config to the agent.
-      - type: number
-        description: Number config to the agent.
-      - type: boolean
-        description: Boolean config to the agent.
-      - type: array
-        description: Array input to the agent.
-        items: {}
-    ValueRunResultUpdate:
-      title: Value Run Result Update
-      description: Partial result provided as value through streaming.
-      type: object
-      properties:
-        type:
-          title: Streaming Output Type
-          type: string
-          enum:
-          - values
-        run_id:
-          type: string
-          format: uuid
-          title: Run Id
-          description: The ID of the run.
-        status:
-          title: Run Status
-          description: Status of the Run when this result was generated. This is particularly useful when this data structure is used for streaming results. As the server can indicate an interrupt or an error condition while streaming the result.
-          $ref: '#/components/schemas/RunStatus'
-        values:
-          $ref: '#/components/schemas/OutputSchema'
-        messages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Message'
-          title: Messages
-          description: Stream of messages returned by the run.
-      required:
-      - type
-      - run_id
-      - status
-      - values
     RunOutputStream:
       type: object
       title: Run Output Stream Event
@@ -924,44 +878,63 @@ components:
       - id
       - event
       - data
-    InputSchema:
-      title: Input Schema
-      description: The input of the agent. The schema is described in agent ACP descriptor under 'spec.input'.
+    RunInterrupt:
+      title: Run Interrupt
+      description: Interrupt occurred during a Run
+      type: object
+      properties:
+        type:
+          title: Output Type
+          type: string
+          enum:
+          - interrupt
+        interrupt:
+          $ref: '#/components/schemas/InterruptPayloadSchema'
+      required:
+      - type
+      - interrupt
+    CustomRunResultUpdate:
+      title: Custom Run Result Update
+      description: Object holding a custom defined update of the agent result during streaming.
+      type: object
+      properties:
+        type:
+          title: Streaming Output Type
+          type: string
+          enum:
+          - custom
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+          description: The ID of the run.
+        status:
+          title: Run Status
+          description: Status of the Run when this result was generated
+          $ref: '#/components/schemas/RunStatus'
+        update:
+          $ref: '#/components/schemas/StreamUpdateSchema'
+      required:
+      - type
+      - status
+      - update
+    ConfigSchema:
+      title: Config
+      description: The configuration for this agent. The schema is described in agent ACP descriptor under 'spec.config'. If missing, default values are used.
       oneOf:
       - type: object
         description: 'This object contains an instance of an OpenAPI schema object, formatted as per the OpenAPI specs: https://spec.openapis.org/oas/v3.1.1.html#schema-object'
       - type: string
-        description: String input to the agent.
+        description: String config to the agent.
       - type: integer
-        description: Integer input to the agent.
+        description: Integer config to the agent.
       - type: number
-        description: Number input to the agent.
+        description: Number config to the agent.
       - type: boolean
-        description: Boolean input to the agent.
+        description: Boolean config to the agent.
       - type: array
         description: Array input to the agent.
         items: {}
-    RunStatus:
-      type: string
-      enum:
-      - pending
-      - error
-      - success
-      - timeout
-      - interrupted
-    RunStateful:
-      title: Agent Run Stateful
-      description: Holds all the information of a stateful run
-      allOf:
-      - $ref: '#/components/schemas/Run'
-      - type: object
-        properties:
-          creation:
-            $ref: '#/components/schemas/RunCreateStateful'
-            title: Creation
-            description: ''
-        required:
-        - creation
     RunWaitResponseStateful:
       type: object
       properties:
@@ -991,3 +964,30 @@ components:
         required:
         - run_id
         - status
+    ValueRunErrorUpdate:
+      title: Value Run Error Update
+      description: Partial result provided as value through streaming.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/RunError'
+      - type: object
+        properties:
+          status:
+            title: Run Status
+            description: Status of the Run when this result was generated. This is particularly useful when this data structure is used for streaming results. As the server can indicate an interrupt or an error condition while streaming the result.
+            $ref: '#/components/schemas/RunStatus'
+        required:
+        - status
+    RunOutput:
+      title: Run Output
+      description: Output of a Run. Can be the final result or an interrupt.
+      oneOf:
+      - $ref: '#/components/schemas/RunResult'
+      - $ref: '#/components/schemas/RunInterrupt'
+      - $ref: '#/components/schemas/RunError'
+      discriminator:
+        propertyName: type
+        mapping:
+          result: '#/components/schemas/RunResult'
+          interrupt: '#/components/schemas/RunInterrupt'
+          error: '#/components/schemas/RunError'

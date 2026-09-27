@@ -188,18 +188,6 @@ components:
           description: The type of the serialized message.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    ListDevicesResponse:
-      type: object
-      properties:
-        devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-          description: A list of Apps.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
     Status:
       type: object
       properties:
@@ -256,6 +244,18 @@ components:
           description: The creation time of the Device.
           format: date-time
       description: Devices used for user approval
+    ListDevicesResponse:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: A list of Apps.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
   securitySchemes:
     AccessToken:
       type: http
