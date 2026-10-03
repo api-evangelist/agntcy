@@ -104,26 +104,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    KeycloakIdpSettings:
-      type: object
-      properties:
-        baseUrl:
-          type: string
-        realm:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-      description: Keycloak IdP Settings
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     Status:
       type: object
       properties:
@@ -140,6 +120,42 @@ components:
             $ref: '#/components/schemas/GoogleProtobufAny'
           description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
       description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    ApiKey:
+      type: object
+      properties:
+        apiKey:
+          type: string
+      description: An Identity API Key.
+    DuoIdpSettings:
+      type: object
+      properties:
+        hostname:
+          type: string
+        integrationKey:
+          type: string
+        secretKey:
+          type: string
+      description: Duo IdP Settings
+    OktaIdpSettings:
+      type: object
+      properties:
+        orgUrl:
+          type: string
+        clientId:
+          type: string
+        privateKey:
+          type: string
+      description: Okta IdP Settings
+    EntraIdpSettings:
+      type: object
+      properties:
+        tenantId:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Entra ID (Azure AD) IdP Settings
     PingIdpSettings:
       type: object
       properties:
@@ -152,72 +168,6 @@ components:
         region:
           type: string
       description: Ping IdP Settings
-    OryIdpSettings:
-      type: object
-      properties:
-        projectSlug:
-          type: string
-        apiKey:
-          type: string
-      description: Ory IdP Settings
-    SetIssuerRequest:
-      required:
-      - issuerSettings
-      type: object
-      properties:
-        issuerSettings:
-          allOf:
-          - $ref: '#/components/schemas/IssuerSettings'
-          description: The Issuer Settings to set up.
-    EntraIdpSettings:
-      type: object
-      properties:
-        tenantId:
-          type: string
-        clientId:
-          type: string
-        clientSecret:
-          type: string
-      description: Entra ID (Azure AD) IdP Settings
-    DuoIdpSettings:
-      type: object
-      properties:
-        hostname:
-          type: string
-        integrationKey:
-          type: string
-        secretKey:
-          type: string
-      description: Duo IdP Settings
-    ApiKey:
-      type: object
-      properties:
-        apiKey:
-          type: string
-      description: An Identity API Key.
-    Settings:
-      type: object
-      properties:
-        apiKey:
-          readOnly: true
-          allOf:
-          - $ref: '#/components/schemas/ApiKey'
-          description: An API Key for the Identity Service.
-        issuerSettings:
-          allOf:
-          - $ref: '#/components/schemas/IssuerSettings'
-          description: Settings for the Issuer.
-      description: Identity Settings
-    OktaIdpSettings:
-      type: object
-      properties:
-        orgUrl:
-          type: string
-        clientId:
-          type: string
-        privateKey:
-          type: string
-      description: Okta IdP Settings
     IssuerSettings:
       required:
       - idpType
@@ -275,6 +225,56 @@ components:
           description: UpdatedAt records the timestamp of the last update to the IssuerSettings
           format: date-time
       description: Issuer Settings
+    KeycloakIdpSettings:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+        realm:
+          type: string
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      description: Keycloak IdP Settings
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    SetIssuerRequest:
+      required:
+      - issuerSettings
+      type: object
+      properties:
+        issuerSettings:
+          allOf:
+          - $ref: '#/components/schemas/IssuerSettings'
+          description: The Issuer Settings to set up.
+    OryIdpSettings:
+      type: object
+      properties:
+        projectSlug:
+          type: string
+        apiKey:
+          type: string
+      description: Ory IdP Settings
+    Settings:
+      type: object
+      properties:
+        apiKey:
+          readOnly: true
+          allOf:
+          - $ref: '#/components/schemas/ApiKey'
+          description: An API Key for the Identity Service.
+        issuerSettings:
+          allOf:
+          - $ref: '#/components/schemas/IssuerSettings'
+          description: Settings for the Issuer.
+      description: Identity Settings
   securitySchemes:
     AccessToken:
       type: http

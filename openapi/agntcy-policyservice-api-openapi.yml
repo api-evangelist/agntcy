@@ -432,103 +432,6 @@ components:
           type: string
           description: The action applied for the rule when calling the tasks
           format: enum
-    Policy:
-      required:
-      - name
-      - assignedTo
-      - rules
-      type: object
-      properties:
-        id:
-          readOnly: true
-          type: string
-          description: A unique identifier for the Policy.
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this Policy applies to.
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rule'
-          description: All the rules that apply to this Policy.
-        createdAt:
-          readOnly: true
-          type: string
-          description: CreatedAt records the timestamp of when the Policy was initially created
-          format: date-time
-      description: Identity Service Policy.
-    PagedResponse:
-      type: object
-      properties:
-        nextPage:
-          type: integer
-          description: Next page
-          format: int32
-        hasNextPage:
-          type: boolean
-          description: Has next page
-        total:
-          type: string
-          description: The total size of items
-        size:
-          type: integer
-          description: The size of the current page
-          format: int32
-      description: Pagination response
-    Status:
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-          format: int32
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        details:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleProtobufAny'
-          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    Task:
-      type: object
-      properties:
-        id:
-          readOnly: true
-          type: string
-          description: A unique identifier for the Task.
-        name:
-          readOnly: true
-          type: string
-          description: A human-readable name for the Task.
-        description:
-          readOnly: true
-          type: string
-          description: A human-readable description for the Task.
-        appId:
-          readOnly: true
-          type: string
-          description: An application ID for the Task.
-        toolName:
-          readOnly: true
-          type: string
-          description: A tool name for the Task.
-      description: Identity Service Policy Task
     Rule:
       required:
       - name
@@ -572,21 +475,6 @@ components:
           description: CreatedAt records the timestamp of when the Rule was initially created
           format: date-time
       description: Identity Service Policy Rule
-    UpdatePolicyRequest:
-      type: object
-      properties:
-        policyId:
-          type: string
-          description: Policy Id to update.
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
     CreateRuleRequest:
       type: object
       properties:
@@ -615,18 +503,6 @@ components:
           type: string
           description: The action applied for the rule when calling the tasks
           format: enum
-    CreatePolicyRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
     ListRulesResponse:
       type: object
       properties:
@@ -639,6 +515,40 @@ components:
           allOf:
           - $ref: '#/components/schemas/PagedResponse'
           description: Pagination response.
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+          format: int32
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleProtobufAny'
+          description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+      description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    PagedResponse:
+      type: object
+      properties:
+        nextPage:
+          type: integer
+          description: Next page
+          format: int32
+        hasNextPage:
+          type: boolean
+          description: Has next page
+        total:
+          type: string
+          description: The total size of items
+        size:
+          type: integer
+          description: The size of the current page
+          format: int32
+      description: Pagination response
     ListPoliciesResponse:
       type: object
       properties:
@@ -651,12 +561,102 @@ components:
           allOf:
           - $ref: '#/components/schemas/PagedResponse'
           description: Pagination response.
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Task.
+        name:
+          readOnly: true
+          type: string
+          description: A human-readable name for the Task.
+        description:
+          readOnly: true
+          type: string
+          description: A human-readable description for the Task.
+        appId:
+          readOnly: true
+          type: string
+          description: An application ID for the Task.
+        toolName:
+          readOnly: true
+          type: string
+          description: A tool name for the Task.
+      description: Identity Service Policy Task
+    UpdatePolicyRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: Policy Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
     GetPoliciesCountResponse:
       type: object
       properties:
         total:
           type: string
           description: The total count
+    Policy:
+      required:
+      - name
+      - assignedTo
+      - rules
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Policy.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this Policy applies to.
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: All the rules that apply to this Policy.
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the Policy was initially created
+          format: date-time
+      description: Identity Service Policy.
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    CreatePolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
   securitySchemes:
     AccessToken:
       type: http

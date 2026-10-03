@@ -158,20 +158,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    TokenResponse:
-      type: object
-      properties:
-        accessToken:
-          type: string
-          description: The access token issued to the Agent or MCP Server.
     Status:
       type: object
       properties:
@@ -188,6 +174,68 @@ components:
             $ref: '#/components/schemas/GoogleProtobufAny'
           description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
       description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    TokenRequest:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: Pass the code received from the authorization endpoint.
+    AuthorizeResponse:
+      type: object
+      properties:
+        authorizationCode:
+          type: string
+          description: "If authorization is successful, return a code to be used for\n the token endpoint."
+    AuthorizeRequest:
+      type: object
+      properties:
+        resolverMetadataId:
+          type: string
+          description: The resolver metadata id for which authorization is requested.
+        toolName:
+          type: string
+          description: The MCP Server tool name.
+        userToken:
+          type: string
+          description: "The User context in the form of an id or access token.\n Mandatory for User Approval Flows."
+    ApproveTokenRequest:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          description: The device id used to handle the approval requestion
+        sessionId:
+          type: string
+          description: The session id related to the token that needs to be approved
+        otp:
+          type: string
+          description: The OTP sent to the device related to the request
+        approve:
+          type: boolean
+          description: 'The action made by the user (true: allow the token, false: deny the token)'
+    ExtAuthzRequest:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The access token to be authorized.
+        toolName:
+          type: string
+          description: The tool name that will be invoked
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: The access token issued to the Agent or MCP Server.
     AppInfoResponse:
       type: object
       properties:
@@ -244,54 +292,6 @@ components:
           description: CreatedAt records the timestamp of when the App was initially created
           format: date-time
       description: Identity Service App.
-    ExtAuthzRequest:
-      type: object
-      properties:
-        accessToken:
-          type: string
-          description: The access token to be authorized.
-        toolName:
-          type: string
-          description: The tool name that will be invoked
-    AuthorizeRequest:
-      type: object
-      properties:
-        resolverMetadataId:
-          type: string
-          description: The resolver metadata id for which authorization is requested.
-        toolName:
-          type: string
-          description: The MCP Server tool name.
-        userToken:
-          type: string
-          description: "The User context in the form of an id or access token.\n Mandatory for User Approval Flows."
-    AuthorizeResponse:
-      type: object
-      properties:
-        authorizationCode:
-          type: string
-          description: "If authorization is successful, return a code to be used for\n the token endpoint."
-    TokenRequest:
-      type: object
-      properties:
-        authorizationCode:
-          type: string
-          description: Pass the code received from the authorization endpoint.
-    ApproveTokenRequest:
-      type: object
-      properties:
-        deviceId:
-          type: string
-          description: The device id used to handle the approval requestion
-        sessionId:
-          type: string
-          description: The session id related to the token that needs to be approved
-        otp:
-          type: string
-          description: The OTP sent to the device related to the request
-        approve:
-          type: boolean
-          description: 'The action made by the user (true: allow the token, false: deny the token)'
   securitySchemes:
     AccessToken:
       type: http

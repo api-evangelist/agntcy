@@ -180,14 +180,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     Status:
       type: object
       properties:
@@ -222,6 +214,26 @@ components:
           description: The size of the current page
           format: int32
       description: Pagination response
+    ListDevicesResponse:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+          description: A list of Apps.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    GoogleProtobufAny:
+      type: object
+      properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     Device:
       type: object
       properties:
@@ -244,18 +256,6 @@ components:
           description: The creation time of the Device.
           format: date-time
       description: Devices used for user approval
-    ListDevicesResponse:
-      type: object
-      properties:
-        devices:
-          type: array
-          items:
-            $ref: '#/components/schemas/Device'
-          description: A list of Apps.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
   securitySchemes:
     AccessToken:
       type: http
