@@ -1,36 +1,34 @@
-# Kin Score artifact — agntcy — 2026-08-25T143147
+# Kin Score artifact — agntcy — 2026-09-24T064009
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: agntcy
-  schema_version: 0.14.0
-  scored_at: '2026-08-25'
-  run_ts: 2026-08-25T143147
-  composite: 47.6
+  schema_version: 0.22.0
+  scored_at: '2026-09-24'
+  run_ts: 2026-09-24T064009
+  composite: 47.9
   band: developing
   facets:
-    discoverability: 72.2
-    contract_quality: 57.4
-    governance: 16.7
+    discoverability: 66.7
+    contract_quality: 64.8
+    contract_governance: 4.5
     operational_transparency: 28.9
     developer_ergonomics: 80.4
-    commercial_clarity: 21.1
-    contract_governance: 16.7
     access_clarity: 21.1
   agent_readiness:
-    score: 34.2
-    band: agent-ready
+    score: 39.2
+    band: agent-native
     dimensions:
       spec_presence: true
       agentic_access: derived
-      reversibility_documented: false
+      reversibility_documented: documented
       mcp_server: documented
       auth_clarity: bearer
       idempotency: documented
       error_semantics: verified
       openapi_examples: false
       rate_limit_signal: documented
-      event_surface_described: derived
+      event_surface_described: true
       agent_skills: derived
       well_known_catalog: false
       consent_identity: false
@@ -46,7 +44,7 @@ kin_score:
     agentic_access: derived
     conformance: derived
     contracts:
-      total: 3
+      total: 20
       derived: 0
       coverage: 100.0
       callable: 0.0
