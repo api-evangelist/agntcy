@@ -123,32 +123,20 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    AgentSearchRequest:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Match all agents with the name specified.
-        version:
-          type: string
-          title: Version
-          description: Match all agents with the version specified. Formatted according to semantic versioning (https://semver.org)
-        limit:
-          type: integer
-          title: Limit
-          description: Maximum number to return.
-          default: 10
-          minimum: 1
-          maximum: 1000
-        offset:
-          type: integer
-          title: Offset
-          description: Offset to start from.
-          default: 0
-          minimum: 0
+    AgentMetadata:
+      title: Agent Metadata
+      description: Basic information associated to the agent
       type: object
-      title: AgentSearchRequest
-      description: Payload for listing agents.
+      properties:
+        ref:
+          $ref: '#/components/schemas/AgentRef'
+        description:
+          description: Description of this agent, which should include what the intended use is, what tasks it accomplishes and how uses input and configs to produce the output and any other side effect
+          title: Description
+          type: string
+      required:
+      - ref
+      - description
     Agent:
       title: Agent
       description: A description of an agent supported by this server
@@ -164,32 +152,6 @@ components:
       required:
       - agent_id
       - metadata
-    AgentACPDescriptor:
-      title: Agent ACP Descriptor
-      description: Describe all the ACP specs of an agent, including schemas and protocol features.
-      type: object
-      properties:
-        metadata:
-          $ref: '#/components/schemas/AgentMetadata'
-        specs:
-          $ref: '#/components/schemas/AgentACPSpec'
-      required:
-      - metadata
-      - specs
-    AgentMetadata:
-      title: Agent Metadata
-      description: Basic information associated to the agent
-      type: object
-      properties:
-        ref:
-          $ref: '#/components/schemas/AgentRef'
-        description:
-          description: Description of this agent, which should include what the intended use is, what tasks it accomplishes and how uses input and configs to produce the output and any other side effect
-          title: Description
-          type: string
-      required:
-      - ref
-      - description
     AgentACPSpec:
       title: Agent ACP Specs
       description: Specification of agent capabilities, config, input, output, and interrupts
@@ -374,10 +336,18 @@ components:
       - input
       - output
       - config
-    ErrorResponse:
-      type: string
-      title: ErrorResponse
-      description: Error message returned from the server
+    AgentACPDescriptor:
+      title: Agent ACP Descriptor
+      description: Describe all the ACP specs of an agent, including schemas and protocol features.
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/AgentMetadata'
+        specs:
+          $ref: '#/components/schemas/AgentACPSpec'
+      required:
+      - metadata
+      - specs
     AgentRef:
       title: Agent Reference
       description: Reference to an Agent Record in the Agent Directory, it includes name, version and a locator.
@@ -399,3 +369,33 @@ components:
       required:
       - name
       - version
+    ErrorResponse:
+      type: string
+      title: ErrorResponse
+      description: Error message returned from the server
+    AgentSearchRequest:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Match all agents with the name specified.
+        version:
+          type: string
+          title: Version
+          description: Match all agents with the version specified. Formatted according to semantic versioning (https://semver.org)
+        limit:
+          type: integer
+          title: Limit
+          description: Maximum number to return.
+          default: 10
+          minimum: 1
+          maximum: 1000
+        offset:
+          type: integer
+          title: Offset
+          description: Offset to start from.
+          default: 0
+          minimum: 0
+      type: object
+      title: AgentSearchRequest
+      description: Payload for listing agents.

@@ -432,6 +432,85 @@ components:
           type: string
           description: The action applied for the rule when calling the tasks
           format: enum
+    Task:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Task.
+        name:
+          readOnly: true
+          type: string
+          description: A human-readable name for the Task.
+        description:
+          readOnly: true
+          type: string
+          description: A human-readable description for the Task.
+        appId:
+          readOnly: true
+          type: string
+          description: An application ID for the Task.
+        toolName:
+          readOnly: true
+          type: string
+          description: A tool name for the Task.
+      description: Identity Service Policy Task
+    CreateRuleRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: The Policy Id to which these Rules belong.
+        name:
+          type: string
+          description: A human-readable name for the Rule.
+        description:
+          type: string
+          description: A human-readable description for the Rule.
+        tasks:
+          type: array
+          items:
+            type: string
+          description: The tasks that this Rule applies to.
+        needsApproval:
+          type: boolean
+          description: Need User Approval for this Rule.
+        action:
+          enum:
+          - RULE_ACTION_UNSPECIFIED
+          - RULE_ACTION_ALLOW
+          - RULE_ACTION_DENY
+          type: string
+          description: The action applied for the rule when calling the tasks
+          format: enum
+    ListRulesResponse:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+          description: A list of Rules.
+        pagination:
+          allOf:
+          - $ref: '#/components/schemas/PagedResponse'
+          description: Pagination response.
+    UpdatePolicyRequest:
+      type: object
+      properties:
+        policyId:
+          type: string
+          description: Policy Id to update.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this policy applies to.
     Rule:
       required:
       - name
@@ -475,46 +554,75 @@ components:
           description: CreatedAt records the timestamp of when the Rule was initially created
           format: date-time
       description: Identity Service Policy Rule
-    CreateRuleRequest:
+    CreatePolicyRequest:
       type: object
       properties:
-        policyId:
-          type: string
-          description: The Policy Id to which these Rules belong.
         name:
           type: string
-          description: A human-readable name for the Rule.
+          description: A human-readable name for the Policy.
         description:
           type: string
-          description: A human-readable description for the Rule.
-        tasks:
-          type: array
-          items:
-            type: string
-          description: The tasks that this Rule applies to.
-        needsApproval:
-          type: boolean
-          description: Need User Approval for this Rule.
-        action:
-          enum:
-          - RULE_ACTION_UNSPECIFIED
-          - RULE_ACTION_ALLOW
-          - RULE_ACTION_DENY
+          description: A human-readable description for the Policy.
+        assignedTo:
           type: string
-          description: The action applied for the rule when calling the tasks
-          format: enum
-    ListRulesResponse:
+          description: The requester application that this policy applies to.
+    GoogleProtobufAny:
       type: object
       properties:
+        '@type':
+          type: string
+          description: The type of the serialized message.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+    Policy:
+      required:
+      - name
+      - assignedTo
+      - rules
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Policy.
+        name:
+          type: string
+          description: A human-readable name for the Policy.
+        description:
+          type: string
+          description: A human-readable description for the Policy.
+        assignedTo:
+          type: string
+          description: The requester application that this Policy applies to.
         rules:
           type: array
           items:
             $ref: '#/components/schemas/Rule'
-          description: A list of Rules.
+          description: All the rules that apply to this Policy.
+        createdAt:
+          readOnly: true
+          type: string
+          description: CreatedAt records the timestamp of when the Policy was initially created
+          format: date-time
+      description: Identity Service Policy.
+    ListPoliciesResponse:
+      type: object
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Policy'
+          description: A list of Policies.
         pagination:
           allOf:
           - $ref: '#/components/schemas/PagedResponse'
           description: Pagination response.
+    GetPoliciesCountResponse:
+      type: object
+      properties:
+        total:
+          type: string
+          description: The total count
     Status:
       type: object
       properties:
@@ -549,114 +657,6 @@ components:
           description: The size of the current page
           format: int32
       description: Pagination response
-    ListPoliciesResponse:
-      type: object
-      properties:
-        policies:
-          type: array
-          items:
-            $ref: '#/components/schemas/Policy'
-          description: A list of Policies.
-        pagination:
-          allOf:
-          - $ref: '#/components/schemas/PagedResponse'
-          description: Pagination response.
-    Task:
-      type: object
-      properties:
-        id:
-          readOnly: true
-          type: string
-          description: A unique identifier for the Task.
-        name:
-          readOnly: true
-          type: string
-          description: A human-readable name for the Task.
-        description:
-          readOnly: true
-          type: string
-          description: A human-readable description for the Task.
-        appId:
-          readOnly: true
-          type: string
-          description: An application ID for the Task.
-        toolName:
-          readOnly: true
-          type: string
-          description: A tool name for the Task.
-      description: Identity Service Policy Task
-    UpdatePolicyRequest:
-      type: object
-      properties:
-        policyId:
-          type: string
-          description: Policy Id to update.
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
-    GetPoliciesCountResponse:
-      type: object
-      properties:
-        total:
-          type: string
-          description: The total count
-    Policy:
-      required:
-      - name
-      - assignedTo
-      - rules
-      type: object
-      properties:
-        id:
-          readOnly: true
-          type: string
-          description: A unique identifier for the Policy.
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this Policy applies to.
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/Rule'
-          description: All the rules that apply to this Policy.
-        createdAt:
-          readOnly: true
-          type: string
-          description: CreatedAt records the timestamp of when the Policy was initially created
-          format: date-time
-      description: Identity Service Policy.
-    GoogleProtobufAny:
-      type: object
-      properties:
-        '@type':
-          type: string
-          description: The type of the serialized message.
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    CreatePolicyRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: A human-readable name for the Policy.
-        description:
-          type: string
-          description: A human-readable description for the Policy.
-        assignedTo:
-          type: string
-          description: The requester application that this policy applies to.
   securitySchemes:
     AccessToken:
       type: http

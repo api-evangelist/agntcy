@@ -88,6 +88,31 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    ResolverMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The ID\n The metadata below is related as claims to the ID"
+        verificationMethod:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerificationMethod'
+          description: "VerificationMethod is a list of cryptographic public keys, which can be used\n to authenticate or authorize interactions with the entities represented by the ID."
+        service:
+          type: array
+          items:
+            $ref: '#/components/schemas/Service'
+          description: "Service is used in ResolverMetadatas to express ways of communicating with\n the node that published the document."
+        assertionMethod:
+          type: array
+          items:
+            type: string
+          description: "AssertionMethod is used to specify how the entity represented by the ID\n is expected to express claims, such as for the purposes of issuing a VCs."
+        controller:
+          type: string
+          description: A controller is an entity that is authorized to make changes to a Resolver Metadata.
+      description: "ResolverMetadata represents a set of data describing the ID including mechanisms such as:\n   - cryptographic public keys - used to authenticate itself and prove\n     association with the ID\n   - service - ways of communicating with the node that published the document\n\n A ResolverMetadata can be retrieved by resolving an ID."
     Status:
       type: object
       properties:
@@ -104,57 +129,6 @@ components:
             $ref: '#/components/schemas/GoogleProtobufAny'
           description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
       description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-    VerificationMethod:
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique id of the verification method.
-        publicKeyJwk:
-          allOf:
-          - $ref: '#/components/schemas/Jwk'
-          description: The public key used for the verification method.
-      description: "VerificationMethod expresses verification methods, such as cryptographic\n public keys, which can be used to authenticate or authorize interactions\n with the entities represented by the ID. It is a part of the ResolverMetadata."
-    ResolveResponse:
-      type: object
-      properties:
-        resolverMetadata:
-          allOf:
-          - $ref: '#/components/schemas/ResolverMetadata'
-          description: The ResolverMetadata resolved from the Id
-      description: Returns the ResolverMetadata corresponding to the specified Id
-    Issuer:
-      type: object
-      properties:
-        organization:
-          type: string
-          description: The organization of the issuer
-        subOrganization:
-          type: string
-          description: The sub organization of the issuer
-        commonName:
-          type: string
-          description: "The common name of the issuer\n Could be a FQDN or a FQDA"
-        verified:
-          type: boolean
-          description: "This will be set to true when issuer provides a valid proof of ownership\n of the common name on registration"
-        publicKey:
-          allOf:
-          - $ref: '#/components/schemas/Jwk'
-          description: "This field is optional\n The keys of the issuer in JWK format\n The public key is used to verify the signature of the different claims"
-        privateKey:
-          allOf:
-          - $ref: '#/components/schemas/Jwk'
-          description: "This field is optional\n The private key of the issuer in JWK format"
-        authType:
-          enum:
-          - ISSUER_AUTH_TYPE_UNSPECIFIED
-          - ISSUER_AUTH_TYPE_IDP
-          - ISSUER_AUTH_TYPE_SELF
-          type: string
-          description: "This field specifies the authentication mechanism used by the issuer.\n It determines whether the issuer uses an external Identity Provider (IDP)\n or a self-issued key for authentication."
-          format: enum
-      description: A Identity Issuer
     Proof:
       type: object
       properties:
@@ -185,13 +159,6 @@ components:
           description: The type of the serialized message.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    ResolveRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Id is the identifier.
-      description: Resolve a specified Id to its corresponding ResolverMetadata
     GenerateRequest:
       type: object
       properties:
@@ -204,31 +171,32 @@ components:
           - $ref: '#/components/schemas/Proof'
           description: "Optional Proof of ownership of the Issuer's provided id\n This should be provided when the Issuer is provided by an external IdP\n Example: a signed JWT"
       description: "Generate an Id and its corresponding ResolverMetadata for the specified Issuer\n For external IdPs, the Issuer should be provided with a Proof of ownership\n of the Issuer's provided id"
-    ResolverMetadata:
+    VerificationMethod:
       type: object
       properties:
         id:
           type: string
-          description: "The ID\n The metadata below is related as claims to the ID"
-        verificationMethod:
-          type: array
-          items:
-            $ref: '#/components/schemas/VerificationMethod'
-          description: "VerificationMethod is a list of cryptographic public keys, which can be used\n to authenticate or authorize interactions with the entities represented by the ID."
-        service:
-          type: array
-          items:
-            $ref: '#/components/schemas/Service'
-          description: "Service is used in ResolverMetadatas to express ways of communicating with\n the node that published the document."
-        assertionMethod:
-          type: array
-          items:
-            type: string
-          description: "AssertionMethod is used to specify how the entity represented by the ID\n is expected to express claims, such as for the purposes of issuing a VCs."
-        controller:
+          description: A unique id of the verification method.
+        publicKeyJwk:
+          allOf:
+          - $ref: '#/components/schemas/Jwk'
+          description: The public key used for the verification method.
+      description: "VerificationMethod expresses verification methods, such as cryptographic\n public keys, which can be used to authenticate or authorize interactions\n with the entities represented by the ID. It is a part of the ResolverMetadata."
+    GenerateResponse:
+      type: object
+      properties:
+        resolverMetadata:
+          allOf:
+          - $ref: '#/components/schemas/ResolverMetadata'
+          description: The ResolverMetadata corresponding to the generated Id
+      description: Returns the Generated Id and its corresponding ResolverMetadata
+    ResolveRequest:
+      type: object
+      properties:
+        id:
           type: string
-          description: A controller is an entity that is authorized to make changes to a Resolver Metadata.
-      description: "ResolverMetadata represents a set of data describing the ID including mechanisms such as:\n   - cryptographic public keys - used to authenticate itself and prove\n     association with the ID\n   - service - ways of communicating with the node that published the document\n\n A ResolverMetadata can be retrieved by resolving an ID."
+          description: Id is the identifier.
+      description: Resolve a specified Id to its corresponding ResolverMetadata
     Jwk:
       type: object
       properties:
@@ -278,11 +246,43 @@ components:
           type: string
           description: The first CRT coefficient for the RSA private key.
       description: "JWK represents:\n - a JSON Web Key (JWK) with the respective fields specific to RSA algorithms.\n - a Quantum JSON Web Key (QJWK) with the respective fields specific to AKP algorithms."
-    GenerateResponse:
+    Issuer:
+      type: object
+      properties:
+        organization:
+          type: string
+          description: The organization of the issuer
+        subOrganization:
+          type: string
+          description: The sub organization of the issuer
+        commonName:
+          type: string
+          description: "The common name of the issuer\n Could be a FQDN or a FQDA"
+        verified:
+          type: boolean
+          description: "This will be set to true when issuer provides a valid proof of ownership\n of the common name on registration"
+        publicKey:
+          allOf:
+          - $ref: '#/components/schemas/Jwk'
+          description: "This field is optional\n The keys of the issuer in JWK format\n The public key is used to verify the signature of the different claims"
+        privateKey:
+          allOf:
+          - $ref: '#/components/schemas/Jwk'
+          description: "This field is optional\n The private key of the issuer in JWK format"
+        authType:
+          enum:
+          - ISSUER_AUTH_TYPE_UNSPECIFIED
+          - ISSUER_AUTH_TYPE_IDP
+          - ISSUER_AUTH_TYPE_SELF
+          type: string
+          description: "This field specifies the authentication mechanism used by the issuer.\n It determines whether the issuer uses an external Identity Provider (IDP)\n or a self-issued key for authentication."
+          format: enum
+      description: A Identity Issuer
+    ResolveResponse:
       type: object
       properties:
         resolverMetadata:
           allOf:
           - $ref: '#/components/schemas/ResolverMetadata'
-          description: The ResolverMetadata corresponding to the generated Id
-      description: Returns the Generated Id and its corresponding ResolverMetadata
+          description: The ResolverMetadata resolved from the Id
+      description: Returns the ResolverMetadata corresponding to the specified Id
