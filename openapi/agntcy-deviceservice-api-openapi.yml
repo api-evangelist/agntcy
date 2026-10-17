@@ -180,28 +180,24 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    Device:
+    PagedResponse:
       type: object
       properties:
-        id:
-          readOnly: true
+        nextPage:
+          type: integer
+          description: Next page
+          format: int32
+        hasNextPage:
+          type: boolean
+          description: Has next page
+        total:
           type: string
-          description: A unique identifier for the Device.
-        userId:
-          type: string
-          description: User ID associated with the Device.
-        subscriptionToken:
-          type: string
-          description: Subscription Token for the Device.
-        name:
-          type: string
-          description: The device human-readable name.
-        createdAt:
-          readOnly: true
-          type: string
-          description: The creation time of the Device.
-          format: date-time
-      description: Devices used for user approval
+          description: The total size of items
+        size:
+          type: integer
+          description: The size of the current page
+          format: int32
+      description: Pagination response
     GoogleProtobufAny:
       type: object
       properties:
@@ -226,6 +222,28 @@ components:
             $ref: '#/components/schemas/GoogleProtobufAny'
           description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
       description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+    Device:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+          description: A unique identifier for the Device.
+        userId:
+          type: string
+          description: User ID associated with the Device.
+        subscriptionToken:
+          type: string
+          description: Subscription Token for the Device.
+        name:
+          type: string
+          description: The device human-readable name.
+        createdAt:
+          readOnly: true
+          type: string
+          description: The creation time of the Device.
+          format: date-time
+      description: Devices used for user approval
     ListDevicesResponse:
       type: object
       properties:
@@ -238,24 +256,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/PagedResponse'
           description: Pagination response.
-    PagedResponse:
-      type: object
-      properties:
-        nextPage:
-          type: integer
-          description: Next page
-          format: int32
-        hasNextPage:
-          type: boolean
-          description: Has next page
-        total:
-          type: string
-          description: The total size of items
-        size:
-          type: integer
-          description: The size of the current page
-          format: int32
-      description: Pagination response
   securitySchemes:
     AccessToken:
       type: http
