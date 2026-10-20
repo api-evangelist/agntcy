@@ -161,6 +161,46 @@ edges:
     detected: '2026-10-18'
   detected_by: sweep-official-sdks.py
   first_seen: '2026-10-18'
+- partner_name: winget (Windows Package Manager)
+  partner: null
+  partner_match: null
+  type: register
+  direction: provider-built
+  category: official CLI (winget (Windows Package Manager))
+  evidence: https://github.com/microsoft/winget-pkgs/tree/master/manifests/a/AGNTCY/agentbridge
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: winget (Windows Package Manager) (public package index)
+    spec_file: null
+    packages:
+    - name: AGNTCY.agentbridge
+      kind: manifest
+      version: 0.1.8
+      released: '2026-09-30'
+      lapsed: false
+      page: https://github.com/microsoft/winget-pkgs/tree/master/manifests/a/AGNTCY/agentbridge
+      cli: 'winget: CLI binary for the agentbridge general-purpose agent interconnect.'
+      repo_leg: github-org:agntcy
+      publisher_leg: artifact-github-org:agntcy
+      matched_by: github-org
+    - name: AGNTCY.shadictl
+      kind: manifest
+      version: 0.1.11
+      released: '2026-09-30'
+      lapsed: false
+      page: https://github.com/microsoft/winget-pkgs/tree/master/manifests/a/AGNTCY/shadictl
+      cli: 'winget: Command-line interface for SHADI policy, secrets, memory, and SLIM operations.'
+      repo_leg: github-org:agntcy
+      publisher_leg: artifact-github-org:agntcy
+      matched_by: github-org
+    current: true
+    signal_note: 'the provider''s own command-line tool on a package manager: distribution, not an integration;
+      lapsed = no release in 24 months or deprecated / disabled by the manager'
+    detected_by: sweep-official-clis.py
+    detected: '2026-10-20'
+  detected_by: sweep-official-clis.py
+  first_seen: '2026-10-20'
 generated: '2026-10-18'
 method: searched
 source:
@@ -173,7 +213,12 @@ source:
 - https://rubygems.org/api/v1
 checked:
 - https://api.nuget.org/v3
+- https://cdn.winget.microsoft.com/cache
 - https://crates.io/api/v1
+- https://formulae.brew.sh/api/cask.json
+- https://formulae.brew.sh/api/formula.json
+- https://github.com/ScoopInstaller/Extras
+- https://github.com/ScoopInstaller/Main
 - https://proxy.golang.org
 - https://pypi.org/pypi
 - https://registry.npmjs.org
