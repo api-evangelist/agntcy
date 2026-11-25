@@ -117,7 +117,7 @@ Model Context Protocol servers that expose the API to agents.
 
 Which operations an agent can call, which act, and which need a human in the loop.
 
-- [Agntcy Agentic Access](https://apis.io/agentic-access/agntcy/agntcy-agentic-access/)
+- [AGNTCY Agentic Access](https://apis.io/agentic-access/agntcy/agntcy-agentic-access/)
 
 #### JSON Schema (7)
 
@@ -135,30 +135,42 @@ The data models the API reads and writes.
 
 OpenAPI overlays, including conversational phrasing for each operation.
 
-- [Agntcy Acp Overlay](https://apis.io/overlays/agntcy/agntcy-acp-overlay/)
-- [Agntcy Identity Node Overlay](https://apis.io/overlays/agntcy/agntcy-identity-node-overlay/)
-- [Agntcy Identity Service Overlay](https://apis.io/overlays/agntcy/agntcy-identity-service-overlay/)
-- [Agntcy Oasf Schema Overlay](https://apis.io/overlays/agntcy/agntcy-oasf-schema-overlay/)
+- [AGNTCY Acp Overlay](https://apis.io/overlays/agntcy/agntcy-acp-overlay/)
+- [AGNTCY Identity Node Overlay](https://apis.io/overlays/agntcy/agntcy-identity-node-overlay/)
+- [AGNTCY Identity Service Overlay](https://apis.io/overlays/agntcy/agntcy-identity-service-overlay/)
+- [AGNTCY Oasf Schema Overlay](https://apis.io/overlays/agntcy/agntcy-oasf-schema-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [AGNTCY API Rules](https://apis.io/rules/agntcy/agntcy-rules/)
 
 #### Security (3)
 
 Authentication, trust centre, and vulnerability disclosure.
 
-- [Agntcy Authentication](https://apis.io/security/agntcy/agntcy-authentication/)
-- [Agntcy Domain Security](https://apis.io/security/agntcy/agntcy-domain-security/)
-- [Agntcy Vulnerability Disclosure](https://apis.io/security/agntcy/agntcy-vulnerability-disclosure/)
+- [AGNTCY Authentication](https://apis.io/security/agntcy/agntcy-authentication/)
+- [AGNTCY Domain Security](https://apis.io/security/agntcy/agntcy-domain-security/)
+- [AGNTCY Vulnerability Disclosure](https://apis.io/security/agntcy/agntcy-vulnerability-disclosure/)
 
 #### Plans and pricing (1)
 
 Published plans, tiers and prices.
 
-- [Agntcy Plans Pricing](https://apis.io/plans/agntcy/agntcy-plans-pricing/)
+- [AGNTCY Plans Pricing](https://apis.io/plans/agntcy/agntcy-plans-pricing/)
 
 #### Rate limits (1)
 
 Published request limits.
 
-- [Agntcy Rate Limits](https://apis.io/rate-limits/agntcy/agntcy-rate-limits/)
+- [AGNTCY Rate Limits](https://apis.io/rate-limits/agntcy/agntcy-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [AGNTCY Finops](https://apis.io/finops/agntcy/agntcy-finops/)
 
 ## Where to find this API
 
@@ -178,18 +190,18 @@ Links to the company's own pages. This repository publishes no copy of their spe
 
 ## API Evangelist rating
 
-**Kin Score 49.0** — developing · rubric 0.25.0 · scored 2026-10-23
+**Kin Score 51.0** — developing · rubric 0.28.1 · scored 2026-11-21
 
 | Facet | Score |
 |---|---|
 | Discoverability | 68.3 |
-| Contract quality | 59.3 |
-| Contract governance | 4.5 |
-| Operational transparency | 28.9 |
+| Contract quality | 64.2 |
+| Contract governance | 18.2 |
+| Operational transparency | 28.6 |
 | Developer ergonomics | 80.4 |
-| Access clarity | 21.1 |
+| Access clarity | 17.0 |
 
-**Agent readiness 42.5** — agent-native
+**Agent readiness 41.6** — agent-native
 
 | Agent-readiness dimension | Result |
 |---|---|
@@ -214,6 +226,10 @@ Links to the company's own pages. This repository publishes no copy of their spe
 | Agentic Commerce | — |
 | Pagination Ratio | paginated |
 | Operation Distinctiveness | distinct |
+| MCP Tool Quality | na |
+| Onboarding Descriptor | — |
+| Dns Aid Index | na |
+| Markdown Negotiation | na |
 
 **Regulatory alignment 30.4** — Horizontal (data, software, accessibility, platform)
 
